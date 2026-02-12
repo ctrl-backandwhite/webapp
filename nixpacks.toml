@@ -1,47 +1,58 @@
 # ================================
-# 🚀 Nixpacks config for Angular + Caddy on Railway
+# 🚀 Railway + Nixpacks config for Angular + Caddy
 # ================================
 
-# ✅ Variables de entorno globales
+# =====================================
+# 🌍 Variables globales
+# =====================================
 [variables]
   NPM_CONFIG_UPDATE_NOTIFIER = 'false'
   NPM_CONFIG_FUND = 'false'
 
-# ================================
-# 🛠️ Fase de instalación inicial
-# ================================
+# =====================================
+# ⚙️ Setup base con Node + jq
+# =====================================
 [phases.setup]
-  nixPkgs = ['nodejs_22', 'jq'] # Node y jq (para parsear angular.json si fuera necesario)
+  nixPkgs = ['nodejs_22', 'jq']
 
-# ================================
+# =====================================
 # 📦 Instalar Caddy
-# ================================
+# =====================================
 [phases.caddy]
   dependsOn = ['setup']
-  nixPkgs = ['caddy'] # Instala Caddy
-  nixpkgsArchive = 'ba913eda2df8eb72147259189d55932012df6301' # Caddy 2.8.4 estable
+  nixPkgs = ['caddy']
+  nixpkgsArchive = 'ba913eda2df8eb72147259189d55932012df6301' # versión estable de Caddy 2.8.4
 
-# ================================
+# =====================================
 # 🧹 Formatear el Caddyfile
-# ================================
+# =====================================
 [phases.fmt]
   dependsOn = ['caddy']
   cmds = ['caddy fmt --overwrite Caddyfile']
 
-# ================================
-# 🏗️ Build Angular
-# ================================
+# =====================================
+# 🏗️ Build Angular App
+# =====================================
 [phases.build]
-  cmds = ['npm ci', 'npm run build'] # Usa tu script con output a /browser
+  cmds = [
+    'npm ci',
+    'npm run build'
+  ]
 
+# =====================================
+# ✅ Verificación opcional de carpetas
+# =====================================
 [phases.verify]
-dependsOn = ['build']
-cmds = ['ls -la /app', 'ls -la /app/browser || true']
+  dependsOn = ['build']
+  cmds = [
+    'echo "Verificando contenido de /app/dist..."',
+    'ls -la /app/dist || true',
+    'ls -la /app/dist/webapp || true',
+    'ls -la /app/dist/webapp/browser || true'
+  ]
 
-
-# ================================
-# 🚦 Start Caddy server
-# ================================
+# =====================================
+# 🚦 Iniciar servidor Caddy
+# =====================================
 [start]
-  # Ejecuta Caddy sirviendo los archivos de /app/browser (output del build Angular)
   cmd = 'exec caddy run --config Caddyfile --adapter caddyfile 2>&1'
