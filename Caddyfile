@@ -1,0 +1,31 @@
+{
+  admin off
+  persist_config off
+  auto_https off
+
+  log {
+    format json
+  }
+
+  servers {
+    trusted_proxies static private_ranges
+  }
+}
+
+:{$PORT} {
+  log {
+    format json
+  }
+
+  # Healthcheck para Railway
+  respond /health 200
+
+  # Sirve el build Angular desde /app/browser
+  root * /app/browser/browser
+
+  encode gzip
+  file_server
+
+  # Fallback SPA para Angular Router
+  try_files {path} /index.html
+}
