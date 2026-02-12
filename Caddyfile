@@ -20,13 +20,12 @@
   # Healthcheck para Railway
   respond /health 200
 
-  # ✅ Sirve el build Angular desde /app/dist/webapp/browser
-  # ⚠️ Si tu build genera directamente en /app/dist/webapp, cambia esta línea
-  root * /app/dist/webapp/browser
+  # ✅ Sirve el build Angular directamente desde /app/dist/webapp
+  root * /app/dist/webapp
 
   encode gzip
   file_server
 
-  # ✅ Fallback SPA (para rutas Angular)
+  # ✅ Fallback SPA para Angular Router
   try_files {path} /index.html
 }
