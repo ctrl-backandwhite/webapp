@@ -1,4 +1,4 @@
-import { Component } from '@angular/core';
+import { Component, viewChild } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
@@ -9,4 +9,10 @@ import { SidebarComponent } from '../sidebar/sidebar.component';
     imports: [RouterOutlet, NavbarComponent, SidebarComponent],
     templateUrl: './admin-layout.component.html'
 })
-export class AdminLayoutComponent { }
+export class AdminLayoutComponent {
+    sidebar = viewChild.required(SidebarComponent);
+
+    onToggleSidebar() {
+        this.sidebar().toggle();
+    }
+}

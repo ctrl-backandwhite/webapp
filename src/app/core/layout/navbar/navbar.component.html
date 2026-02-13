@@ -8,9 +8,10 @@
         </label>
     </div>
     <div class="flex-1 flex items-center gap-2">
-        <label for="sidebar-collapse" class="btn btn-ghost btn-sm hidden lg:inline-flex" aria-label="Acoplar menú">
+        <button (click)="onToggleSidebar()" class="btn btn-ghost btn-sm hidden lg:inline-flex"
+            aria-label="Acoplar menú">
             <i class="fa-solid fa-bars"></i>
-        </label>
+        </button>
     </div>
     <div class="flex items-center gap-2">
         <div class="dropdown dropdown-end">
