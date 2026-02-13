@@ -41,7 +41,6 @@
 - Use **signals** for state management whenever possible.
 - The changes made must be associated with the current version that is being used
 - Configurations and files that are not necessary must always be removed
-- The styles that are written must be understandable by humans
 
 
 

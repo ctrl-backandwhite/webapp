@@ -26,10 +26,40 @@
         <button class="btn btn-ghost btn-sm" aria-label="Notificaciones">
             <i class="fa-solid fa-bell text-lg"></i>
         </button>
-        <div class="avatar placeholder">
-            <div class="bg-primary text-primary-content w-8 rounded-full">
-                <span>AD</span>
+        <div class="dropdown dropdown-end">
+            <div tabindex="0" role="button" class="avatar placeholder">
+                <div class="bg-primary text-primary-content w-8 h-8 rounded-full flex items-center justify-center">
+                    <span>{{ user.initials }}</span>
+                </div>
             </div>
+            <ul tabindex="0"
+                class="dropdown-content menu p-3 bg-base-100 rounded-box w-56 mt-3 border border-base-200 shadow-none">
+                <li class="flex flex-col items-center gap-1 mb-2">
+                    <div class="avatar">
+                        <div
+                            class="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
+                            <span>{{ user.initials }}</span>
+                        </div>
+                    </div>
+                    <span class="font-medium text-sm text-base-content">{{ user.fullName }}</span>
+                    <span class="text-xs text-base-content/60">{{ user.position }}</span>
+                    <span class="text-xs text-base-content/40 tracking-wide">{{ user.role }}</span>
+                </li>
+                <li>
+                    <a
+                        class="flex flex-row items-center justify-center gap-2 text-sm py-2 text-base-content/60 hover:bg-base-200 transition-colors">
+                        <i class="fa-solid fa-cog"></i>
+                        <span>Configuración</span>
+                    </a>
+                </li>
+                <li>
+                    <a
+                        class="flex flex-row items-center justify-center gap-2 text-sm py-2 text-base-content/60 hover:bg-base-200 transition-colors">
+                        <i class="fa-solid fa-sign-out-alt"></i>
+                        <span>Cerrar sesión</span>
+                    </a>
+                </li>
+            </ul>
         </div>
     </div>
 </div>

@@ -8,7 +8,7 @@
         </div>
       </div>
       <div [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
-        class="transition-all duration-200">
+        [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200">
         <p class="font-semibold">Back & White</p>
         <p class="text-xs text-base-content/60">Administración</p>
       </div>
@@ -16,32 +16,22 @@
   </div>
   <ul [class]="isCollapsed() ? 'menu w-full px-0 py-2 mt-3 space-y-0.5' : 'menu w-full px-0 py-2 mt-3 space-y-[5px]'">
     <li class="w-full">
-      <a [class]="isCollapsed() ? 'menu-link active w-full flex flex-col items-center justify-center px-0 gap-0 py-0 rounded-none transition-colors duration-1000' : 'menu-link active w-full flex items-center justify-start gap-4 px-4 rounded-none transition-colors duration-1000'"
+      <a [routerLink]="['/admin']" routerLinkActive="active"
+        [class]="isCollapsed() ? 'menu-link w-full flex flex-col items-center justify-center px-0 gap-0 py-0 rounded-none transition-colors duration-1000' : 'menu-link w-full flex items-center justify-start gap-4 px-4 rounded-none transition-colors duration-1000'"
         title="Dashboard">
         <i [class]="isCollapsed() ? 'fa-solid fa-chart-line text-lg' : 'fa-solid fa-chart-line'"></i>
         <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
-          class="transition-all duration-200 flex-1">Dashboard</span>
-        <i [class.opacity-0]="true" class="fa-solid fa-chevron-down"></i>
+          [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200 flex-1">Dashboard</span>
       </a>
     </li>
-    <li class="menu-item w-full relative">
-      <details [open]="!isCollapsed()" class="group no-marker">
-        <summary
-          [class]="isCollapsed() ? 'menu-link menu-summary w-full flex flex-col items-center justify-center px-0 gap-0 py-3 rounded-none list-none transition-colors duration-1000' : 'menu-link menu-summary w-full flex items-center justify-start gap-4 px-4 rounded-none list-none transition-colors duration-1000'"
-          title="Usuarios">
-          <i [class]="isCollapsed() ? 'fa-solid fa-users text-lg' : 'fa-solid fa-users'"></i>
-          <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
-            class="transition-all duration-200 flex-1">Usuarios</span>
-          <i [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
-            class="fa-solid fa-chevron-down transition-all duration-1000 group-open:rotate-180"></i>
-        </summary>
-        <ul [class.hidden]="isCollapsed()"
-          class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-40 group-open:opacity-100">
-          <li><a class="w-full text-sm transition-colors duration-1000" title="Lista">Lista</a></li>
-          <li><a class="w-full text-sm transition-colors duration-1000" title="Roles">Roles</a></li>
-          <li><a class="w-full text-sm transition-colors duration-1000" title="Permisos">Permisos</a></li>
-        </ul>
-      </details>
+    <li class="w-full">
+      <a [routerLink]="['/admin/roles']" routerLinkActive="active"
+        [class]="isCollapsed() ? 'menu-link w-full flex flex-col items-center justify-center px-0 gap-0 py-0 rounded-none transition-colors duration-1000' : 'menu-link w-full flex items-center justify-start gap-4 px-4 rounded-none transition-colors duration-1000'"
+        title="Roles">
+        <i [class]="isCollapsed() ? 'fa-solid fa-user-shield text-lg' : 'fa-solid fa-user-shield'"></i>
+        <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
+          [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200 flex-1">Roles</span>
+      </a>
     </li>
     <li class="menu-item w-full relative">
       <details [open]="false" class="group no-marker">
@@ -50,11 +40,12 @@
           title="Ventas">
           <i [class]="isCollapsed() ? 'fa-solid fa-bag-shopping text-lg' : 'fa-solid fa-bag-shopping'"></i>
           <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
-            class="transition-all duration-200 flex-1">Ventas</span>
+            [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200 flex-1">Ventas</span>
           <i [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
+            [style.display]="isCollapsed() ? 'none' : 'block'"
             class="fa-solid fa-chevron-down transition-all duration-1000 group-open:rotate-180"></i>
         </summary>
-        <ul [class.hidden]="isCollapsed()"
+        <ul [style.display]="isCollapsed() ? 'none' : 'block'"
           class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-32 group-open:opacity-100">
           <li><a class="w-full text-sm transition-colors duration-1000" title="Órdenes">Órdenes</a></li>
           <li><a class="w-full text-sm transition-colors duration-1000" title="Clientes">Clientes</a></li>
@@ -68,11 +59,13 @@
           title="Reportes">
           <i [class]="isCollapsed() ? 'fa-solid fa-chart-pie text-lg' : 'fa-solid fa-chart-pie'"></i>
           <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
+            [style.display]="isCollapsed() ? 'none' : 'block'"
             class="transition-all duration-200 flex-1">Reportes</span>
           <i [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
+            [style.display]="isCollapsed() ? 'none' : 'block'"
             class="fa-solid fa-chevron-down transition-all duration-1000 group-open:rotate-180"></i>
         </summary>
-        <ul [class.hidden]="isCollapsed()"
+        <ul [style.display]="isCollapsed() ? 'none' : 'block'"
           class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-40 group-open:opacity-100">
           <li><a class="w-full text-sm transition-colors duration-1000" title="Mensual">Mensual</a></li>
           <li><a class="w-full text-sm transition-colors duration-1000" title="Anual">Anual</a></li>
@@ -87,17 +80,22 @@
           title="Configuración">
           <i [class]="isCollapsed() ? 'fa-solid fa-gear text-lg' : 'fa-solid fa-gear'"></i>
           <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
+            [style.display]="isCollapsed() ? 'none' : 'block'"
             class="transition-all duration-200 flex-1">Configuración</span>
           <i [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
+            [style.display]="isCollapsed() ? 'none' : 'block'"
             class="fa-solid fa-chevron-down transition-all duration-1000 group-open:rotate-180"></i>
         </summary>
-        <ul [class.hidden]="isCollapsed()"
+        <ul [style.display]="isCollapsed() ? 'none' : 'block'"
           class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-32 group-open:opacity-100">
           <li><a class="w-full text-sm transition-colors duration-1000" title="Preferencias">Preferencias</a>
           </li>
           <li><a class="w-full text-sm transition-colors duration-1000" title="Seguridad">Seguridad</a></li>
         </ul>
       </details>
+    </li>
+    <li>
+      <a [routerLink]="['/data-table']" routerLinkActive="active">Data Table</a>
     </li>
   </ul>
 </div>

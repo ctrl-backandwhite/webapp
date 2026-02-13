@@ -4,15 +4,15 @@ import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 
 @Component({
-    selector: 'app-admin-layout',
-    standalone: true,
-    imports: [RouterOutlet, NavbarComponent, SidebarComponent],
-    templateUrl: './admin-layout.component.html'
+  selector: 'app-admin-layout',
+  standalone: true,
+  imports: [RouterOutlet, NavbarComponent, SidebarComponent],
+  templateUrl: './admin-layout.component.html'
 })
 export class AdminLayoutComponent {
-    sidebar = viewChild.required(SidebarComponent);
+  sidebar = viewChild.required(SidebarComponent);
 
-    onToggleSidebar() {
-        this.sidebar().toggle();
-    }
+  onToggleSidebar() {
+    this.sidebar().toggle();
+  }
 }

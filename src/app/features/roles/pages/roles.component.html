@@ -1,0 +1,16 @@
+<div class="w-full h-full min-h-[70vh] flex items-center justify-center p-5">
+  <div class="card bg-base-100 shadow-sm w-full h-full p-5">
+    <div class="flex justify-end mb-4">
+      <button class="btn btn-circle bg-base-200 border-none hover:bg-base-300" title="Agregar rol">
+        <i class="fa-solid fa-plus text-base-content/60 text-lg"></i>
+      </button>
+    </div>
+    <div class="w-full">
+      <ag-grid-angular class="w-full min-h-[400px]" [rowData]="rowData" [columnDefs]="columnDefs"
+        [defaultColDef]="defaultColDef" [domLayout]="'autoHeight'" [animateRows]="true" [suppressCellFocus]="true"
+        [overlayNoRowsTemplate]="'No hay roles para mostrar'" [theme]="theme" [pagination]="pagination"
+        [paginationPageSize]="paginationPageSize"></ag-grid-angular>
+      <div *ngIf="errorMsg" class="text-error mt-2">{{ errorMsg }}</div>
+    </div>
+  </div>
+</div>
