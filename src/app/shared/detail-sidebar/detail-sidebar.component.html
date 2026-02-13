@@ -1,0 +1,20 @@
+<div class="dt-sidebar" [class.dt-sidebar-open]="open">
+    <div class="dt-sidebar-overlay" (click)="onClose()"></div>
+    <aside class="dt-sidebar-panel">
+        <div class="dt-sidebar-header">
+            <div class="dt-sidebar-title-wrap">
+                <h3 class="dt-sidebar-title">{{ title }}</h3>
+                <p *ngIf="subtitle" class="dt-sidebar-subtitle">{{ subtitle }}</p>
+            </div>
+            <button type="button" class="btn btn-ghost btn-sm" aria-label="Cerrar" (click)="onClose()">
+                <i class="fa-solid fa-xmark"></i>
+            </button>
+        </div>
+        <div class="dt-sidebar-body">
+            <ng-content></ng-content>
+        </div>
+        <div *ngIf="showFooter" class="dt-sidebar-footer">
+            <ng-content select="[sidebar-footer]"></ng-content>
+        </div>
+    </aside>
+</div>

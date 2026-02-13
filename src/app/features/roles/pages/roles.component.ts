@@ -7,6 +7,7 @@ import { RolesService } from '../services/roles.service';
 import { RolesReloadService } from '../services/roles-reload.service';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
+import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
@@ -15,7 +16,7 @@ import { map, Observable, Subscription, take } from 'rxjs';
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent],
+  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent],
   templateUrl: './roles.component.html',
 })
 export class RolesComponent implements OnInit, OnDestroy {
@@ -38,6 +39,9 @@ export class RolesComponent implements OnInit, OnDestroy {
   deleting = signal(false);
   deleteError = signal('');
   deleteTarget = signal<Role | null>(null);
+
+  isDetailOpen = signal(false);
+  detailRole = signal<Role | null>(null);
 
   roleForm = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
@@ -75,7 +79,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   onDetailRole(row: Role) {
-    alert('Detalle: ' + row.name);
+    this.openDetail(row);
   }
 
   defaultColDef = {
@@ -151,6 +155,16 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.isDeleteOpen.set(false);
     this.deleteError.set('');
     this.deleteTarget.set(null);
+  }
+
+  openDetail(role: Role) {
+    this.detailRole.set(role);
+    this.isDetailOpen.set(true);
+  }
+
+  closeDetail() {
+    this.isDetailOpen.set(false);
+    this.detailRole.set(null);
   }
 
   confirmDelete() {
@@ -330,4 +344,6 @@ export class RolesComponent implements OnInit, OnDestroy {
   private getFieldValue(row: Role, field: string): unknown {
     return (row as unknown as Record<string, unknown>)[field];
   }
+
+  trackByRoleId = (row: Role) => String(row.id);
 }

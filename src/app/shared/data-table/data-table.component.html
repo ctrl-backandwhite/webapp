@@ -1,6 +1,5 @@
 <div class="w-full flex flex-col gap-3">
-    <div class="flex items-center justify-between">
-        <div></div>
+    <div class="flex items-center justify-end">
         <div class="flex items-center gap-2">
             <button class="btn btn-ghost btn-sm" type="button" (click)="exportCsv()">
                 Exportar CSV
@@ -22,7 +21,7 @@
         [overlayNoRowsTemplate]="overlayNoRowsTemplate" [theme]="theme"
         [rowSelection]="enableSelection ? 'multiple' : 'single'" [suppressRowClickSelection]="enableSelection"
         (gridReady)="onGridReady($event)" (selectionChanged)="onSelectionChanged()" (sortChanged)="onSortChanged()"
-        (filterChanged)="onFilterChanged()">
+        (filterChanged)="onFilterChanged()" (rowClicked)="onRowClicked($event)" [getRowId]="gridGetRowId">
     </ag-grid-angular>
 
     <div *ngIf="loading()" class="text-xs text-base-content/60">Cargando datos...</div>

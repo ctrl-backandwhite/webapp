@@ -52,8 +52,10 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() pageSizeOptions: number[] = [10, 20, 50];
   @Input() overlayNoRowsTemplate = 'No hay registros para mostrar';
   @Input() reloadToken = 0;
+  @Input() getRowId?: (row: any) => string;
 
   @Output() selectedRowsChange = new EventEmitter<any[]>();
+  @Output() rowClick = new EventEmitter<any>();
 
   theme = themeQuartz;
   rows = signal<any[]>([]);
@@ -146,6 +148,23 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
     this.selectedRows.set(rows);
     this.selectedRowsChange.emit(rows);
   }
+
+  onRowClicked(event: { data?: any }) {
+    if (event?.data) {
+      this.rowClick.emit(event.data);
+    }
+  }
+
+  gridGetRowId = (params: { data?: any }) => {
+    if (!params?.data) {
+      return '';
+    }
+    if (this.getRowId) {
+      return this.getRowId(params.data);
+    }
+    const fallback = params.data?.id;
+    return typeof fallback === 'number' ? String(fallback) : (fallback ?? '');
+  };
 
   onSortChanged() {
     this.page.set(1);
