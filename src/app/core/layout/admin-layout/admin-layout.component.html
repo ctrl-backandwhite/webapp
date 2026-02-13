@@ -1,0 +1,16 @@
+<div class="drawer lg:drawer-open min-h-screen bg-base-200">
+    <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
+
+    <div class="drawer-content flex flex-col">
+        <app-navbar></app-navbar>
+        <main class="p-4 md:p-6">
+            <router-outlet></router-outlet>
+        </main>
+    </div>
+
+    <aside class="drawer-side">
+        <label for="admin-drawer" class="drawer-overlay" aria-label="Cerrar menú"></label>
+        <input id="sidebar-collapse" type="checkbox" class="peer sr-only" />
+        <app-sidebar></app-sidebar>
+    </aside>
+</div>

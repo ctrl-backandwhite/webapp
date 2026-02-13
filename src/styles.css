@@ -1,3 +1,20 @@
 /* You can add global styles to this file, and also import other style files */
 
 @import "tailwindcss";
+@plugin "daisyui" {
+	themes: corporate --default;
+}
+
+@import "@fortawesome/fontawesome-free/css/all.min.css";
+
+.menu-summary::-webkit-details-marker {
+	display: none;
+}
+
+.menu-summary::marker {
+	content: "";
+}
+
+.no-marker > summary::after {
+	display: none;
+}

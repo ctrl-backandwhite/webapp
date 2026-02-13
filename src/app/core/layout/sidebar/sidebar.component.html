@@ -1,0 +1,113 @@
+<div class="w-72 min-h-full bg-base-100 border-r border-base-200 transition-all duration-200 peer-checked:w-20
+      peer-checked:[&_.menu-text]:opacity-0 peer-checked:[&_.menu-text]:w-0 peer-checked:[&_.menu-text]:overflow-hidden peer-checked:[&_.menu-text]:flex-none
+      peer-checked:[&_.menu-chevron]:opacity-0 peer-checked:[&_.menu-chevron]:w-0 peer-checked:[&_.menu-chevron]:overflow-hidden
+      peer-checked:[&_.menu-link]:justify-center peer-checked:[&_.menu-link]:px-0 peer-checked:[&_.menu-link]:gap-0 peer-checked:[&_.menu-link]:py-3
+      peer-checked:[&_.menu-icon]:mx-auto peer-checked:[&_.menu-icon]:text-lg
+      peer-checked:[&_.submenu]:hidden
+      peer-checked:[&_.submenu]:absolute peer-checked:[&_.submenu]:left-full peer-checked:[&_.submenu]:top-0 peer-checked:[&_.submenu]:ml-2
+      peer-checked:[&_.submenu]:w-48 peer-checked:[&_.submenu]:bg-base-100 peer-checked:[&_.submenu]:shadow-md
+      peer-checked:[&_.submenu]:rounded-box peer-checked:[&_.submenu]:py-2 peer-checked:[&_.submenu]:max-h-none
+      peer-checked:[&_.submenu]:opacity-100
+      peer-checked:[&_.menu-item:hover_.submenu]:block
+      peer-checked:[&_.menu-item:hover_.submenu]:opacity-100
+      peer-checked:[&_.menu-item:hover_.submenu]:max-h-64">
+    <div class="h-14 px-4 flex items-center justify-center">
+        <div class="flex items-center gap-3 overflow-hidden">
+            <div class="avatar placeholder">
+                <div class="bg-primary text-primary-content rounded-lg w-10 flex items-center justify-center">
+                    <span>B&W</span>
+                </div>
+            </div>
+            <div class="menu-text transition-all duration-200">
+                <p class="font-semibold">Back & White</p>
+                <p class="text-xs text-base-content/60">Administración</p>
+            </div>
+        </div>
+    </div>
+    <ul class="menu w-full px-0 py-2 mt-3">
+        <li class="w-full">
+            <a class="menu-link active w-full flex items-center justify-start gap-4 px-4 rounded-none transition-colors duration-1000"
+                title="Dashboard">
+                <i class="fa-solid fa-chart-line menu-icon w-5 text-center"></i>
+                <span class="menu-text transition-all duration-200 flex-1">Dashboard</span>
+                <i class="fa-solid fa-chevron-down menu-chevron opacity-0"></i>
+            </a>
+        </li>
+        <li class="menu-item w-full relative">
+            <details open class="group no-marker">
+                <summary
+                    class="menu-link menu-summary w-full flex items-center justify-start gap-4 px-4 rounded-none list-none transition-colors duration-1000"
+                    title="Usuarios">
+                    <i class="fa-solid fa-users menu-icon w-5 text-center"></i>
+                    <span class="menu-text transition-all duration-200 flex-1">Usuarios</span>
+                    <i
+                        class="fa-solid fa-chevron-down menu-chevron transition-all duration-1000 group-open:rotate-180"></i>
+                </summary>
+                <ul
+                    class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-40 group-open:opacity-100">
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000" title="Lista">Lista</a></li>
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000" title="Roles">Roles</a></li>
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000"
+                            title="Permisos">Permisos</a></li>
+                </ul>
+            </details>
+        </li>
+        <li class="menu-item w-full relative">
+            <details class="group no-marker">
+                <summary
+                    class="menu-link menu-summary w-full flex items-center justify-start gap-4 px-4 rounded-none list-none transition-colors duration-1000"
+                    title="Ventas">
+                    <i class="fa-solid fa-bag-shopping menu-icon w-5 text-center"></i>
+                    <span class="menu-text transition-all duration-200 flex-1">Ventas</span>
+                    <i
+                        class="fa-solid fa-chevron-down menu-chevron transition-all duration-1000 group-open:rotate-180"></i>
+                </summary>
+                <ul
+                    class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-32 group-open:opacity-100">
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000" title="Órdenes">Órdenes</a>
+                    </li>
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000"
+                            title="Clientes">Clientes</a></li>
+                </ul>
+            </details>
+        </li>
+        <li class="menu-item w-full relative">
+            <details class="group no-marker">
+                <summary
+                    class="menu-link menu-summary w-full flex items-center justify-start gap-4 px-4 rounded-none list-none transition-colors duration-1000"
+                    title="Reportes">
+                    <i class="fa-solid fa-chart-pie menu-icon w-5 text-center"></i>
+                    <span class="menu-text transition-all duration-200 flex-1">Reportes</span>
+                    <i
+                        class="fa-solid fa-chevron-down menu-chevron transition-all duration-1000 group-open:rotate-180"></i>
+                </summary>
+                <ul
+                    class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-40 group-open:opacity-100">
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000" title="Mensual">Mensual</a>
+                    </li>
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000" title="Anual">Anual</a></li>
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000" title="KPI">KPI</a></li>
+                </ul>
+            </details>
+        </li>
+        <li class="menu-item w-full relative">
+            <details class="group no-marker">
+                <summary
+                    class="menu-link menu-summary w-full flex items-center justify-start gap-4 px-4 rounded-none list-none transition-colors duration-1000"
+                    title="Configuración">
+                    <i class="fa-solid fa-gear menu-icon w-5 text-center"></i>
+                    <span class="menu-text transition-all duration-200 flex-1">Configuración</span>
+                    <i
+                        class="fa-solid fa-chevron-down menu-chevron transition-all duration-1000 group-open:rotate-180"></i>
+                </summary>
+                <ul
+                    class="submenu pl-10 pr-2 py-1 overflow-hidden max-h-0 opacity-0 transition-all duration-1000 ease-in-out group-open:max-h-32 group-open:opacity-100">
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000"
+                            title="Preferencias">Preferencias</a></li>
+                    <li><a class="menu-link w-full text-sm transition-colors duration-1000"
+                            title="Seguridad">Seguridad</a></li>
+                </ul>
+            </details>
+        </li>
+    </ul>
+</div>
