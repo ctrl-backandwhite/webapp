@@ -1,0 +1,15 @@
+<div class="w-full p-[10px] mb-[25px] bg-base-100 rounded-box">
+    <nav aria-label="Breadcrumb">
+        <ul class="breadcrumb flex gap-2 text-sm text-base-content/50">
+            <li *ngFor="let crumb of crumbs(); let isLast = last">
+                <ng-container *ngIf="!isLast; else lastCrumb">
+                    <a [routerLink]="crumb.url" class="hover:text-primary">{{ crumb.label }}</a>
+                    <span class="mx-1">/</span>
+                </ng-container>
+                <ng-template #lastCrumb>
+                    <span class="text-primary font-semibold">{{ crumb.label }}</span>
+                </ng-template>
+            </li>
+        </ul>
+    </nav>
+</div>

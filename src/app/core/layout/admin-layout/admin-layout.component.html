@@ -1,15 +1,16 @@
 <div class="drawer lg:drawer-open min-h-screen bg-base-200">
-    <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
+  <input id="admin-drawer" type="checkbox" class="drawer-toggle" />
 
-    <div class="drawer-content flex flex-col">
-        <app-navbar (toggleSidebar)="onToggleSidebar()"></app-navbar>
-        <main class="p-4 md:p-6">
-            <router-outlet></router-outlet>
-        </main>
-    </div>
+  <div class="drawer-content flex flex-col">
+    <app-navbar (toggleSidebar)="onToggleSidebar()"></app-navbar>
+    <main class="p-4 md:p-6">
+      <app-breadcrumbs></app-breadcrumbs>
+      <router-outlet></router-outlet>
+    </main>
+  </div>
 
-    <aside class="drawer-side">
-        <label for="admin-drawer" class="drawer-overlay" aria-label="Cerrar menú"></label>
-        <app-sidebar></app-sidebar>
-    </aside>
+  <aside class="drawer-side">
+    <label for="admin-drawer" class="drawer-overlay" aria-label="Cerrar menú"></label>
+    <app-sidebar></app-sidebar>
+  </aside>
 </div>
