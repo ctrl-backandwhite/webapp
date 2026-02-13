@@ -39,3 +39,8 @@ body {
 .no-marker > summary::after {
 	display: none;
 }
+
+.ag-header-center .ag-header-cell-label {
+	justify-content: center;
+	text-align: center;
+}
