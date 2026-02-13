@@ -5,9 +5,6 @@
             <button class="btn btn-ghost btn-sm" type="button" (click)="exportCsv()">
                 Exportar CSV
             </button>
-            <button *ngIf="canExportExcel()" class="btn btn-ghost btn-sm" type="button" (click)="exportExcel()">
-                Exportar Excel
-            </button>
             <ng-content select="[data-table-actions]"></ng-content>
         </div>
     </div>

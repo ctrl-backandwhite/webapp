@@ -13,6 +13,18 @@ export class RolesService {
     return this.http.get<Role[]>(`${this.baseUrl}/roles`);
   }
 
+  createRole(payload: Omit<Role, 'id'>): Observable<Role> {
+    return this.http.post<Role>(`${this.baseUrl}/roles`, payload);
+  }
+
+  updateRole(id: number, payload: Omit<Role, 'id'>): Observable<Role> {
+    return this.http.put<Role>(`${this.baseUrl}/roles/${id}`, payload);
+  }
+
+  deleteRole(id: number): Observable<void> {
+    return this.http.delete<void>(`${this.baseUrl}/roles/${id}`);
+  }
+
   // Si necesitas otros endpoints, puedes construirlos así:
   // getRoleById(id: number): Observable<Role> {
   //   return this.http.get<Role>(`${this.baseUrl}/roles/${id}`);

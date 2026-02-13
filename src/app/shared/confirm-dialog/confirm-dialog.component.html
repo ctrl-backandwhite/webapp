@@ -1,0 +1,20 @@
+<div class="modal" [class.modal-open]="open">
+    <div class="modal-box dt-modal-box">
+        <div class="dt-modal-header">
+            <h3 class="dt-modal-title">{{ title }}</h3>
+        </div>
+        <div class="dt-confirm-body">
+            <p class="dt-confirm-message">{{ message }}</p>
+            <div *ngIf="error" class="dt-error">{{ error }}</div>
+        </div>
+        <div class="dt-actions dt-modal-actions">
+            <button type="button" class="btn btn-ghost btn-sm dt-btn-outline" (click)="onCancel()">{{ cancelLabel
+                }}</button>
+            <button type="button" class="btn btn-ghost btn-sm dt-btn-outline-danger" [disabled]="busy"
+                (click)="onConfirm()">
+                {{ busy ? 'Eliminando...' : confirmLabel }}
+            </button>
+        </div>
+    </div>
+    <div class="modal-backdrop" (click)="onCancel()"></div>
+</div>

@@ -1,26 +1,50 @@
 
-import { Component, OnDestroy, OnInit, inject } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Role } from '../interfaces/role.model';
 import { RolesService } from '../services/roles.service';
 import { RolesReloadService } from '../services/roles-reload.service';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
+import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
-import { map, Observable, Subscription } from 'rxjs';
+import { map, Observable, Subscription, take } from 'rxjs';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [DataTableComponent],
+  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent],
   templateUrl: './roles.component.html',
 })
 export class RolesComponent implements OnInit, OnDestroy {
   private rolesReloadService = inject(RolesReloadService);
   private rolesService = inject(RolesService);
+  private fb = inject(FormBuilder);
   private reloadSub?: Subscription;
+  private saveSub?: Subscription;
+  private uniqueNameSub?: Subscription;
 
   reloadToken = 0;
+
+  isModalOpen = signal(false);
+  isEditMode = signal(false);
+  saving = signal(false);
+  errorMsg = signal('');
+  editingRoleId = signal<number | null>(null);
+
+  isDeleteOpen = signal(false);
+  deleting = signal(false);
+  deleteError = signal('');
+  deleteTarget = signal<Role | null>(null);
+
+  roleForm = this.fb.nonNullable.group({
+    name: ['', [Validators.required]],
+    uniqueName: ['', [Validators.required]],
+    description: [''],
+    enabled: [true],
+  });
 
   columnDefs: ColDef<Role>[] = [
     { field: 'id' as keyof Role, headerName: 'ID', minWidth: 80, maxWidth: 120 },
@@ -43,11 +67,11 @@ export class RolesComponent implements OnInit, OnDestroy {
   ];
 
   onEditRole(row: Role) {
-    alert('Editar: ' + row.name);
+    this.openEdit(row);
   }
 
   onDeleteRole(row: Role) {
-    alert('Eliminar: ' + row.name);
+    this.openDelete(row);
   }
 
   onDetailRole(row: Role) {
@@ -64,10 +88,134 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.reloadSub = this.rolesReloadService.reload$.subscribe(() => {
       this.reloadToken += 1;
     });
+
+    this.uniqueNameSub = this.roleForm.controls.uniqueName.valueChanges.subscribe((value) => {
+      const upper = (value ?? '').toUpperCase();
+      if (value !== upper) {
+        this.roleForm.controls.uniqueName.setValue(upper, { emitEvent: false });
+      }
+    });
   }
 
   ngOnDestroy(): void {
     this.reloadSub?.unsubscribe();
+    this.saveSub?.unsubscribe();
+    this.uniqueNameSub?.unsubscribe();
+  }
+
+  openCreate() {
+    this.isEditMode.set(false);
+    this.editingRoleId.set(null);
+    this.errorMsg.set('');
+    this.roleForm.reset({
+      name: '',
+      uniqueName: '',
+      description: '',
+      enabled: true,
+    });
+    this.isModalOpen.set(true);
+  }
+
+  openEdit(role: Role) {
+    this.isEditMode.set(true);
+    this.editingRoleId.set(role.id);
+    this.errorMsg.set('');
+    this.roleForm.reset({
+      name: role.name ?? '',
+      uniqueName: role.uniqueName ?? '',
+      description: role.description ?? '',
+      enabled: role.enabled ?? true,
+    });
+    this.isModalOpen.set(true);
+  }
+
+  closeModal() {
+    if (this.saving()) {
+      return;
+    }
+    this.isModalOpen.set(false);
+    this.errorMsg.set('');
+  }
+
+  openDelete(role: Role) {
+    this.deleteTarget.set(role);
+    this.deleteError.set('');
+    this.deleting.set(false);
+    this.isDeleteOpen.set(true);
+  }
+
+  closeDelete() {
+    if (this.deleting()) {
+      return;
+    }
+    this.isDeleteOpen.set(false);
+    this.deleteError.set('');
+    this.deleteTarget.set(null);
+  }
+
+  confirmDelete() {
+    const target = this.deleteTarget();
+    if (!target) {
+      return;
+    }
+
+    this.deleting.set(true);
+    this.deleteError.set('');
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.rolesService.deleteRole(target.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.deleting.set(false);
+          this.isDeleteOpen.set(false);
+          this.deleteTarget.set(null);
+          this.rolesReloadService.triggerReload();
+        },
+        error: () => {
+          this.deleting.set(false);
+          this.deleteError.set('No se pudo eliminar el rol.');
+        }
+      });
+  }
+
+  submitRole() {
+    if (this.roleForm.invalid) {
+      this.roleForm.markAllAsTouched();
+      return;
+    }
+
+    const payload = this.roleForm.getRawValue();
+    this.saving.set(true);
+    this.errorMsg.set('');
+    this.saveSub?.unsubscribe();
+
+    if (this.isEditMode() && this.editingRoleId() !== null) {
+      this.saveSub = this.rolesService.updateRole(this.editingRoleId() as number, payload)
+        .pipe(take(1))
+        .subscribe({
+          next: () => this.finishSave(),
+          error: () => this.handleSaveError(),
+        });
+      return;
+    }
+
+    this.saveSub = this.rolesService.createRole(payload)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.finishSave(),
+        error: () => this.handleSaveError(),
+      });
+  }
+
+  private finishSave() {
+    this.saving.set(false);
+    this.isModalOpen.set(false);
+    this.rolesReloadService.triggerReload();
+  }
+
+  private handleSaveError() {
+    this.saving.set(false);
+    this.errorMsg.set('No se pudo guardar el rol.');
   }
 
   loadRoles = (query: DataTableQuery): Observable<DataTableResult<Role>> => {
