@@ -38,12 +38,6 @@ export class NavbarComponent {
         this.tourService.startAdminTour();
     }
 
-    constructor() {
-        const saved = localStorage.getItem('lang') ?? 'es';
-        this.translate.setDefaultLang('es');
-        this.translate.use(saved);
-    }
-
     onChangeLanguage(locale: 'es' | 'en'): void {
         localStorage.setItem('lang', locale);
         this.translate.use(locale);
