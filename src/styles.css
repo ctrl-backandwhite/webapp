@@ -44,11 +44,13 @@ body {
 .sidebar-submenu-collapsible {
 	max-height: 0;
 	overflow: hidden;
-	transition: max-height 0.2s ease;
+	opacity: 0;
+	transition: max-height 1s ease-in-out, opacity 0.3s ease-in-out;
 }
 
 .sidebar-submenu-collapsible.is-open {
 	max-height: 320px;
+	opacity: 1;
 }
 
 .sidebar-submenu-popover {
@@ -62,7 +64,7 @@ body {
 	opacity: 0;
 	pointer-events: none;
 	transform: translateX(6px);
-	transition: opacity 0.15s ease, transform 0.15s ease;
+	transition: opacity 1s ease-in-out, transform 1s ease-in-out;
 	z-index: 50;
 }
 
@@ -239,9 +241,20 @@ body {
 	padding: 6px;
 	display: grid;
 	gap: 6px;
-	max-height: 160px;
+	max-height: 120px;
 	overflow: auto;
 	background-color: #ffffff;
+}
+
+.dt-multi-select.dt-multi-select-empty {
+	display: flex;
+	align-items: center;
+	min-height: 28px;
+}
+
+.dt-empty-box {
+	font-size: 11px;
+	color: #9ca3af;
 }
 
 .dt-option {

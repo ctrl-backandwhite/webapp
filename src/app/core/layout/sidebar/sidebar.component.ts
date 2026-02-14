@@ -46,6 +46,32 @@ export class SidebarComponent {
           icon: 'fa-solid fa-key'
         }
       ]
+    },
+    {
+      labelKey: 'menu.applications',
+      icon: 'fa-solid fa-diagram-project',
+      children: [
+        {
+          labelKey: 'menu.scopes',
+          route: ['/admin/applications/scopes'],
+          icon: 'fa-solid fa-key'
+        },
+        {
+          labelKey: 'menu.redirectUris',
+          route: ['/admin/applications/redirecturis'],
+          icon: 'fa-solid fa-link'
+        },
+        {
+          labelKey: 'menu.grantTypes',
+          route: ['/admin/applications/granttypes'],
+          icon: 'fa-solid fa-right-to-bracket'
+        },
+        {
+          labelKey: 'menu.oauthClients',
+          route: ['/admin/applications/oauthclients'],
+          icon: 'fa-solid fa-shield-halved'
+        }
+      ]
     }
   ];
 

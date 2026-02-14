@@ -44,10 +44,15 @@
 
                 <label class="dt-field dt-field-full">
                     <span class="dt-label">{{ 'groups.roleIdsLabel' | translate }}</span>
+                    @if (roles().length) {
                     <input class="dt-input" type="text" [value]="roleSearch()"
                         (input)="roleSearch.set($any($event.target).value)"
                         [placeholder]="'groups.roleSearchPlaceholder' | translate" />
-                    <div class="dt-multi-select">
+                    }
+                    <div class="dt-multi-select" [class.dt-multi-select-empty]="!roles().length">
+                        @if (!roles().length) {
+                        <div class="dt-empty-box">{{ 'groups.noRoles' | translate }}</div>
+                        }
                         @for (role of filteredRoles(); track role.id) {
                         <label class="dt-option">
                             <input type="checkbox" [checked]="isSelected(groupForm.controls.roleIds.value, role.id)"

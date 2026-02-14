@@ -22,7 +22,11 @@
     "usersList": "Users",
     "roles": "Roles",
     "groups": "Groups",
-    "scopes": "Scopes"
+    "scopes": "Scopes",
+    "applications": "Applications",
+    "redirectUris": "Redirect URIs",
+    "grantTypes": "Grant types",
+    "oauthClients": "OAuth clients"
   },
   "table": {
     "exportCsv": "Export CSV",
@@ -81,10 +85,13 @@
     "passwordMismatch": "Passwords do not match",
     "scopeIdsLabel": "Scopes",
     "scopeSearchPlaceholder": "Search scopes",
+    "noScopes": "No scopes available",
     "roleIdsLabel": "Roles",
     "roleSearchPlaceholder": "Search roles",
+    "noRoles": "No roles available",
     "groupIdsLabel": "Groups",
     "groupSearchPlaceholder": "Search groups",
+    "noGroups": "No groups available",
     "activeLabel": "Active",
     "accountNonExpiredLabel": "Account active",
     "accountNonLockedLabel": "Account unlocked",
@@ -141,7 +148,8 @@
       "detail": "Detail",
       "edit": "Edit",
       "delete": "Delete"
-    }
+    },
+    "noRoles": "No roles available"
   },
   "scopes": {
     "title": "Scopes",
@@ -172,6 +180,96 @@
       "delete": "Delete"
     }
   },
+  "redirectUris": {
+    "title": "Redirect URIs",
+    "add": "Add redirect URI",
+    "editTitle": "Edit redirect URI",
+    "createTitle": "Create redirect URI",
+    "nameLabel": "Name",
+    "nameRequired": "Name is required",
+    "valueLabel": "Value",
+    "valueRequired": "Value is required",
+    "activeLabel": "Active",
+    "deleteTitle": "Delete redirect URI",
+    "deleteMessage": "Are you sure you want to delete redirect URI {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the redirect URI.",
+    "saveError": "Could not save the redirect URI.",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "value": "Value",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "grantTypes": {
+    "title": "Grant types",
+    "add": "Add grant type",
+    "editTitle": "Edit grant type",
+    "createTitle": "Create grant type",
+    "valueLabel": "Value",
+    "valueRequired": "Value is required",
+    "activeLabel": "Active",
+    "deleteTitle": "Delete grant type",
+    "deleteMessage": "Are you sure you want to delete grant type {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the grant type.",
+    "saveError": "Could not save the grant type.",
+    "table": {
+      "id": "ID",
+      "value": "Value",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "oauthClients": {
+    "title": "OAuth clients",
+    "add": "Add OAuth client",
+    "editTitle": "Edit OAuth client",
+    "createTitle": "Create OAuth client",
+    "clientIdLabel": "Client ID",
+    "clientIdRequired": "Client ID is required",
+    "clientSecretLabel": "Client secret",
+    "secretRequired": "Client secret is required",
+    "scopeIdsLabel": "Scopes",
+    "scopeSearchPlaceholder": "Search scopes",
+    "noScopes": "No scopes available",
+    "redirectUriIdsLabel": "Redirect URIs",
+    "redirectUriSearchPlaceholder": "Search redirect URIs",
+    "noRedirectUris": "No redirect URIs available",
+    "grantTypeIdsLabel": "Grant types",
+    "grantTypeSearchPlaceholder": "Search grant types",
+    "noGrantTypes": "No grant types available",
+    "deleteTitle": "Delete OAuth client",
+    "deleteMessage": "Are you sure you want to delete OAuth client {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the OAuth client.",
+    "saveError": "Could not save the OAuth client.",
+    "scopesLabel": "Scopes",
+    "redirectUrisLabel": "Redirect URIs",
+    "grantTypesLabel": "Grant types",
+    "table": {
+      "id": "ID",
+      "clientId": "Client ID",
+      "scopes": "Scopes",
+      "redirectUris": "Redirect URIs",
+      "grantTypes": "Grant types"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
   "common": {
     "yes": "Yes",
     "no": "No",
@@ -195,7 +293,11 @@
     "roles": "Roles",
     "users": "Users",
     "groups": "Groups",
-    "scopes": "Scopes"
+    "scopes": "Scopes",
+    "applications": "Applications",
+    "redirectUris": "Redirect URIs",
+    "grantTypes": "Grant types",
+    "oauthClients": "OAuth clients"
   },
   "grid": {
     "filter": {

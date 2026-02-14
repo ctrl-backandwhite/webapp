@@ -22,7 +22,11 @@
     "usersList": "Usuarios",
     "roles": "Roles",
     "groups": "Grupos",
-    "scopes": "Scopes"
+    "scopes": "Scopes",
+    "applications": "Aplicaciones",
+    "redirectUris": "Redirect URIs",
+    "grantTypes": "Tipos de grant",
+    "oauthClients": "Clientes OAuth"
   },
   "table": {
     "exportCsv": "Exportar CSV",
@@ -81,10 +85,13 @@
     "passwordMismatch": "Las contrasenas no coinciden",
     "scopeIdsLabel": "Scopes",
     "scopeSearchPlaceholder": "Buscar scopes",
+    "noScopes": "No existen scopes",
     "roleIdsLabel": "Roles",
     "roleSearchPlaceholder": "Buscar roles",
+    "noRoles": "No existen roles",
     "groupIdsLabel": "Grupos",
     "groupSearchPlaceholder": "Buscar grupos",
+    "noGroups": "No existen grupos",
     "activeLabel": "Activo",
     "accountNonExpiredLabel": "Cuenta vigente",
     "accountNonLockedLabel": "Cuenta desbloqueada",
@@ -141,7 +148,8 @@
       "detail": "Detalle",
       "edit": "Editar",
       "delete": "Eliminar"
-    }
+    },
+    "noRoles": "No existen roles"
   },
   "scopes": {
     "title": "Scopes",
@@ -172,6 +180,96 @@
       "delete": "Eliminar"
     }
   },
+  "redirectUris": {
+    "title": "Redirect URIs",
+    "add": "Agregar redirect URI",
+    "editTitle": "Editar redirect URI",
+    "createTitle": "Crear redirect URI",
+    "nameLabel": "Nombre",
+    "nameRequired": "El nombre es obligatorio",
+    "valueLabel": "Valor",
+    "valueRequired": "El valor es obligatorio",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar redirect URI",
+    "deleteMessage": "Seguro que deseas eliminar el redirect URI {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el redirect URI.",
+    "saveError": "No se pudo guardar el redirect URI.",
+    "table": {
+      "id": "ID",
+      "name": "Nombre",
+      "value": "Valor",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "grantTypes": {
+    "title": "Tipos de grant",
+    "add": "Agregar tipo de grant",
+    "editTitle": "Editar tipo de grant",
+    "createTitle": "Crear tipo de grant",
+    "valueLabel": "Valor",
+    "valueRequired": "El valor es obligatorio",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar tipo de grant",
+    "deleteMessage": "Seguro que deseas eliminar el tipo de grant {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el tipo de grant.",
+    "saveError": "No se pudo guardar el tipo de grant.",
+    "table": {
+      "id": "ID",
+      "value": "Valor",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "oauthClients": {
+    "title": "Clientes OAuth",
+    "add": "Agregar cliente OAuth",
+    "editTitle": "Editar cliente OAuth",
+    "createTitle": "Crear cliente OAuth",
+    "clientIdLabel": "Client ID",
+    "clientIdRequired": "El Client ID es obligatorio",
+    "clientSecretLabel": "Client secret",
+    "secretRequired": "El Client secret es obligatorio",
+    "scopeIdsLabel": "Scopes",
+    "scopeSearchPlaceholder": "Buscar scopes",
+    "noScopes": "No existen scopes",
+    "redirectUriIdsLabel": "Redirect URIs",
+    "redirectUriSearchPlaceholder": "Buscar redirect URIs",
+    "noRedirectUris": "No existen redirect URIs",
+    "grantTypeIdsLabel": "Tipos de grant",
+    "grantTypeSearchPlaceholder": "Buscar tipos de grant",
+    "noGrantTypes": "No existen tipos de grant",
+    "deleteTitle": "Eliminar cliente OAuth",
+    "deleteMessage": "Seguro que deseas eliminar el cliente OAuth {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el cliente OAuth.",
+    "saveError": "No se pudo guardar el cliente OAuth.",
+    "scopesLabel": "Scopes",
+    "redirectUrisLabel": "Redirect URIs",
+    "grantTypesLabel": "Tipos de grant",
+    "table": {
+      "id": "ID",
+      "clientId": "Client ID",
+      "scopes": "Scopes",
+      "redirectUris": "Redirect URIs",
+      "grantTypes": "Tipos de grant"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
   "common": {
     "yes": "Si",
     "no": "No",
@@ -195,7 +293,11 @@
     "roles": "Roles",
     "users": "Usuarios",
     "groups": "Grupos",
-    "scopes": "Scopes"
+    "scopes": "Scopes",
+    "applications": "Aplicaciones",
+    "redirectUris": "Redirect URIs",
+    "grantTypes": "Tipos de grant",
+    "oauthClients": "Clientes OAuth"
   },
   "grid": {
     "filter": {

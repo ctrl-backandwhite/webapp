@@ -41,6 +41,37 @@ export const routes: Routes = [
         loadComponent: () => import('./features/scopes/pages/scopes.component').then(m => m.ScopesComponent),
         data: { breadcrumb: 'breadcrumb.scopes' },
       },
+      {
+        path: 'applications',
+        data: { breadcrumb: 'breadcrumb.applications' },
+        children: [
+          {
+            path: '',
+            redirectTo: 'scopes',
+            pathMatch: 'full',
+          },
+          {
+            path: 'scopes',
+            loadComponent: () => import('./features/scopes/pages/scopes.component').then(m => m.ScopesComponent),
+            data: { breadcrumb: 'breadcrumb.scopes' },
+          },
+          {
+            path: 'redirecturis',
+            loadComponent: () => import('./features/redirect-uris/pages/redirect-uris.component').then(m => m.RedirectUrisComponent),
+            data: { breadcrumb: 'breadcrumb.redirectUris' },
+          },
+          {
+            path: 'granttypes',
+            loadComponent: () => import('./features/grant-types/pages/grant-types.component').then(m => m.GrantTypesComponent),
+            data: { breadcrumb: 'breadcrumb.grantTypes' },
+          },
+          {
+            path: 'oauthclients',
+            loadComponent: () => import('./features/oauth-clients/pages/oauth-clients.component').then(m => m.OauthClientsComponent),
+            data: { breadcrumb: 'breadcrumb.oauthClients' },
+          },
+        ],
+      },
     ],
   },
   {

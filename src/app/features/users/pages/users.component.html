@@ -65,10 +65,15 @@
 
                 <label class="dt-field dt-field-full">
                     <span class="dt-label">{{ 'users.scopeIdsLabel' | translate }}</span>
+                    @if (scopes().length) {
                     <input class="dt-input" type="text" [value]="scopeSearch()"
                         (input)="scopeSearch.set($any($event.target).value)"
                         [placeholder]="'users.scopeSearchPlaceholder' | translate" />
-                    <div class="dt-multi-select">
+                    }
+                    <div class="dt-multi-select" [class.dt-multi-select-empty]="!scopes().length">
+                        @if (!scopes().length) {
+                        <div class="dt-empty-box">{{ 'users.noScopes' | translate }}</div>
+                        }
                         @for (scope of filteredScopes(); track scope.id) {
                         <label class="dt-option">
                             <input type="checkbox" [checked]="isSelected(userForm.controls.scopeIds.value, scope.id)"
@@ -81,10 +86,15 @@
 
                 <label class="dt-field dt-field-full">
                     <span class="dt-label">{{ 'users.roleIdsLabel' | translate }}</span>
+                    @if (roles().length) {
                     <input class="dt-input" type="text" [value]="roleSearch()"
                         (input)="roleSearch.set($any($event.target).value)"
                         [placeholder]="'users.roleSearchPlaceholder' | translate" />
-                    <div class="dt-multi-select">
+                    }
+                    <div class="dt-multi-select" [class.dt-multi-select-empty]="!roles().length">
+                        @if (!roles().length) {
+                        <div class="dt-empty-box">{{ 'users.noRoles' | translate }}</div>
+                        }
                         @for (role of filteredRoles(); track role.id) {
                         <label class="dt-option">
                             <input type="checkbox" [checked]="isSelected(userForm.controls.roleIds.value, role.id)"
@@ -97,10 +107,15 @@
 
                 <label class="dt-field dt-field-full">
                     <span class="dt-label">{{ 'users.groupIdsLabel' | translate }}</span>
+                    @if (groups().length) {
                     <input class="dt-input" type="text" [value]="groupSearch()"
                         (input)="groupSearch.set($any($event.target).value)"
                         [placeholder]="'users.groupSearchPlaceholder' | translate" />
-                    <div class="dt-multi-select">
+                    }
+                    <div class="dt-multi-select" [class.dt-multi-select-empty]="!groups().length">
+                        @if (!groups().length) {
+                        <div class="dt-empty-box">{{ 'users.noGroups' | translate }}</div>
+                        }
                         @for (group of filteredGroups(); track group.id) {
                         <label class="dt-option">
                             <input type="checkbox" [checked]="isSelected(userForm.controls.groupIds.value, group.id)"
