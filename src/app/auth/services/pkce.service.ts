@@ -11,16 +11,6 @@ export interface PKCEChallenge {
 export class PKCEService {
   private readonly PKCE_VERIFIER_KEY = 'pkce_verifier';
 
-  generateChallenge(): PKCEChallenge {
-    const verifier = this.generateVerifier();
-    const challenge = this.generateChallengeSync(verifier);
-
-    // Store verifier in sessionStorage for later use
-    sessionStorage.setItem(this.PKCE_VERIFIER_KEY, verifier);
-
-    return { verifier, challenge };
-  }
-
   async generateChallengeAsync(): Promise<PKCEChallenge> {
     const verifier = this.generateVerifier();
     const challenge = await this.computeChallengeAsync(verifier);
@@ -51,35 +41,21 @@ export class PKCEService {
     return verifier;
   }
 
-  private generateChallengeSync(verifier: string): string {
-    // Synchronous version - for immediate use
-    const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const hash = crypto.subtle.digest('SHA-256', data);
-    // Note: This is async, but we're using sync API as wrapper
-    return this.hashToBase64Url(verifier);
-  }
-
   private async computeChallengeAsync(verifier: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
+    const data = new TextEncoder().encode(verifier);
     const hash = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hash));
-    const hashString = String.fromCharCode.apply(null, hashArray);
-
-    return btoa(hashString)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
+    return this.base64UrlEncode(hash);
   }
 
-  private hashToBase64Url(verifier: string): string {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const hashArray = Array.from(new Uint8Array(new TextEncoder().encode(verifier)));
-    const hashString = String.fromCharCode.apply(null, hashArray);
+  // Converts ArrayBuffer to base64url for PKCE.
+  private base64UrlEncode(buffer: ArrayBuffer): string {
+    const bytes = new Uint8Array(buffer);
+    let binary = '';
+    for (const byte of bytes) {
+      binary += String.fromCharCode(byte);
+    }
 
-    return btoa(hashString)
+    return btoa(binary)
       .replace(/\+/g, '-')
       .replace(/\//g, '_')
       .replace(/=+$/, '');

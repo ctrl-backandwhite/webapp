@@ -303,20 +303,7 @@ export class RolesComponent implements OnInit, OnDestroy {
     }
 
     const sorted = [...data];
-    sorted.sort((a, b) => {
-      for (const sort of sortModel) {
-        if (!sort.colId) {
-          continue;
-        }
-        const aValue = this.getFieldValue(a, sort.colId);
-        const bValue = this.getFieldValue(b, sort.colId);
-        const comparison = this.compareValues(aValue, bValue);
-        if (comparison !== 0) {
-          return sort.sort === 'asc' ? comparison : -comparison;
-        }
-      }
-      return 0;
-    });
+    sorted.sort((a, b) => this.compareBySortModel(a, b, sortModel));
     return sorted;
   }
 
@@ -326,52 +313,75 @@ export class RolesComponent implements OnInit, OnDestroy {
       return data;
     }
 
-    return data.filter((row) => {
-      return entries.every(([field, rawModel]) => {
-        const model = rawModel as { filterType?: string; type?: string; filter?: unknown };
-        const value = this.getFieldValue(row, field);
+    // Apply each column filter; all must match to keep the row.
+    return data.filter((row) =>
+      entries.every(([field, rawModel]) => this.matchesFilter(row, field, rawModel))
+    );
+  }
 
-        if (!model || model.filter === undefined || model.filter === null) {
-          return true;
-        }
+  private compareBySortModel(a: Role, b: Role, sortModel: SortModelItem[]): number {
+    for (const sort of sortModel) {
+      if (!sort.colId) {
+        continue;
+      }
+      const aValue = this.getFieldValue(a, sort.colId);
+      const bValue = this.getFieldValue(b, sort.colId);
+      const comparison = this.compareValues(aValue, bValue);
+      if (comparison !== 0) {
+        return sort.sort === 'asc' ? comparison : -comparison;
+      }
+    }
+    return 0;
+  }
 
-        if (model.filterType === 'text') {
-          const filterValue = String(model.filter).toLowerCase();
-          const candidate = String(value ?? '').toLowerCase();
-          switch (model.type) {
-            case 'equals':
-              return candidate === filterValue;
-            case 'startsWith':
-              return candidate.startsWith(filterValue);
-            case 'endsWith':
-              return candidate.endsWith(filterValue);
-            default:
-              return candidate.includes(filterValue);
-          }
-        }
+  private matchesFilter(row: Role, field: string, rawModel: unknown): boolean {
+    const model = rawModel as { filterType?: string; type?: string; filter?: unknown };
+    const value = this.getFieldValue(row, field);
 
-        if (model.filterType === 'number') {
-          const filterValue = Number(model.filter);
-          const candidate = Number(value);
-          switch (model.type) {
-            case 'equals':
-              return candidate === filterValue;
-            case 'lessThan':
-              return candidate < filterValue;
-            case 'greaterThan':
-              return candidate > filterValue;
-            default:
-              return true;
-          }
-        }
+    if (!model || model.filter === undefined || model.filter === null) {
+      return true;
+    }
 
-        if (model.filterType === 'boolean') {
-          return Boolean(value) === Boolean(model.filter);
-        }
-
+    switch (model.filterType) {
+      case 'text':
+        return this.matchesTextFilter(value, model);
+      case 'number':
+        return this.matchesNumberFilter(value, model);
+      case 'boolean':
+        return Boolean(value) === Boolean(model.filter);
+      default:
         return true;
-      });
-    });
+    }
+  }
+
+  private matchesTextFilter(value: unknown, model: { type?: string; filter?: unknown }): boolean {
+    const filterValue = String(model.filter ?? '').toLowerCase();
+    const candidate = String(value ?? '').toLowerCase();
+    switch (model.type) {
+      case 'equals':
+        return candidate === filterValue;
+      case 'startsWith':
+        return candidate.startsWith(filterValue);
+      case 'endsWith':
+        return candidate.endsWith(filterValue);
+      default:
+        return candidate.includes(filterValue);
+    }
+  }
+
+  private matchesNumberFilter(value: unknown, model: { type?: string; filter?: unknown }): boolean {
+    const filterValue = Number(model.filter);
+    const candidate = Number(value);
+    switch (model.type) {
+      case 'equals':
+        return candidate === filterValue;
+      case 'lessThan':
+        return candidate < filterValue;
+      case 'greaterThan':
+        return candidate > filterValue;
+      default:
+        return true;
+    }
   }
 
   private compareValues(aValue: unknown, bValue: unknown): number {

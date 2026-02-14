@@ -4,6 +4,7 @@ import { environment } from '../../../environments/environment';
 import { TokenService } from './token.service';
 import { AuthStateService } from './auth-state.service';
 import { PKCEService } from './pkce.service';
+import { firstValueFrom } from 'rxjs';
 
 export interface TokenResponse {
   access_token: string;
@@ -23,9 +24,7 @@ export class AuthService {
 
   private readonly tokenEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/oauth2/token';
 
-  /**
-   * Exchange authorization code for access token
-   */
+  // Exchange authorization code for tokens using PKCE.
   async exchangeCodeForToken(code: string): Promise<TokenResponse> {
     const codeVerifier = this.pkceService.getStoredVerifier();
 
@@ -34,26 +33,13 @@ export class AuthService {
     }
 
     try {
-      const body = new URLSearchParams();
-      body.set('grant_type', 'authorization_code');
-      body.set('client_id', environment.clientId);
-      body.set('code', code);
-      body.set('redirect_uri', environment.redirectUri);
-      body.set('code_verifier', codeVerifier);
-
-      const response = await this.http.post<TokenResponse>(
-        this.tokenEndpoint,
-        body.toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      ).toPromise();
-
-      if (!response) {
-        throw new Error('No token response received');
-      }
+      const response = await this.requestToken({
+        grant_type: 'authorization_code',
+        client_id: environment.clientId,
+        code,
+        redirect_uri: environment.redirectUri,
+        code_verifier: codeVerifier,
+      });
 
       this.tokenService.setTokens(
         response.access_token,
@@ -74,9 +60,7 @@ export class AuthService {
     }
   }
 
-  /**
-   * Refresh access token
-   */
+  // Refresh access token using the stored refresh token.
   async refreshToken(): Promise<TokenResponse> {
     const refreshToken = this.tokenService.getRefreshToken();
 
@@ -85,24 +69,11 @@ export class AuthService {
     }
 
     try {
-      const body = new URLSearchParams();
-      body.set('grant_type', 'refresh_token');
-      body.set('client_id', environment.clientId);
-      body.set('refresh_token', refreshToken);
-
-      const response = await this.http.post<TokenResponse>(
-        this.tokenEndpoint,
-        body.toString(),
-        {
-          headers: {
-            'Content-Type': 'application/x-www-form-urlencoded'
-          }
-        }
-      ).toPromise();
-
-      if (!response) {
-        throw new Error('No token response received');
-      }
+      const response = await this.requestToken({
+        grant_type: 'refresh_token',
+        client_id: environment.clientId,
+        refresh_token: refreshToken,
+      });
 
       this.tokenService.setTokens(
         response.access_token,
@@ -120,35 +91,39 @@ export class AuthService {
     }
   }
 
-  /**
-   * Check if user has valid access token
-   */
   isAuthenticated(): boolean {
     return this.tokenService.hasAccessToken() && !this.tokenService.isTokenExpired();
   }
 
-  /**
-   * Get current access token
-   */
   getAccessToken(): string | null {
     return this.tokenService.getAccessToken();
   }
 
-  /**
-   * Check if token is expired
-   */
   isTokenExpired(): boolean {
     return this.tokenService.isTokenExpired();
   }
 
-  /**
-   * Logout and clear all auth data
-   */
   logout(): void {
     this.tokenService.clearTokens();
     this.pkceService.clearVerifier();
     this.authStateService.setUnauthenticated();
     localStorage.removeItem('authInitiated');
     console.log('[Auth] User logged out');
+  }
+
+  private async requestToken(params: Record<string, string>): Promise<TokenResponse> {
+    const body = new URLSearchParams(params);
+
+    const response = await firstValueFrom(
+      this.http.post<TokenResponse>(this.tokenEndpoint, body.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+    );
+
+    if (!response) {
+      throw new Error('No token response received');
+    }
+
+    return response;
   }
 }

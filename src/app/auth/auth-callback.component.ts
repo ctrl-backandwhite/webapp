@@ -49,28 +49,20 @@ export class AuthCallbackComponent implements OnInit {
   }
 
   private extractAuthorizationCode(): string | null {
-    // Method 1: Look for hidden input with name="code"
-    const codeInput = document.querySelector('input[name="code"]') as HTMLInputElement;
-    if (codeInput && codeInput.value) {
-      return codeInput.value;
+    // Prefer standard OAuth2 redirect parameters.
+    const url = new URL(window.location.href);
+    const queryCode = url.searchParams.get('code');
+    if (queryCode) {
+      return queryCode;
     }
 
-    // Method 2: Search in entire HTML
-    const htmlContent = document.documentElement.innerHTML;
-    const codeMatch = htmlContent.match(/name="code"\s+value="([^"]+)"/);
-    if (codeMatch && codeMatch[1]) {
-      return codeMatch[1];
+    // Some providers return params in the hash fragment.
+    const hash = url.hash.replace(/^#/, '');
+    if (!hash) {
+      return null;
     }
 
-    // Method 3: Try to find code in body text
-    const bodyText = document.body.innerText;
-    const bodyCodeMatch = bodyText.match(/code[=:\s]+([a-zA-Z0-9\-._~]+)/i);
-    if (bodyCodeMatch && bodyCodeMatch[1]) {
-      return bodyCodeMatch[1];
-    }
-
-    // Method 4: Check URL query params
-    const params = new URLSearchParams(window.location.search);
-    return params.get('code');
+    const hashParams = new URLSearchParams(hash);
+    return hashParams.get('code');
   }
 }
