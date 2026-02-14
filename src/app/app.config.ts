@@ -4,7 +4,7 @@ import { provideRouter, withComponentInputBinding, withRouterConfig } from '@ang
 
 import { routes } from './app.routes';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-import { authInterceptor } from './auth/auth.interceptor';
+import { authInterceptor } from './auth/interceptors/auth.interceptor';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 

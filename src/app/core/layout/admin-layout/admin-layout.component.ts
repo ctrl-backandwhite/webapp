@@ -1,11 +1,11 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
-import { ActivatedRoute, RouterOutlet } from '@angular/router';
+import { Component, inject, OnInit, viewChild } from '@angular/core';
+import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
-import { environment } from '../../../../environments/environment';
-import { HttpParams } from '@angular/common/http';
-import { AuthService } from '../../../auth/auth.service';
+import { AuthService } from '../../../auth/services/auth.service';
+import { PKCEService } from '../../../auth/services/pkce.service';
+import { OAuth2ConfigService } from '../../../auth/services/oauth2-config.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -14,86 +14,45 @@ import { AuthService } from '../../../auth/auth.service';
   templateUrl: './admin-layout.component.html'
 })
 export class AdminLayoutComponent implements OnInit {
-
-  public code = signal('');
   private authService = inject(AuthService);
-  private oauth2AuthorizeUrl = environment.oauth2AuthorizeUrl;
-  private codeVerifier: string = '';
-
-  parameters: any = {
-    client_id: environment.clientId,
-    redirect_uri: environment.redirectUri,
-    scope: environment.scope,
-    response_type: environment.responseType,
-    response_mode: environment.responseMode,
-    code_challenge_method: environment.code_challenge_method,
-    code_challenge: ''
-  };
+  private pkceService = inject(PKCEService);
+  private oauth2ConfigService = inject(OAuth2ConfigService);
+  private router = inject(Router);
 
   sidebar = viewChild.required(SidebarComponent);
 
-  onToggleSidebar() {
+  onToggleSidebar(): void {
     this.sidebar().toggle();
   }
 
-  private generateCodeVerifier(): string {
-    const characters = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_.~';
-    let verifier = '';
-    const length = 128;
-    const randomValues = new Uint8Array(length);
-    crypto.getRandomValues(randomValues);
-
-    for (let i = 0; i < length; i++) {
-      verifier += characters[randomValues[i] % characters.length];
-    }
-    return verifier;
-  }
-
-  private async generateCodeChallenge(verifier: string): Promise<string> {
-    const encoder = new TextEncoder();
-    const data = encoder.encode(verifier);
-    const hash = await crypto.subtle.digest('SHA-256', data);
-    const hashArray = Array.from(new Uint8Array(hash));
-    const hashString = String.fromCharCode.apply(null, hashArray);
-    const base64url = btoa(hashString)
-      .replace(/\+/g, '-')
-      .replace(/\//g, '_')
-      .replace(/=+$/, '');
-    return base64url;
-  }
-
   ngOnInit(): void {
-    // Check if user has valid access token
-    const accessToken = this.authService.getAccessToken();
-    const hasInitiatedAuth = localStorage.getItem('authInitiated');
-
-    if (accessToken && !this.authService.isTokenExpired()) {
-      // User is authenticated
-      console.log('User has valid access token');
+    // Check if user is already authenticated
+    if (this.authService.isAuthenticated()) {
+      console.log('[AdminLayout] User is authenticated');
       return;
     }
 
-    // Only initiate authorization if not already done and no token exists
-    if (!hasInitiatedAuth && !accessToken) {
-      this.onLogin();
+    // Check if authorization has already been initiated
+    const hasInitiatedAuth = localStorage.getItem('authInitiated');
+    if (hasInitiatedAuth) {
+      console.log('[AdminLayout] Authorization already initiated');
+      return;
     }
+
+    // Initiate OAuth2 authorization
+    this.initiateAuthorization();
   }
 
-  async onLogin() {
-    // Generate PKCE parameters dynamically
-    this.codeVerifier = this.generateCodeVerifier();
-    const codeChallenge = await this.generateCodeChallenge(this.codeVerifier);
+  private async initiateAuthorization(): Promise<void> {
+    try {
+      const { challenge } = await this.pkceService.generateChallengeAsync();
+      const authUrl = this.oauth2ConfigService.buildAuthorizationUrl(challenge);
 
-    // Store code_verifier in localStorage for later use in token exchange
-    localStorage.setItem('pkce_verifier', this.codeVerifier);
-
-    // Update parameters with dynamic code_challenge
-    this.parameters.code_challenge = codeChallenge;
-
-    const httpParams = new HttpParams({ fromObject: this.parameters });
-    const url = this.oauth2AuthorizeUrl + httpParams.toString();
-    // Mark that authorization has been initiated
-    localStorage.setItem('authInitiated', 'true');
-    location.href = url;
+      localStorage.setItem('authInitiated', 'true');
+      window.location.href = authUrl;
+    } catch (error) {
+      console.error('[AdminLayout] Failed to initiate authorization:', error);
+      this.router.navigate(['/']);
+    }
   }
 }
