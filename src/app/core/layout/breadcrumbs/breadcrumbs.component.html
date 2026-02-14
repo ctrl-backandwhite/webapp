@@ -1,6 +1,6 @@
 <div class="w-full p-2.5 mb-6.25 bg-base-100 rounded-box">
     <nav aria-label="Breadcrumb">
-        <div class="breadcrumb flex items-center gap-1 text-[10px] text-base-content/50">
+        <div class="breadcrumb flex flex-wrap items-center gap-1 text-[10px] text-base-content/50">
             <span class="text-base-content/40">/</span>
             <ng-container *ngFor="let crumb of crumbs(); let isLast = last; let isFirst = first">
                 <ng-container *ngIf="!isFirst">
