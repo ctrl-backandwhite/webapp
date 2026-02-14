@@ -17,6 +17,11 @@
     format json
   }
 
+  @i18n path /i18n/*
+  header @i18n Cache-Control "no-cache, no-store, must-revalidate"
+  header @i18n Pragma "no-cache"
+  header @i18n Expires "0"
+
   # Healthcheck para Railway
   respond /health 200
 

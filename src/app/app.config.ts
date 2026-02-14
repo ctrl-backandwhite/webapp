@@ -10,7 +10,9 @@ import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const createTranslateLoader = (http: HttpClient) => new TranslateHttpLoader(http, 'i18n/', '.json');
+const I18N_VERSION = '1';
+const createTranslateLoader = (http: HttpClient) =>
+  new TranslateHttpLoader(http, `i18n/?v=${I18N_VERSION}`, '.json');
 
 const initTranslations = (translate: TranslateService) => () => {
   const saved = localStorage.getItem('lang') ?? 'es';
