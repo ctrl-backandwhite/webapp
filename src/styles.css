@@ -87,6 +87,16 @@ body {
 	min-height: 0;
 }
 
+.ag-row {
+	min-height: 16px;
+	line-height: 16px;
+}
+
+.ag-cell {
+	padding-top: 1px;
+	padding-bottom: 1px;
+}
+
 .driver-popover {
 	background: #ffffff;
 	color: hsl(var(--bc));

@@ -67,6 +67,7 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   page = signal(1);
   pageSizeSignal = signal(10);
   selectedRows = signal<any[]>([]);
+  localeText = signal<Record<string, string>>({});
 
   totalPages = computed(() => {
     const total = this.totalRows();
@@ -87,10 +88,14 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
       this.usesDefaultOverlay = false;
     }
     this.applyTranslatedOverlay();
+    this.localeText.set(this.buildLocaleText());
     this.langSub = this.translate.onLangChange.subscribe(() => {
       this.applyTranslatedOverlay();
+      this.localeText.set(this.buildLocaleText());
       if (this.gridApi) {
         this.gridApi.setGridOption('columnDefs', this.gridColumnDefs);
+        (this.gridApi as unknown as { setGridOption: (key: string, value: unknown) => void })
+          .setGridOption('localeText', this.localeText());
       }
     });
     this.pageSizeSignal.set(this.pageSize);
@@ -171,9 +176,32 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
     }
   }
 
+  private buildLocaleText(): Record<string, string> {
+    return {
+      filterOoo: this.translate.instant('grid.filter.search'),
+      equals: this.translate.instant('grid.filter.equals'),
+      notEqual: this.translate.instant('grid.filter.notEqual'),
+      greaterThan: this.translate.instant('grid.filter.greaterThan'),
+      greaterThanOrEqual: this.translate.instant('grid.filter.greaterThanOrEqual'),
+      lessThan: this.translate.instant('grid.filter.lessThan'),
+      lessThanOrEqual: this.translate.instant('grid.filter.lessThanOrEqual'),
+      inRange: this.translate.instant('grid.filter.inRange'),
+      contains: this.translate.instant('grid.filter.contains'),
+      notContains: this.translate.instant('grid.filter.notContains'),
+      startsWith: this.translate.instant('grid.filter.startsWith'),
+      endsWith: this.translate.instant('grid.filter.endsWith'),
+      blank: this.translate.instant('grid.filter.blank'),
+      notBlank: this.translate.instant('grid.filter.notBlank'),
+      andCondition: this.translate.instant('grid.filter.and'),
+      orCondition: this.translate.instant('grid.filter.or')
+    };
+  }
+
   onGridReady(event: GridReadyEvent) {
     this.gridApi = event.api;
     this.restoreState();
+    (this.gridApi as unknown as { setGridOption: (key: string, value: unknown) => void })
+      .setGridOption('localeText', this.localeText());
     this.load();
   }
 

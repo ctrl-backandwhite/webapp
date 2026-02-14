@@ -197,6 +197,26 @@
     "groups": "Groups",
     "scopes": "Scopes"
   },
+  "grid": {
+    "filter": {
+      "search": "Search...",
+      "equals": "Equals",
+      "notEqual": "Does not equal",
+      "greaterThan": "Greater than",
+      "greaterThanOrEqual": "Greater than or equal to",
+      "lessThan": "Less than",
+      "lessThanOrEqual": "Less than or equal to",
+      "inRange": "Between",
+      "contains": "Contains",
+      "notContains": "Does not contain",
+      "startsWith": "Starts with",
+      "endsWith": "Ends with",
+      "blank": "Blank",
+      "notBlank": "Not blank",
+      "and": "And",
+      "or": "Or"
+    }
+  },
   "tour": {
     "next": "Next",
     "prev": "Previous",

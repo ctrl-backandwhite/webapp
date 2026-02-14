@@ -21,7 +21,7 @@
     <div class="w-full overflow-x-auto">
         <ag-grid-angular class="min-w-[640px] w-full" [rowData]="rows()" [columnDefs]="gridColumnDefs"
             [defaultColDef]="defaultColDef" [domLayout]="'autoHeight'" [animateRows]="true" [suppressCellFocus]="true"
-            [overlayNoRowsTemplate]="overlayNoRowsTemplate" [theme]="theme"
+            [overlayNoRowsTemplate]="overlayNoRowsTemplate" [localeText]="localeText()" [theme]="theme"
             [rowSelection]="enableSelection ? 'multiple' : 'single'" [suppressRowClickSelection]="enableSelection"
             (gridReady)="onGridReady($event)" (selectionChanged)="onSelectionChanged()" (sortChanged)="onSortChanged()"
             (filterChanged)="onFilterChanged()" (rowClicked)="onRowClicked($event)" [getRowId]="gridGetRowId">

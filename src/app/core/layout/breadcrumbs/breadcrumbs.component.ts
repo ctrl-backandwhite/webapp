@@ -20,12 +20,12 @@ export class BreadcrumbsComponent implements OnInit, OnDestroy {
   crumbs = signal<BreadcrumbItem[]>([]);
 
   ngOnInit() {
-    this.crumbs.set(this.buildBreadcrumbs(this.activatedRoute));
+    this.crumbs.set(this.buildBreadcrumbs(this.router.routerState.root));
     this.routerSub = this.router.events
       .pipe(filter(event => event instanceof NavigationEnd))
-      .subscribe(() => this.crumbs.set(this.buildBreadcrumbs(this.activatedRoute)));
+      .subscribe(() => this.crumbs.set(this.buildBreadcrumbs(this.router.routerState.root)));
     this.langSub = this.translate.onLangChange
-      .subscribe(() => this.crumbs.set(this.buildBreadcrumbs(this.activatedRoute)));
+      .subscribe(() => this.crumbs.set(this.buildBreadcrumbs(this.router.routerState.root)));
   }
 
   ngOnDestroy() {
