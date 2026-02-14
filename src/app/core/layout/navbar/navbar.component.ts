@@ -7,8 +7,6 @@ import { Component, output } from '@angular/core';
 })
 export class NavbarComponent {
     toggleSidebar = output<void>();
-
-    // Mock user data
     user = {
         initials: 'AD',
         fullName: 'Andrea Domínguez',
@@ -18,5 +16,21 @@ export class NavbarComponent {
 
     onToggleSidebar() {
         this.toggleSidebar.emit();
+    }
+
+    get userName(): string {
+        return this.user.fullName;
+    }
+
+    get userEmail(): string {
+        return '';
+    }
+
+    get userRole(): string {
+        return this.user.role;
+    }
+
+    get userInitials(): string {
+        return this.user.initials;
     }
 }

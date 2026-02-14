@@ -1,5 +1,4 @@
 import { Routes } from '@angular/router';
-import { authGuard } from './core/auth/auth.guard';
 
 export const routes: Routes = [
   {
@@ -8,14 +7,9 @@ export const routes: Routes = [
     pathMatch: 'full',
   },
   {
-    path: 'auth/callback',
-    loadComponent: () => import('./core/auth/auth-callback.component').then(m => m.AuthCallbackComponent),
-  },
-  {
     path: 'admin',
     loadComponent: () => import('./core/layout/admin-layout/admin-layout.component').then(m => m.AdminLayoutComponent),
     data: { breadcrumb: 'Administración' },
-    canActivate: [authGuard],
     children: [
       {
         path: '',
