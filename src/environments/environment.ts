@@ -1,4 +1,4 @@
 export const environment = {
   production: false,
-  apiBaseUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
+  apiBaseUrl: 'https://localhost:8443/api/v1',
 };
