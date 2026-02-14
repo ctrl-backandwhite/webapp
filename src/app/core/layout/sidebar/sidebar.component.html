@@ -1,27 +1,28 @@
-<div [class]="isCollapsed() ? 'w-20' : 'w-72'"
+<div [class]="isCollapsed() ? 'w-16' : 'w-50'"
   class="min-h-full bg-base-100 border-r border-base-200 transition-all duration-200">
   <a class="h-14 px-4 flex items-center justify-center" [routerLink]="['/admin']" aria-label="Ir a administración">
     <div class="flex items-center gap-3 overflow-hidden">
       <div class="avatar placeholder">
-        <div class="bg-primary text-primary-content rounded-lg w-10 flex items-center justify-center">
+        <div [class]="isCollapsed() ? 'bg-primary text-primary-content rounded-lg w-7 h-7 flex items-center justify-center' : 'bg-primary text-primary-content rounded-lg w-8 h-8 flex items-center justify-center'">
           <span>B&W</span>
         </div>
       </div>
       <div [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
         [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200">
-        <p class="font-semibold">Back & White</p>
-        <p class="text-xs text-base-content/60">Administración</p>
+        <p class="font-semibold">{{ 'brand.name' | translate }}</p>
+        <p class="text-xs text-base-content/60">{{ 'brand.subtitle' | translate }}</p>
       </div>
     </div>
   </a>
-  <ul [class]="isCollapsed() ? 'menu w-full px-0 py-2 mt-3 space-y-0.5' : 'menu w-full px-0 py-2 mt-3 space-y-[5px]'">
+  <ul [class]="isCollapsed() ? 'menu w-full px-0 py-2 mt-3 space-y-0.5' : 'menu w-full px-0 py-2 mt-3 space-y-1.25'">
     <li class="w-full">
-      <a [routerLink]="['/admin/roles']" routerLinkActive="active"
-        [class]="isCollapsed() ? 'menu-link w-full flex flex-col items-center justify-center px-0 gap-0 py-0 rounded-none transition-colors duration-1000' : 'menu-link w-full flex items-center justify-start gap-4 px-4 rounded-none transition-colors duration-1000'"
-        title="Roles">
+      <a [routerLink]="['/admin/roles']" routerLinkActive="active" [attr.title]="'menu.roles' | translate"
+        [class]="isCollapsed() ? 'menu-link w-full flex flex-col items-center justify-center px-0 gap-0 py-2.5 rounded-none transition-colors duration-1000' : 'menu-link w-full flex items-center justify-start gap-4 px-4 py-2.5 rounded-none transition-colors duration-1000'">
         <i [class]="isCollapsed() ? 'fa-solid fa-user-shield text-lg' : 'fa-solid fa-user-shield'"></i>
         <span [class.opacity-0]="isCollapsed()" [class.w-0]="isCollapsed()" [class.overflow-hidden]="isCollapsed()"
-          [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200 flex-1">Roles</span>
+          [style.display]="isCollapsed() ? 'none' : 'block'" class="transition-all duration-200 flex-1">
+          {{ 'menu.roles' | translate }}
+        </span>
       </a>
     </li>
   </ul>

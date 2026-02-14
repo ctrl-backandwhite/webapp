@@ -61,4 +61,40 @@ export class TokenService {
         localStorage.removeItem(this.TOKEN_EXPIRES_AT_KEY);
         localStorage.removeItem(this.TOKEN_TYPE_KEY);
     }
+
+    getAccessTokenPayload(): Record<string, unknown> | null {
+        const token = this.getAccessToken();
+        if (!token) {
+            return null;
+        }
+
+        const parts = token.split('.');
+        if (parts.length < 2) {
+            return null;
+        }
+
+        try {
+            const json = this.decodeBase64Url(parts[1]);
+            return JSON.parse(json) as Record<string, unknown>;
+        } catch {
+            return null;
+        }
+    }
+
+    private decodeBase64Url(value: string): string {
+        const normalized = value.replace(/-/g, '+').replace(/_/g, '/');
+        const padding = normalized.length % 4 ? 4 - (normalized.length % 4) : 0;
+        const padded = normalized + '='.repeat(padding);
+
+        try {
+            const decoded = atob(padded);
+            return decodeURIComponent(
+                Array.from(decoded)
+                    .map((char) => `%${char.charCodeAt(0).toString(16).padStart(2, '0')}`)
+                    .join('')
+            );
+        } catch {
+            return atob(padded);
+        }
+    }
 }

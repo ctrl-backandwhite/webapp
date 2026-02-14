@@ -12,20 +12,23 @@ import type { DataTableAction } from '../../../shared/data-table/data-table-acti
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent],
+  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, TranslateModule],
   templateUrl: './roles.component.html',
 })
 export class RolesComponent implements OnInit, OnDestroy {
   private rolesReloadService = inject(RolesReloadService);
   private rolesService = inject(RolesService);
   private fb = inject(FormBuilder);
+  private translate = inject(TranslateService);
   private reloadSub?: Subscription;
   private saveSub?: Subscription;
   private uniqueNameSub?: Subscription;
+  private langSub?: Subscription;
 
   reloadToken = 0;
 
@@ -50,25 +53,8 @@ export class RolesComponent implements OnInit, OnDestroy {
     enabled: [true],
   });
 
-  columnDefs: ColDef<Role>[] = [
-    { field: 'id' as keyof Role, headerName: 'ID', minWidth: 80, maxWidth: 120 },
-    { field: 'name' as keyof Role, headerName: 'Nombre', flex: 1 },
-    { field: 'uniqueName' as keyof Role, headerName: 'Nombre Único', flex: 1 },
-    { field: 'description' as keyof Role, headerName: 'Descripción', flex: 2 },
-    {
-      field: 'enabled' as keyof Role,
-      headerName: 'Activo',
-      minWidth: 100,
-      maxWidth: 120,
-      cellRenderer: (params: { value: boolean }) => params.value ? 'Sí' : 'No',
-    },
-  ];
-
-  rowActions: DataTableAction<Role>[] = [
-    { id: 'detail', label: 'Detalle', icon: 'fa-solid fa-eye', handler: (row) => this.onDetailRole(row) },
-    { id: 'edit', label: 'Editar', icon: 'fa-solid fa-pen', handler: (row) => this.onEditRole(row) },
-    { id: 'delete', label: 'Eliminar', icon: 'fa-solid fa-trash', handler: (row) => this.onDeleteRole(row) },
-  ];
+  columnDefs: ColDef<Role>[] = [];
+  rowActions: DataTableAction<Role>[] = [];
 
   onEditRole(row: Role) {
     this.openEdit(row);
@@ -89,6 +75,13 @@ export class RolesComponent implements OnInit, OnDestroy {
     minWidth: 100,
   };
   ngOnInit() {
+    this.buildColumnDefs();
+    this.buildRowActions();
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.buildColumnDefs();
+      this.buildRowActions();
+    });
+
     this.reloadSub = this.rolesReloadService.reload$.subscribe(() => {
       this.reloadToken += 1;
     });
@@ -105,6 +98,7 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.reloadSub?.unsubscribe();
     this.saveSub?.unsubscribe();
     this.uniqueNameSub?.unsubscribe();
+    this.langSub?.unsubscribe();
   }
 
   openCreate() {
@@ -187,9 +181,64 @@ export class RolesComponent implements OnInit, OnDestroy {
         },
         error: () => {
           this.deleting.set(false);
-          this.deleteError.set('No se pudo eliminar el rol.');
+          this.deleteError.set(this.translate.instant('roles.deleteError'));
         }
       });
+  }
+
+  private buildColumnDefs(): void {
+    this.columnDefs = [
+      {
+        field: 'id' as keyof Role,
+        headerName: this.translate.instant('roles.table.id'),
+        minWidth: 80,
+        maxWidth: 120
+      },
+      { field: 'name' as keyof Role, headerName: this.translate.instant('roles.table.name'), flex: 1 },
+      {
+        field: 'uniqueName' as keyof Role,
+        headerName: this.translate.instant('roles.table.uniqueName'),
+        flex: 1
+      },
+      {
+        field: 'description' as keyof Role,
+        headerName: this.translate.instant('roles.table.description'),
+        flex: 2
+      },
+      {
+        field: 'enabled' as keyof Role,
+        headerName: this.translate.instant('roles.table.active'),
+        minWidth: 100,
+        maxWidth: 120,
+        cellRenderer: (params: { value: boolean }) =>
+          params.value
+            ? this.translate.instant('common.yes')
+            : this.translate.instant('common.no')
+      }
+    ];
+  }
+
+  private buildRowActions(): void {
+    this.rowActions = [
+      {
+        id: 'detail',
+        label: this.translate.instant('roles.action.detail'),
+        icon: 'fa-solid fa-eye',
+        handler: (row) => this.onDetailRole(row)
+      },
+      {
+        id: 'edit',
+        label: this.translate.instant('roles.action.edit'),
+        icon: 'fa-solid fa-pen',
+        handler: (row) => this.onEditRole(row)
+      },
+      {
+        id: 'delete',
+        label: this.translate.instant('roles.action.delete'),
+        icon: 'fa-solid fa-trash',
+        handler: (row) => this.onDeleteRole(row)
+      }
+    ];
   }
 
   submitRole() {

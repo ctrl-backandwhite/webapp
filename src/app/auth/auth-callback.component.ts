@@ -1,17 +1,19 @@
 import { Component, OnInit, inject } from '@angular/core';
 import { Router } from '@angular/router';
 import { AuthService } from './services/auth.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-auth-callback',
   standalone: true,
+  imports: [TranslateModule],
   template: `
     <div class="flex items-center justify-center min-h-screen">
       <div class="text-center">
         <div class="mb-4">
           <span class="loading loading-spinner loading-lg"></span>
         </div>
-        <h2 class="text-2xl font-bold">Completando autenticación...</h2>
+        <h2 class="text-2xl font-bold">{{ 'auth.completing' | translate }}</h2>
       </div>
     </div>
   `

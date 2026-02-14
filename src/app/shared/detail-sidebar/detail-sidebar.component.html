@@ -6,7 +6,8 @@
                 <h3 class="dt-sidebar-title">{{ title }}</h3>
                 <p *ngIf="subtitle" class="dt-sidebar-subtitle">{{ subtitle }}</p>
             </div>
-            <button type="button" class="btn btn-ghost btn-sm" aria-label="Cerrar" (click)="onClose()">
+            <button type="button" class="btn btn-ghost btn-sm" [attr.aria-label]="'common.close' | translate"
+                (click)="onClose()">
                 <i class="fa-solid fa-xmark"></i>
             </button>
         </div>

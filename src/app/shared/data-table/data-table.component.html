@@ -2,14 +2,16 @@
     <div class="flex items-center justify-end">
         <div class="flex items-center gap-2">
             <button class="btn btn-ghost btn-sm" type="button" (click)="exportCsv()">
-                Exportar CSV
+                <span>{{ 'table.exportCsv' | translate }}</span>
             </button>
             <ng-content select="[data-table-actions]"></ng-content>
         </div>
     </div>
 
     <div *ngIf="bulkActions.length && selectedRows().length" class="flex items-center gap-2">
-        <span class="text-xs text-base-content/60">{{ selectedRows().length }} seleccionados</span>
+        <span class="text-xs text-base-content/60">
+            {{ 'table.selected' | translate:{ count: selectedRows().length } }}
+        </span>
         <button *ngFor="let action of bulkActions" class="btn btn-ghost btn-xs" type="button"
             (click)="onBulkAction(action)">
             {{ action.label }}
@@ -24,7 +26,7 @@
         (filterChanged)="onFilterChanged()" (rowClicked)="onRowClicked($event)" [getRowId]="gridGetRowId">
     </ag-grid-angular>
 
-    <div *ngIf="loading()" class="text-xs text-base-content/60">Cargando datos...</div>
+    <div *ngIf="loading()" class="text-xs text-base-content/60">{{ 'table.loading' | translate }}</div>
     <div *ngIf="error()" class="text-error text-xs">{{ error() }}</div>
 
     <div *ngIf="totalPages() >= 1" class="flex flex-wrap items-center justify-between gap-6">
@@ -36,14 +38,14 @@
             <div class="flex items-center gap-2 flex-nowrap">
                 <button class="btn btn-ghost btn-xs" type="button" [disabled]="page() === 1"
                     (click)="goToPage(page() - 1)">
-                    Anterior
+                    <span>{{ 'table.previous' | translate }}</span>
                 </button>
                 <button class="btn btn-ghost btn-xs" type="button" [disabled]="page() >= totalPages()"
                     (click)="goToPage(page() + 1)">
-                    Siguiente
+                    <span>{{ 'table.next' | translate }}</span>
                 </button>
                 <span class="text-xs text-base-content/60 whitespace-nowrap">
-                    {{ page() }} de {{ totalPages() }}
+                    {{ 'table.pageOf' | translate:{ page: page(), total: totalPages() } }}
                 </span>
             </div>
             <select class="select select-bordered select-sm" [value]="pageSizeSignal()"

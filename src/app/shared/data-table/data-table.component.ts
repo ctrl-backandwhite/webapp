@@ -1,10 +1,11 @@
 import { CommonModule } from '@angular/common';
-import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, signal, computed } from '@angular/core';
+import { Component, EventEmitter, Input, OnChanges, OnDestroy, OnInit, Output, SimpleChanges, signal, computed, inject } from '@angular/core';
 import { AgGridModule } from 'ag-grid-angular';
 import type { ColDef, ColumnState, GridApi, GridReadyEvent, SortModelItem } from 'ag-grid-community';
 import { themeQuartz } from 'ag-grid-community';
 import { Observable, Subscription } from 'rxjs';
 import { DataTableActionsRendererComponent, DataTableAction } from './data-table-actions-renderer.component';
+import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 export interface DataTableQuery {
   page: number;
@@ -29,10 +30,11 @@ export interface DataTableBulkAction<T> {
 @Component({
   selector: 'app-data-table',
   standalone: true,
-  imports: [CommonModule, AgGridModule],
+  imports: [CommonModule, AgGridModule, TranslateModule],
   templateUrl: './data-table.component.html'
 })
 export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
+  private readonly translate = inject(TranslateService);
   @Input({ required: true }) tableId = '';
   @Input({ required: true }) columnDefs: ColDef[] = [];
   @Input() defaultColDef: ColDef = {
@@ -50,7 +52,7 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   @Input() enableSelection = false;
   @Input() pageSize = 10;
   @Input() pageSizeOptions: number[] = [10, 20, 50];
-  @Input() overlayNoRowsTemplate = 'No hay registros para mostrar';
+  @Input() overlayNoRowsTemplate = '';
   @Input() reloadToken = 0;
   @Input() getRowId?: (row: any) => string;
 
@@ -77,8 +79,20 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
 
   gridApi?: GridApi;
   private loadSub?: Subscription;
+  private langSub?: Subscription;
+  private usesDefaultOverlay = true;
 
   ngOnInit() {
+    if (this.overlayNoRowsTemplate) {
+      this.usesDefaultOverlay = false;
+    }
+    this.applyTranslatedOverlay();
+    this.langSub = this.translate.onLangChange.subscribe(() => {
+      this.applyTranslatedOverlay();
+      if (this.gridApi) {
+        this.gridApi.setGridOption('columnDefs', this.gridColumnDefs);
+      }
+    });
     this.pageSizeSignal.set(this.pageSize);
     if (!this.loadFn) {
       this.rows.set(this.rowData ?? []);
@@ -87,6 +101,19 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    if (changes['overlayNoRowsTemplate'] && !changes['overlayNoRowsTemplate'].firstChange) {
+      this.usesDefaultOverlay = !this.overlayNoRowsTemplate;
+      this.applyTranslatedOverlay();
+    }
+
+    if (changes['columnDefs'] && this.gridApi) {
+      this.gridApi.setGridOption('columnDefs', this.gridColumnDefs);
+    }
+
+    if (changes['rowActions'] && this.gridApi) {
+      this.gridApi.setGridOption('columnDefs', this.gridColumnDefs);
+    }
+
     if (changes['reloadToken'] && !changes['reloadToken'].firstChange) {
       this.load();
     }
@@ -99,6 +126,7 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
 
   ngOnDestroy(): void {
     this.loadSub?.unsubscribe();
+    this.langSub?.unsubscribe();
   }
 
   get gridColumnDefs(): ColDef[] {
@@ -120,7 +148,7 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
 
     if (this.rowActions.length > 0) {
       defs.push({
-        headerName: 'Acciones',
+        headerName: this.translate.instant('table.actions'),
         cellRenderer: DataTableActionsRendererComponent,
         headerClass: 'ag-header-center',
         minWidth: 140,
@@ -135,6 +163,12 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
     }
 
     return defs;
+  }
+
+  private applyTranslatedOverlay(): void {
+    if (this.usesDefaultOverlay) {
+      this.overlayNoRowsTemplate = this.translate.instant('table.noRows');
+    }
   }
 
   onGridReady(event: GridReadyEvent) {

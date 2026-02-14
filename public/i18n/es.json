@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "openMenu": "Abrir menu",
+    "pinMenu": "Acoplar menu",
+    "translations": "Traducciones",
+    "notifications": "Notificaciones",
+    "settings": "Configuracion",
+    "logout": "Cerrar sesion",
+    "closeMenu": "Cerrar menu"
+  },
+  "lang": {
+    "spanish": "Espanol",
+    "english": "English"
+  },
+  "brand": {
+    "name": "Back & White",
+    "subtitle": "Administracion"
+  },
+  "menu": {
+    "roles": "Roles"
+  },
+  "table": {
+    "exportCsv": "Exportar CSV",
+    "selected": "{{count}} seleccionados",
+    "loading": "Cargando datos...",
+    "previous": "Anterior",
+    "next": "Siguiente",
+    "pageOf": "{{page}} de {{total}}",
+    "actions": "Acciones",
+    "noRows": "No hay registros para mostrar"
+  },
+  "roles": {
+    "title": "Roles",
+    "add": "Agregar rol",
+    "editTitle": "Editar rol",
+    "createTitle": "Crear rol",
+    "nameLabel": "Nombre",
+    "nameRequired": "El nombre es obligatorio",
+    "uniqueNameLabel": "Nombre unico",
+    "uniqueNameRequired": "El nombre unico es obligatorio",
+    "descriptionLabel": "Descripcion",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar rol",
+    "deleteMessage": "Seguro que deseas eliminar el rol {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el rol.",
+    "table": {
+      "id": "ID",
+      "name": "Nombre",
+      "uniqueName": "Nombre unico",
+      "description": "Descripcion",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "common": {
+    "yes": "Si",
+    "no": "No",
+    "save": "Guardar",
+    "saving": "Guardando...",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "close": "Cerrar"
+  },
+  "confirm": {
+    "title": "Confirmar",
+    "delete": "Eliminar",
+    "deleting": "Eliminando..."
+  },
+  "auth": {
+    "completing": "Completando autenticacion..."
+  },
+  "breadcrumb": {
+    "admin": "Administracion",
+    "dashboard": "Dashboard",
+    "roles": "Roles"
+  }
+}

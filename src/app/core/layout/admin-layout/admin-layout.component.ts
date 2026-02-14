@@ -6,11 +6,12 @@ import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { AuthService } from '../../../auth/services/auth.service';
 import { PKCEService } from '../../../auth/services/pkce.service';
 import { OAuth2ConfigService } from '../../../auth/services/oauth2-config.service';
+import { TranslateModule } from '@ngx-translate/core';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, SidebarComponent, BreadcrumbsComponent],
+  imports: [RouterOutlet, NavbarComponent, SidebarComponent, BreadcrumbsComponent, TranslateModule],
   templateUrl: './admin-layout.component.html'
 })
 export class AdminLayoutComponent implements OnInit {

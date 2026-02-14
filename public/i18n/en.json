@@ -1,0 +1,82 @@
+{
+  "nav": {
+    "openMenu": "Open menu",
+    "pinMenu": "Pin menu",
+    "translations": "Languages",
+    "notifications": "Notifications",
+    "settings": "Settings",
+    "logout": "Sign out",
+    "closeMenu": "Close menu"
+  },
+  "lang": {
+    "spanish": "Spanish",
+    "english": "English"
+  },
+  "brand": {
+    "name": "Back & White",
+    "subtitle": "Administration"
+  },
+  "menu": {
+    "roles": "Roles"
+  },
+  "table": {
+    "exportCsv": "Export CSV",
+    "selected": "{{count}} selected",
+    "loading": "Loading data...",
+    "previous": "Previous",
+    "next": "Next",
+    "pageOf": "{{page}} of {{total}}",
+    "actions": "Actions",
+    "noRows": "No records to display"
+  },
+  "roles": {
+    "title": "Roles",
+    "add": "Add role",
+    "editTitle": "Edit role",
+    "createTitle": "Create role",
+    "nameLabel": "Name",
+    "nameRequired": "Name is required",
+    "uniqueNameLabel": "Unique name",
+    "uniqueNameRequired": "Unique name is required",
+    "descriptionLabel": "Description",
+    "activeLabel": "Active",
+    "deleteTitle": "Delete role",
+    "deleteMessage": "Are you sure you want to delete role {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the role.",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "uniqueName": "Unique name",
+      "description": "Description",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "common": {
+    "yes": "Yes",
+    "no": "No",
+    "save": "Save",
+    "saving": "Saving...",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "close": "Close"
+  },
+  "confirm": {
+    "title": "Confirm",
+    "delete": "Delete",
+    "deleting": "Deleting..."
+  },
+  "auth": {
+    "completing": "Completing authentication..."
+  },
+  "breadcrumb": {
+    "admin": "Administration",
+    "dashboard": "Dashboard",
+    "roles": "Roles"
+  }
+}
