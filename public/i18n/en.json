@@ -5,6 +5,7 @@
     "translations": "Languages",
     "notifications": "Notifications",
     "settings": "Settings",
+    "tour": "Guide",
     "logout": "Sign out",
     "closeMenu": "Close menu"
   },
@@ -195,5 +196,72 @@
     "users": "Users",
     "groups": "Groups",
     "scopes": "Scopes"
+  },
+  "tour": {
+    "next": "Next",
+    "prev": "Previous",
+    "done": "Done",
+    "sidebar": {
+      "title": "Main menu",
+      "description": "Quick access to the main sections."
+    },
+    "breadcrumbs": {
+      "title": "Current path",
+      "description": "See where you are and navigate back."
+    },
+    "table": {
+      "title": "Listing",
+      "description": "Browse, filter, and manage records."
+    },
+    "crud": {
+      "createTitle": "Create record",
+      "createDescription": "Open the form to add a new item.",
+      "editTitle": "Edit record",
+      "editDescription": "Update the selected item.",
+      "deleteTitle": "Delete record",
+      "deleteDescription": "Remove the selected item with confirmation.",
+      "detailTitle": "View detail",
+      "detailDescription": "Inspect the full item information."
+    },
+    "roles": {
+      "createTitle": "Create role",
+      "createDescription": "Add a new role with basic data.",
+      "editTitle": "Edit role",
+      "editDescription": "Update the selected role.",
+      "deleteTitle": "Delete role",
+      "deleteDescription": "Remove the selected role with confirmation.",
+      "detailTitle": "Role detail",
+      "detailDescription": "Review the full role information."
+    },
+    "users": {
+      "createTitle": "Create user",
+      "createDescription": "Add a user and assign roles, groups, and scopes.",
+      "editTitle": "Edit user",
+      "editDescription": "Update the user information.",
+      "deleteTitle": "Delete user",
+      "deleteDescription": "Remove the selected user with confirmation.",
+      "detailTitle": "User detail",
+      "detailDescription": "Review the user data and associations."
+    },
+    "groups": {
+      "createTitle": "Create group",
+      "createDescription": "Create a group and assign roles.",
+      "editTitle": "Edit group",
+      "editDescription": "Update the group information.",
+      "deleteTitle": "Delete group",
+      "deleteDescription": "Remove the selected group with confirmation.",
+      "detailTitle": "Group detail",
+      "detailDescription": "Review the roles linked to the group."
+    },
+    "scopes": {
+      "createTitle": "Create scope",
+      "createDescription": "Add a new scope.",
+      "editTitle": "Edit scope",
+      "editDescription": "Update the scope information.",
+      "deleteTitle": "Delete scope",
+      "deleteDescription": "Remove the selected scope with confirmation.",
+      "detailTitle": "Scope detail",
+      "detailDescription": "Review the full scope information."
+    }
   }
 }

@@ -37,6 +37,7 @@
     "@ngx-translate/http-loader": "^8.0.0",
     "ag-grid-angular": "^35.1.0",
     "daisyui": "^5.5.18",
+    "driver.js": "^1.4.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0"
   },
@@ -45,11 +46,11 @@
     "@angular/cli": "^21.0.2",
     "@angular/compiler-cli": "^21.0.0",
     "@tailwindcss/postcss": "^4.1.12",
+    "cypress": "^13.13.3",
     "jsdom": "^27.1.0",
     "postcss": "^8.5.3",
     "tailwindcss": "^4.1.12",
     "typescript": "~5.9.2",
-    "vitest": "^4.0.8",
-    "cypress": "^13.13.3"
+    "vitest": "^4.0.8"
   }
 }

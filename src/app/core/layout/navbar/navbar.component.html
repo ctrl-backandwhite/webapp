@@ -30,6 +30,11 @@
         </li>
       </ul>
     </div>
+    <button class="btn btn-ghost btn-sm flex items-center gap-2" (click)="onStartTour()"
+      [attr.aria-label]="'nav.tour' | translate" [attr.title]="'nav.tour' | translate">
+      <i class="fa-solid fa-circle-play text-lg"></i>
+      <span class="hidden sm:inline text-xs">{{ 'nav.tour' | translate }}</span>
+    </button>
     <button class="btn btn-ghost btn-sm" [attr.aria-label]="'nav.notifications' | translate">
       <i class="fa-solid fa-bell text-lg"></i>
     </button>

@@ -5,6 +5,7 @@
     "translations": "Traducciones",
     "notifications": "Notificaciones",
     "settings": "Configuracion",
+    "tour": "Guia",
     "logout": "Cerrar sesion",
     "closeMenu": "Cerrar menu"
   },
@@ -195,5 +196,72 @@
     "users": "Usuarios",
     "groups": "Grupos",
     "scopes": "Scopes"
+  },
+  "tour": {
+    "next": "Siguiente",
+    "prev": "Anterior",
+    "done": "Listo",
+    "sidebar": {
+      "title": "Menu principal",
+      "description": "Accede rapidamente a las secciones del sistema."
+    },
+    "breadcrumbs": {
+      "title": "Ruta actual",
+      "description": "Ubica donde estas y navega hacia atras."
+    },
+    "table": {
+      "title": "Listado",
+      "description": "Consulta, filtra y gestiona los registros."
+    },
+    "crud": {
+      "createTitle": "Crear registro",
+      "createDescription": "Abre el formulario para registrar un nuevo elemento.",
+      "editTitle": "Editar registro",
+      "editDescription": "Actualiza la informacion del elemento seleccionado.",
+      "deleteTitle": "Eliminar registro",
+      "deleteDescription": "Elimina el elemento seleccionado con confirmacion.",
+      "detailTitle": "Ver detalle",
+      "detailDescription": "Consulta los datos completos del elemento."
+    },
+    "roles": {
+      "createTitle": "Crear rol",
+      "createDescription": "Registra un nuevo rol con sus datos basicos.",
+      "editTitle": "Editar rol",
+      "editDescription": "Modifica el rol seleccionado.",
+      "deleteTitle": "Eliminar rol",
+      "deleteDescription": "Quita el rol seleccionado con confirmacion.",
+      "detailTitle": "Detalle de rol",
+      "detailDescription": "Revisa toda la informacion del rol."
+    },
+    "users": {
+      "createTitle": "Crear usuario",
+      "createDescription": "Registra un usuario y asigna roles, grupos y scopes.",
+      "editTitle": "Editar usuario",
+      "editDescription": "Actualiza la informacion del usuario.",
+      "deleteTitle": "Eliminar usuario",
+      "deleteDescription": "Elimina el usuario seleccionado con confirmacion.",
+      "detailTitle": "Detalle de usuario",
+      "detailDescription": "Consulta los datos y asociaciones del usuario."
+    },
+    "groups": {
+      "createTitle": "Crear grupo",
+      "createDescription": "Crea un grupo y asigna roles.",
+      "editTitle": "Editar grupo",
+      "editDescription": "Modifica los datos del grupo.",
+      "deleteTitle": "Eliminar grupo",
+      "deleteDescription": "Elimina el grupo seleccionado con confirmacion.",
+      "detailTitle": "Detalle de grupo",
+      "detailDescription": "Consulta los roles asociados al grupo."
+    },
+    "scopes": {
+      "createTitle": "Crear scope",
+      "createDescription": "Registra un nuevo scope.",
+      "editTitle": "Editar scope",
+      "editDescription": "Actualiza los datos del scope.",
+      "deleteTitle": "Eliminar scope",
+      "deleteDescription": "Elimina el scope seleccionado con confirmacion.",
+      "detailTitle": "Detalle de scope",
+      "detailDescription": "Revisa la informacion completa del scope."
+    }
   }
 }

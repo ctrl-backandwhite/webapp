@@ -3,6 +3,7 @@ import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../auth/services/auth.service';
 import { TokenService } from '../../auth/services/token.service';
+import { TourService } from '../../tour/tour.service';
 
 @Component({
     selector: 'app-navbar',
@@ -15,6 +16,7 @@ export class NavbarComponent {
     private readonly tokenService = inject(TokenService);
     private readonly router = inject(Router);
     private readonly translate = inject(TranslateService);
+    private readonly tourService = inject(TourService);
     toggleSidebar = output<void>();
     user = {
         initials: 'AD',
@@ -30,6 +32,10 @@ export class NavbarComponent {
     onLogout(): void {
         this.authService.logout();
         this.router.navigate(['/']);
+    }
+
+    onStartTour(): void {
+        this.tourService.startAdminTour();
     }
 
     constructor() {

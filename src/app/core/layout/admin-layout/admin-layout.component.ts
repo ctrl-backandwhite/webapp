@@ -7,6 +7,7 @@ import { AuthService } from '../../auth/services/auth.service';
 import { PKCEService } from '../../auth/services/pkce.service';
 import { OAuth2ConfigService } from '../../auth/services/oauth2-config.service';
 import { TranslateModule } from '@ngx-translate/core';
+import { TourService } from '../../tour/tour.service';
 
 @Component({
   selector: 'app-admin-layout',
@@ -19,6 +20,7 @@ export class AdminLayoutComponent implements OnInit {
   private pkceService = inject(PKCEService);
   private oauth2ConfigService = inject(OAuth2ConfigService);
   private router = inject(Router);
+  private tourService = inject(TourService);
 
   sidebar = viewChild.required(SidebarComponent);
 
@@ -30,6 +32,7 @@ export class AdminLayoutComponent implements OnInit {
     // Check if user is already authenticated
     if (this.authService.isAuthenticated()) {
       console.log('[AdminLayout] User is authenticated');
+      this.startTourOnce();
       return;
     }
 
@@ -55,5 +58,17 @@ export class AdminLayoutComponent implements OnInit {
       console.error('[AdminLayout] Failed to initiate authorization:', error);
       this.router.navigate(['/']);
     }
+  }
+
+  private startTourOnce(): void {
+    const storageKey = 'adminTourSeen';
+    if (localStorage.getItem(storageKey)) {
+      return;
+    }
+
+    setTimeout(() => {
+      this.tourService.startAdminTour();
+      localStorage.setItem(storageKey, 'true');
+    }, 600);
   }
 }
