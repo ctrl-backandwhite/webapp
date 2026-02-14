@@ -3,9 +3,9 @@ import { Router, RouterOutlet } from '@angular/router';
 import { NavbarComponent } from '../navbar/navbar.component';
 import { SidebarComponent } from '../sidebar/sidebar.component';
 import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
-import { AuthService } from '../../../auth/services/auth.service';
-import { PKCEService } from '../../../auth/services/pkce.service';
-import { OAuth2ConfigService } from '../../../auth/services/oauth2-config.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { PKCEService } from '../../auth/services/pkce.service';
+import { OAuth2ConfigService } from '../../auth/services/oauth2-config.service';
 import { TranslateModule } from '@ngx-translate/core';
 
 @Component({

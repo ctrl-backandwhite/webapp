@@ -1,24 +1,68 @@
+import { CommonModule } from '@angular/common';
 import { Component, signal } from '@angular/core';
-import { RolesReloadService } from '../../../features/roles/services/roles-reload.service';
-import { RouterLink } from "@angular/router";
+import { RouterLink } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
+
+interface SidebarMenuItem {
+  labelKey: string;
+  route?: string[];
+  icon: string;
+  children?: SidebarMenuItem[];
+}
 
 @Component({
   selector: 'app-sidebar',
   standalone: true,
   templateUrl: './sidebar.component.html',
   host: { '[class.collapsed]': 'isCollapsed()' },
-  imports: [RouterLink, TranslateModule]
+  imports: [CommonModule, RouterLink, TranslateModule]
 })
 export class SidebarComponent {
   isCollapsed = signal(false);
-
-  constructor(private rolesReloadService: RolesReloadService) { }
-
-
-  // reloadRoles y onRolesClick eliminados: la recarga se maneja solo en el componente de roles
+  expandedKey = signal<string | null>(null);
+  readonly menuItems: SidebarMenuItem[] = [
+    {
+      labelKey: 'menu.users',
+      icon: 'fa-solid fa-users',
+      children: [
+        {
+          labelKey: 'menu.usersList',
+          route: ['/admin/users'],
+          icon: 'fa-solid fa-user'
+        },
+        {
+          labelKey: 'menu.roles',
+          route: ['/admin/roles'],
+          icon: 'fa-solid fa-user-shield'
+        },
+        {
+          labelKey: 'menu.groups',
+          route: ['/admin/groups'],
+          icon: 'fa-solid fa-people-group'
+        },
+        {
+          labelKey: 'menu.scopes',
+          route: ['/admin/scopes'],
+          icon: 'fa-solid fa-key'
+        }
+      ]
+    }
+  ];
 
   toggle() {
     this.isCollapsed.set(!this.isCollapsed());
+  }
+
+  toggleMenu(item: SidebarMenuItem) {
+    if (!item.children?.length) {
+      return;
+    }
+
+    const current = this.expandedKey();
+    this.expandedKey.set(current === item.labelKey ? null : item.labelKey);
+  }
+
+  isExpanded(item: SidebarMenuItem): boolean {
+    return this.expandedKey() === item.labelKey;
   }
 }

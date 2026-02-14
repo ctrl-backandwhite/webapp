@@ -6,7 +6,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
-import { authInterceptor } from './auth/interceptors/auth.interceptor';
+import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 

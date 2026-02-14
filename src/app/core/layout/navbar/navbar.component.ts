@@ -1,8 +1,8 @@
 import { Component, inject, output } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
-import { AuthService } from '../../../auth/services/auth.service';
-import { TokenService } from '../../../auth/services/token.service';
+import { AuthService } from '../../auth/services/auth.service';
+import { TokenService } from '../../auth/services/token.service';
 
 @Component({
     selector: 'app-navbar',

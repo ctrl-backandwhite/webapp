@@ -17,7 +17,11 @@
     "subtitle": "Administration"
   },
   "menu": {
-    "roles": "Roles"
+    "users": "Users",
+    "usersList": "Users",
+    "roles": "Roles",
+    "groups": "Groups",
+    "scopes": "Scopes"
   },
   "table": {
     "exportCsv": "Export CSV",
@@ -57,6 +61,116 @@
       "delete": "Delete"
     }
   },
+  "users": {
+    "title": "Users",
+    "add": "Add user",
+    "editTitle": "Edit user",
+    "createTitle": "Create user",
+    "nameLabel": "Name",
+    "nameRequired": "Name is required",
+    "lastNameLabel": "Last name",
+    "lastNameRequired": "Last name is required",
+    "nickNameLabel": "Username",
+    "nickNameRequired": "Username is required",
+    "emailLabel": "Email",
+    "emailRequired": "Email is required",
+    "passwordLabel": "Password",
+    "confirmPasswordLabel": "Confirm password",
+    "passwordRequired": "Password is required",
+    "passwordMismatch": "Passwords do not match",
+    "scopeIdsLabel": "Scopes",
+    "scopeSearchPlaceholder": "Search scopes",
+    "roleIdsLabel": "Roles",
+    "roleSearchPlaceholder": "Search roles",
+    "groupIdsLabel": "Groups",
+    "groupSearchPlaceholder": "Search groups",
+    "activeLabel": "Active",
+    "accountNonExpiredLabel": "Account active",
+    "accountNonLockedLabel": "Account unlocked",
+    "credentialsNonExpiredLabel": "Credentials active",
+    "deleteTitle": "Delete user",
+    "deleteMessage": "Are you sure you want to delete user {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the user.",
+    "saveError": "Could not save the user.",
+    "scopesLabel": "Scopes",
+    "rolesLabel": "Roles",
+    "groupsLabel": "Groups",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "lastName": "Last name",
+      "nickName": "Username",
+      "email": "Email",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "groups": {
+    "title": "Groups",
+    "add": "Add group",
+    "editTitle": "Edit group",
+    "createTitle": "Create group",
+    "nameLabel": "Name",
+    "nameRequired": "Name is required",
+    "uniqueNameLabel": "Unique name",
+    "uniqueNameRequired": "Unique name is required",
+    "descriptionLabel": "Description",
+    "roleIdsLabel": "Roles",
+    "roleSearchPlaceholder": "Search roles",
+    "rolesLabel": "Roles",
+    "activeLabel": "Active",
+    "deleteTitle": "Delete group",
+    "deleteMessage": "Are you sure you want to delete group {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the group.",
+    "saveError": "Could not save the group.",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "uniqueName": "Unique name",
+      "description": "Description",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
+  "scopes": {
+    "title": "Scopes",
+    "add": "Add scope",
+    "editTitle": "Edit scope",
+    "createTitle": "Create scope",
+    "nameLabel": "Name",
+    "nameRequired": "Name is required",
+    "uniqueNameLabel": "Unique name",
+    "uniqueNameRequired": "Unique name is required",
+    "descriptionLabel": "Description",
+    "activeLabel": "Active",
+    "deleteTitle": "Delete scope",
+    "deleteMessage": "Are you sure you want to delete scope {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the scope.",
+    "saveError": "Could not save the scope.",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "uniqueName": "Unique name",
+      "description": "Description",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "edit": "Edit",
+      "delete": "Delete"
+    }
+  },
   "common": {
     "yes": "Yes",
     "no": "No",
@@ -77,6 +191,9 @@
   "breadcrumb": {
     "admin": "Administration",
     "dashboard": "Dashboard",
-    "roles": "Roles"
+    "roles": "Roles",
+    "users": "Users",
+    "groups": "Groups",
+    "scopes": "Scopes"
   }
 }

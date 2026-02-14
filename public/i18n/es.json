@@ -17,7 +17,11 @@
     "subtitle": "Administracion"
   },
   "menu": {
-    "roles": "Roles"
+    "users": "Usuarios",
+    "usersList": "Usuarios",
+    "roles": "Roles",
+    "groups": "Grupos",
+    "scopes": "Scopes"
   },
   "table": {
     "exportCsv": "Exportar CSV",
@@ -57,6 +61,116 @@
       "delete": "Eliminar"
     }
   },
+  "users": {
+    "title": "Usuarios",
+    "add": "Agregar usuario",
+    "editTitle": "Editar usuario",
+    "createTitle": "Crear usuario",
+    "nameLabel": "Nombre",
+    "nameRequired": "El nombre es obligatorio",
+    "lastNameLabel": "Apellido",
+    "lastNameRequired": "El apellido es obligatorio",
+    "nickNameLabel": "Usuario",
+    "nickNameRequired": "El usuario es obligatorio",
+    "emailLabel": "Correo",
+    "emailRequired": "El correo es obligatorio",
+    "passwordLabel": "Contrasena",
+    "confirmPasswordLabel": "Confirmar contrasena",
+    "passwordRequired": "La contrasena es obligatoria",
+    "passwordMismatch": "Las contrasenas no coinciden",
+    "scopeIdsLabel": "Scopes",
+    "scopeSearchPlaceholder": "Buscar scopes",
+    "roleIdsLabel": "Roles",
+    "roleSearchPlaceholder": "Buscar roles",
+    "groupIdsLabel": "Grupos",
+    "groupSearchPlaceholder": "Buscar grupos",
+    "activeLabel": "Activo",
+    "accountNonExpiredLabel": "Cuenta vigente",
+    "accountNonLockedLabel": "Cuenta desbloqueada",
+    "credentialsNonExpiredLabel": "Credenciales vigentes",
+    "deleteTitle": "Eliminar usuario",
+    "deleteMessage": "Seguro que deseas eliminar el usuario {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el usuario.",
+    "saveError": "No se pudo guardar el usuario.",
+    "scopesLabel": "Scopes",
+    "rolesLabel": "Roles",
+    "groupsLabel": "Grupos",
+    "table": {
+      "id": "ID",
+      "name": "Nombre",
+      "lastName": "Apellido",
+      "nickName": "Usuario",
+      "email": "Correo",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "groups": {
+    "title": "Grupos",
+    "add": "Agregar grupo",
+    "editTitle": "Editar grupo",
+    "createTitle": "Crear grupo",
+    "nameLabel": "Nombre",
+    "nameRequired": "El nombre es obligatorio",
+    "uniqueNameLabel": "Nombre unico",
+    "uniqueNameRequired": "El nombre unico es obligatorio",
+    "descriptionLabel": "Descripcion",
+    "roleIdsLabel": "Roles",
+    "roleSearchPlaceholder": "Buscar roles",
+    "rolesLabel": "Roles",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar grupo",
+    "deleteMessage": "Seguro que deseas eliminar el grupo {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el grupo.",
+    "saveError": "No se pudo guardar el grupo.",
+    "table": {
+      "id": "ID",
+      "name": "Nombre",
+      "uniqueName": "Nombre unico",
+      "description": "Descripcion",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
+  "scopes": {
+    "title": "Scopes",
+    "add": "Agregar scope",
+    "editTitle": "Editar scope",
+    "createTitle": "Crear scope",
+    "nameLabel": "Nombre",
+    "nameRequired": "El nombre es obligatorio",
+    "uniqueNameLabel": "Nombre unico",
+    "uniqueNameRequired": "El nombre unico es obligatorio",
+    "descriptionLabel": "Descripcion",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar scope",
+    "deleteMessage": "Seguro que deseas eliminar el scope {{name}}?",
+    "detailTitle": "Detalle",
+    "deleteError": "No se pudo eliminar el scope.",
+    "saveError": "No se pudo guardar el scope.",
+    "table": {
+      "id": "ID",
+      "name": "Nombre",
+      "uniqueName": "Nombre unico",
+      "description": "Descripcion",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
   "common": {
     "yes": "Si",
     "no": "No",
@@ -77,6 +191,9 @@
   "breadcrumb": {
     "admin": "Administracion",
     "dashboard": "Dashboard",
-    "roles": "Roles"
+    "roles": "Roles",
+    "users": "Usuarios",
+    "groups": "Grupos",
+    "scopes": "Scopes"
   }
 }

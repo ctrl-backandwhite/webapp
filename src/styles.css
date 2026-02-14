@@ -36,6 +36,41 @@ body {
 	content: "";
 }
 
+.sidebar-item {
+	position: relative;
+}
+
+.sidebar-submenu-collapsible {
+	max-height: 0;
+	overflow: hidden;
+	transition: max-height 0.2s ease;
+}
+
+.sidebar-submenu-collapsible.is-open {
+	max-height: 320px;
+}
+
+.sidebar-submenu-popover {
+	position: absolute;
+	left: 100%;
+	top: 0;
+	min-width: 190px;
+	background-color: hsl(var(--b1));
+	border: 1px solid hsl(var(--b2));
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.08);
+	opacity: 0;
+	pointer-events: none;
+	transform: translateX(6px);
+	transition: opacity 0.15s ease, transform 0.15s ease;
+	z-index: 50;
+}
+
+.sidebar-item:hover .sidebar-submenu-popover {
+	opacity: 1;
+	pointer-events: auto;
+	transform: translateX(0);
+}
+
 .no-marker > summary::after {
 	display: none;
 }
@@ -53,14 +88,14 @@ body {
 
 .dt-modal-box {
 	border: 1px solid #e5e7eb;
-	box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+	box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
 	padding: 0;
-	max-width: 440px;
+	max-width: 560px;
 }
 
 @media (max-width: 640px) {
 	.dt-modal-box {
-		width: min(92vw, 440px);
+		width: min(90vw, 420px);
 		max-height: 85vh;
 		overflow: hidden;
 	}
@@ -68,7 +103,11 @@ body {
 	.dt-form {
 		max-height: calc(85vh - 120px);
 		overflow: auto;
-		padding-bottom: 16px;
+		padding-bottom: 12px;
+	}
+
+	.dt-form-grid {
+		grid-template-columns: 1fr;
 	}
 
 	.dt-confirm-body {
@@ -79,7 +118,7 @@ body {
 
 .dt-modal-header {
 	border-bottom: 1px solid #e5e7eb;
-	padding: 10px 18px;
+	padding: 12px 20px;
 	background-color: #f9fafb;
 	text-align: center;
 }
@@ -87,16 +126,26 @@ body {
 .dt-modal-title {
 	font-size: 16px;
 	font-weight: 600;
-	color: #2b2b2b;
+	color: #1f2937;
 	letter-spacing: 0.2px;
 }
 
 .dt-form {
-	margin: 12px 18px 0;
-	padding: 10px;
+	margin: 14px 20px 0;
+	padding: 8px 6px 0;
 	display: flex;
 	flex-direction: column;
-	gap: 10px;
+	gap: 12px;
+}
+
+.dt-form-grid {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 12px 16px;
+}
+
+.dt-field-full {
+	grid-column: 1 / -1;
 }
 
 .dt-field {
@@ -106,27 +155,53 @@ body {
 }
 
 .dt-label {
-	font-size: 12px;
-	color: #4b5563;
+	font-size: 11px;
+	letter-spacing: 0.2px;
+	color: #6b7280;
 }
 
 .dt-input,
 .dt-textarea {
 	width: 100%;
-	border: 1px solid #d1d5db;
-	border-radius: 6px;
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
 	padding: 5px 8px;
 	background-color: #ffffff;
-	font-size: 12px;
+	font-size: 11px;
 	line-height: 1.35;
 	transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.dt-multi-select {
+	border: 1px solid #e5e7eb;
+	border-radius: 8px;
+	padding: 6px;
+	display: grid;
+	gap: 6px;
+	max-height: 160px;
+	overflow: auto;
+	background-color: #ffffff;
+}
+
+.dt-option {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-size: 11px;
+	color: #374151;
+}
+
+.dt-option input {
+	accent-color: hsl(var(--su));
+	width: 12px;
+	height: 12px;
 }
 
 .dt-input:focus,
 .dt-textarea:focus {
 	outline: none;
-	border-color: #2563eb;
-	box-shadow: 0 0 0 2px rgba(37, 99, 235, 0.15);
+	border-color: hsl(var(--su));
+	box-shadow: 0 0 0 3px hsl(var(--su) / 0.18);
 }
 
 .dt-textarea {
@@ -136,19 +211,25 @@ body {
 .dt-toggle {
 	display: flex;
 	align-items: center;
-	gap: 10px;
+	justify-content: space-between;
+	gap: 12px;
+}
+
+.dt-toggle .toggle {
+	width: 28px;
+	height: 14px;
 }
 
 .dt-error {
-	font-size: 12px;
+	font-size: 11px;
 	color: #dc2626;
 }
 
 .dt-actions {
-	margin: 2px 0 16px;
+	margin: 6px 0 18px;
 	display: flex;
-	justify-content: center;
-	gap: 8px;
+	justify-content: flex-end;
+	gap: 10px;
 }
 
 .dt-confirm-body {

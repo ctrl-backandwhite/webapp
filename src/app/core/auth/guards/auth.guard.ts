@@ -16,7 +16,7 @@ export class AuthGuardService {
             return true;
         }
 
-        // Redirect to login if not authenticated
+        // Redirect to login if not authenticated.
         this.router.navigate(['/auth/login']);
         return false;
     }
