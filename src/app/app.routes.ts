@@ -1,10 +1,15 @@
 import { Routes } from '@angular/router';
+import { AuthCallbackComponent } from './auth/auth-callback.component';
 
 export const routes: Routes = [
   {
     path: '',
     redirectTo: '/admin',
     pathMatch: 'full',
+  },
+  {
+    path: 'auth/callback',
+    component: AuthCallbackComponent,
   },
   {
     path: 'admin',
