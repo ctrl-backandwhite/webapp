@@ -5,11 +5,14 @@
 /tmp
 /out-tsc
 /bazel-out
+/browser
 
 # Node
 /node_modules
 npm-debug.log
 yarn-error.log
+pnpm-debug.log
+*.log
 
 # IDEs and editors
 .idea/
@@ -37,6 +40,10 @@ yarn-error.log
 testem.log
 /typings
 __screenshots__/
+/.env
+/.env.*
+/cypress/videos
+/cypress/screenshots
 
 # System files
 .DS_Store
