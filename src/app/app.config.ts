@@ -1,7 +1,7 @@
-import { ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners } from '@angular/core';
+import { APP_INITIALIZER, ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners } from '@angular/core';
 import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
-import { TranslateLoader, TranslateModule } from '@ngx-translate/core';
+import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 
 import { routes } from './app.routes';
@@ -10,7 +10,13 @@ import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-const createTranslateLoader = (http: HttpClient) => new TranslateHttpLoader(http, '/i18n/', '.json');
+const createTranslateLoader = (http: HttpClient) => new TranslateHttpLoader(http, 'i18n/', '.json');
+
+const initTranslations = (translate: TranslateService) => () => {
+  const saved = localStorage.getItem('lang') ?? 'es';
+  translate.setDefaultLang('es');
+  translate.use(saved);
+};
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -27,6 +33,12 @@ export const appConfig: ApplicationConfig = {
         }
       })
     ),
+    {
+      provide: APP_INITIALIZER,
+      useFactory: initTranslations,
+      deps: [TranslateService],
+      multi: true
+    },
     provideRouter(
       routes,
       withComponentInputBinding(),
