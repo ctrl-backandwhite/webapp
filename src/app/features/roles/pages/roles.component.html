@@ -75,22 +75,18 @@
       </div>
       <div class="dt-detail-row">
         <span class="dt-detail-label">{{ 'roles.nameLabel' | translate }}</span>
-        <span class="dt-detail-label">:</span>
         <span class="dt-detail-value">{{ role.name }}</span>
       </div>
       <div class="dt-detail-row">
         <span class="dt-detail-label">{{ 'roles.uniqueNameLabel' | translate }}</span>
-        <span class="dt-detail-label">:</span>
         <span class="dt-detail-value">{{ role.uniqueName }}</span>
       </div>
       <div class="dt-detail-row">
         <span class="dt-detail-label">{{ 'roles.descriptionLabel' | translate }}</span>
-        <span class="dt-detail-label">:</span>
         <span class="dt-detail-value">{{ role.description || '-' }}</span>
       </div>
       <div class="dt-detail-row">
         <span class="dt-detail-label">{{ 'roles.activeLabel' | translate }}</span>
-        <span class="dt-detail-label">:</span>
         <span class="dt-detail-value" [class.dt-badge-active]="role.enabled" [class.dt-badge-inactive]="!role.enabled">
           <span *ngIf="role.enabled">{{ 'common.yes' | translate }}</span>
           <span *ngIf="!role.enabled">{{ 'common.no' | translate }}</span>

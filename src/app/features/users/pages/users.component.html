@@ -160,42 +160,34 @@
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.nameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ user.name }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.lastNameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ user.lastName }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.nickNameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ user.nickName }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.emailLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ user.email }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.scopesLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
-                <span class="dt-detail-value">{{ getScopeNames(user) }}</span>
+                <span class="dt-detail-value dt-badge-outline-info">{{ getScopeNames(user) }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.rolesLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
-                <span class="dt-detail-value">{{ getRoleNames(user) }}</span>
+                <span class="dt-detail-value dt-badge-outline-info">{{ getRoleNames(user) }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.groupsLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
-                <span class="dt-detail-value">{{ getGroupNames(user) }}</span>
+                <span class="dt-detail-value dt-badge-outline-info">{{ getGroupNames(user) }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.activeLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value" [class.dt-badge-active]="user.enabled"
                     [class.dt-badge-inactive]="!user.enabled">
                     <span *ngIf="user.enabled">{{ 'common.yes' | translate }}</span>

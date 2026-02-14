@@ -181,7 +181,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
         this.deleting.set(true);
         this.deleteError.set('');
         this.saveSub?.unsubscribe();
-        this.saveSub = this.groupsService.deleteGroup(target.id)
+        this.saveSub = this.groupsService.delete(target.id)
             .pipe(take(1))
             .subscribe({
                 next: () => {
@@ -264,7 +264,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
         this.saveSub?.unsubscribe();
 
         if (this.isEditMode() && this.editingGroupId() !== null) {
-            this.saveSub = this.groupsService.updateGroup(this.editingGroupId() as number, payload)
+            this.saveSub = this.groupsService.update(this.editingGroupId() as number, payload)
                 .pipe(take(1))
                 .subscribe({
                     next: () => this.finishSave(),
@@ -273,7 +273,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.saveSub = this.groupsService.createGroup(payload)
+        this.saveSub = this.groupsService.create(payload)
             .pipe(take(1))
             .subscribe({
                 next: () => this.finishSave(),
@@ -304,7 +304,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
     }
 
     loadGroups = (query: DataTableQuery): Observable<DataTableResult<Group>> => {
-        return this.groupsService.getGroups().pipe(
+        return this.groupsService.list().pipe(
             map((groups) => {
                 let data = [...groups];
                 data = this.applyFilters(data, query.filterModel);
@@ -426,8 +426,8 @@ export class GroupsComponent implements OnInit, OnDestroy {
     }
 
     private loadReferenceData(): void {
-        this.rolesService.getRoles().pipe(take(1)).subscribe({
-            next: (roles) => this.roles.set(roles),
+        this.rolesService.list().pipe(take(1)).subscribe({
+            next: (roles: Role[]) => this.roles.set(roles),
             error: () => this.roles.set([]),
         });
     }

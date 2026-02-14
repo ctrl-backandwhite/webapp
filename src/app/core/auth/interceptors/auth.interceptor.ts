@@ -1,9 +1,9 @@
 import { inject } from '@angular/core';
 import { HttpInterceptorFn, HttpRequest, HttpHandlerFn } from '@angular/common/http';
-import { AuthService } from '../services/auth.service';
+import { TokenService } from '../services/token.service';
 
 export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: HttpHandlerFn) => {
-    const authService = inject(AuthService);
+    const tokenService = inject(TokenService);
     const isAuthEndpoint = (url: string): boolean =>
         url.includes('/oauth2/token') || url.includes('/oauth2/authorize');
 
@@ -12,12 +12,13 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
         return next(req);
     }
 
-    const token = authService.getAccessToken();
+    const token = tokenService.getAccessToken();
+    const tokenType = tokenService.getTokenType();
 
-    if (token) {
+    if (token && !req.headers.has('Authorization')) {
         req = req.clone({
             setHeaders: {
-                Authorization: `Bearer ${token}`
+                Authorization: `${tokenType} ${token}`
             }
         });
     }

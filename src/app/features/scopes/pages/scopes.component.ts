@@ -170,7 +170,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.deleting.set(true);
         this.deleteError.set('');
         this.saveSub?.unsubscribe();
-        this.saveSub = this.scopesService.deleteScope(target.id)
+        this.saveSub = this.scopesService.delete(target.id)
             .pipe(take(1))
             .subscribe({
                 next: () => {
@@ -253,7 +253,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.saveSub?.unsubscribe();
 
         if (this.isEditMode() && this.editingScopeId() !== null) {
-            this.saveSub = this.scopesService.updateScope(this.editingScopeId() as number, payload)
+            this.saveSub = this.scopesService.update(this.editingScopeId() as number, payload)
                 .pipe(take(1))
                 .subscribe({
                     next: () => this.finishSave(),
@@ -262,7 +262,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.saveSub = this.scopesService.createScope(payload)
+        this.saveSub = this.scopesService.create(payload)
             .pipe(take(1))
             .subscribe({
                 next: () => this.finishSave(),
@@ -282,8 +282,8 @@ export class ScopesComponent implements OnInit, OnDestroy {
     }
 
     loadScopes = (query: DataTableQuery): Observable<DataTableResult<Scope>> => {
-        return this.scopesService.getScopes().pipe(
-            map((scopes) => {
+        return this.scopesService.list().pipe(
+            map((scopes: Scope[]) => {
                 let data = [...scopes];
                 data = this.applyFilters(data, query.filterModel);
                 data = this.applySort(data, query.sortModel);

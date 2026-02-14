@@ -1,27 +1,8 @@
-import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
-import { environment } from '../../../../environments/environment';
+import { Injectable } from '@angular/core';
 import { Group, GroupInput } from '../interfaces/group.model';
+import { ApiService } from '../../../core/api/api.service';
 
 @Injectable({ providedIn: 'root' })
-export class GroupsService {
-    private http = inject(HttpClient);
-    private readonly baseUrl = environment.apiBaseUrl;
-
-    getGroups(): Observable<Group[]> {
-        return this.http.get<Group[]>(`${this.baseUrl}/groups`);
-    }
-
-    createGroup(payload: GroupInput): Observable<Group> {
-        return this.http.post<Group>(`${this.baseUrl}/groups`, payload);
-    }
-
-    updateGroup(id: number, payload: GroupInput): Observable<Group> {
-        return this.http.put<Group>(`${this.baseUrl}/groups/${id}`, payload);
-    }
-
-    deleteGroup(id: number): Observable<void> {
-        return this.http.delete<void>(`${this.baseUrl}/groups/${id}`);
-    }
+export class GroupsService extends ApiService<Group, GroupInput> {
+    protected resource = 'groups';
 }

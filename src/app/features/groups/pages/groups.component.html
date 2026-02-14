@@ -92,27 +92,22 @@
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'groups.nameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ group.name }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'groups.uniqueNameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ group.uniqueName }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'groups.descriptionLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ group.description || '-' }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'groups.rolesLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
-                <span class="dt-detail-value">{{ getRoleNames(group) }}</span>
+                <span class="dt-detail-value dt-badge-outline-info">{{ getRoleNames(group) }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'groups.activeLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value" [class.dt-badge-active]="group.enabled"
                     [class.dt-badge-inactive]="!group.enabled">
                     <span *ngIf="group.enabled">{{ 'common.yes' | translate }}</span>

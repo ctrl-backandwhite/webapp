@@ -432,13 +432,15 @@ body {
 }
 
 .dt-detail-row {
-	display: flex;
-	justify-content: space-between;
-	gap: 12px;
+	display: grid;
+	grid-template-columns: 140px 1fr;
+	column-gap: 8px;
+	align-items: center;
 	padding: 6px 0;
 }
 
 .dt-detail-row-center {
+	display: flex;
 	justify-content: center;
 	gap: 2px;
 }
@@ -447,6 +449,12 @@ body {
 	font-size: 12px;
 	color: #6b7280;
 	font-weight: 1000;
+	white-space: nowrap;
+}
+
+.dt-detail-label::after {
+	content: ":";
+	margin-left: 0;
 }
 
 .dt-detail-label-center {
@@ -464,8 +472,9 @@ body {
 .dt-detail-value {
 	font-size: 13px;
 	color: #111827;
-	text-align: right;
-	max-width: 220px;
+	text-align: left;
+	justify-self: start;
+	max-width: 100%;
 }
 
 .dt-detail-value-center {
@@ -478,13 +487,14 @@ body {
 	align-items: center;
 	justify-content: center;
 	border: 1px solid #16a34a;
+	background: transparent;
 	color: #16a34a;
 	border-radius: 999px;
 	min-width: 36px;
-	height: 24px;
+	height: 18px;
 	padding: 0 8px;
-	font-size: 12px;
-	line-height: 1.2;
+	font-size: 11px;
+	line-height: 1;
 	text-align: center;
 }
 
@@ -492,14 +502,31 @@ body {
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	border: 1px solid #9ca3af;
-	color: #6b7280;
+	border: 1px solid #dc2626;
+	background: transparent;
+	color: #dc2626;
 	border-radius: 999px;
 	min-width: 36px;
-	height: 24px;
+	height: 18px;
 	padding: 0 8px;
-	font-size: 12px;
-	line-height: 1.2;
+	font-size: 11px;
+	line-height: 1;
 	text-align: center;
+}
+
+.dt-badge-outline-info {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 1px solid hsl(var(--p));
+	color: hsl(var(--p));
+	border-radius: 999px;
+	min-width: 36px;
+	height: 18px;
+	padding: 0 8px;
+	font-size: 11px;
+	line-height: 1;
+	width: max-content;
+	white-space: nowrap;
 }
 

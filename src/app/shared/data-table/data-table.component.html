@@ -49,11 +49,11 @@
                 <span class="text-xs text-base-content/60 whitespace-nowrap">
                     {{ 'table.pageOf' | translate:{ page: page(), total: totalPages() } }}
                 </span>
+                <select class="select select-bordered select-sm" [value]="pageSizeSignal()"
+                    (change)="onPageSizeChange($event)">
+                    <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
+                </select>
             </div>
-            <select class="select select-bordered select-sm" [value]="pageSizeSignal()"
-                (change)="onPageSizeChange($event)">
-                <option *ngFor="let size of pageSizeOptions" [value]="size">{{ size }}</option>
-            </select>
         </div>
     </div>
 </div>

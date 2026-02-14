@@ -76,22 +76,18 @@
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'scopes.nameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ scope.name }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'scopes.uniqueNameLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ scope.uniqueName }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'scopes.descriptionLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value">{{ scope.description || '-' }}</span>
             </div>
             <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'scopes.activeLabel' | translate }}</span>
-                <span class="dt-detail-label">:</span>
                 <span class="dt-detail-value" [class.dt-badge-active]="scope.enabled"
                     [class.dt-badge-inactive]="!scope.enabled">
                     <span *ngIf="scope.enabled">{{ 'common.yes' | translate }}</span>

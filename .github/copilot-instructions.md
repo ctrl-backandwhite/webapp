@@ -41,6 +41,8 @@
 - Use **signals** for state management whenever possible.
 - The changes made must be associated with the current version that is being used
 - Configurations and files that are not necessary must always be removed
+- allways use @for and @if directives in angular
+- allways use external template for hmtl
 
 
 

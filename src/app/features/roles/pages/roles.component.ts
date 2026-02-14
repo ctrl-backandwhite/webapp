@@ -170,7 +170,7 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.deleting.set(true);
     this.deleteError.set('');
     this.saveSub?.unsubscribe();
-    this.saveSub = this.rolesService.deleteRole(target.id)
+    this.saveSub = this.rolesService.delete(target.id)
       .pipe(take(1))
       .subscribe({
         next: () => {
@@ -253,7 +253,7 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.saveSub?.unsubscribe();
 
     if (this.isEditMode() && this.editingRoleId() !== null) {
-      this.saveSub = this.rolesService.updateRole(this.editingRoleId() as number, payload)
+      this.saveSub = this.rolesService.update(this.editingRoleId() as number, payload)
         .pipe(take(1))
         .subscribe({
           next: () => this.finishSave(),
@@ -262,7 +262,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    this.saveSub = this.rolesService.createRole(payload)
+    this.saveSub = this.rolesService.create(payload)
       .pipe(take(1))
       .subscribe({
         next: () => this.finishSave(),
@@ -282,7 +282,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   loadRoles = (query: DataTableQuery): Observable<DataTableResult<Role>> => {
-    return this.rolesService.getRoles().pipe(
+    return this.rolesService.list().pipe(
       map((roles) => {
         let data = [...roles];
         data = this.applyFilters(data, query.filterModel);
