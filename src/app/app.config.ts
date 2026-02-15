@@ -12,7 +12,7 @@ ModuleRegistry.registerModules([AllCommunityModule]);
 
 const I18N_VERSION = '1';
 const createTranslateLoader = (http: HttpClient) =>
-  new TranslateHttpLoader(http, `i18n/?v=${I18N_VERSION}`, '.json');
+  new TranslateHttpLoader(http, 'i18n/', `.json?v=${I18N_VERSION}`);
 
 const initTranslations = (translate: TranslateService) => () => {
   const saved = localStorage.getItem('lang') ?? 'es';
