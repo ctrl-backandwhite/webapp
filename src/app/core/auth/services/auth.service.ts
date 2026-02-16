@@ -4,6 +4,7 @@ import { environment } from '../../../../environments/environment';
 import { TokenService } from './token.service';
 import { AuthStateService } from './auth-state.service';
 import { PKCEService } from './pkce.service';
+import { RoleService } from './role.service';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { catchError, tap, map } from 'rxjs/operators';
 
@@ -22,6 +23,7 @@ export class AuthService {
   private readonly tokenService = inject(TokenService);
   private readonly authStateService = inject(AuthStateService);
   private readonly pkceService = inject(PKCEService);
+  private readonly roleService = inject(RoleService);
 
   private readonly tokenEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/oauth2/token';
   private readonly logoutEndpoint = `${environment.apiBaseUrl}/auth/logout`;
@@ -53,6 +55,7 @@ export class AuthService {
 
       this.pkceService.clearVerifier();
       this.authStateService.setAuthenticated();
+      this.roleService.updateRoles();
 
       console.log('[Auth] Token exchange successful');
       return response;

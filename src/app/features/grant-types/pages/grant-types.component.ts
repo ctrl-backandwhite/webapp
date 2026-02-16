@@ -11,9 +11,11 @@ import type { DataTableQuery, DataTableResult } from '../../../shared/data-table
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
+import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import { GrantTypesService } from '../services/grant-types.service';
 import { GrantTypesReloadService } from '../services/grant-types-reload.service';
 import { GrantType, GrantTypeInput } from '../interfaces/grant-type.model';
+import { RoleService } from '../../../core/auth/services/role.service';
 
 @Component({
     selector: 'app-grant-types',
@@ -25,6 +27,7 @@ import { GrantType, GrantTypeInput } from '../interfaces/grant-type.model';
         ConfirmDialogComponent,
         DetailSidebarComponent,
         AuditInfoComponent,
+        HasRoleDirective,
         TranslateModule
     ],
     templateUrl: './grant-types.component.html',
@@ -34,6 +37,7 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
     private grantTypesService = inject(GrantTypesService);
     private fb = inject(FormBuilder);
     private translate = inject(TranslateService);
+    private roleService = inject(RoleService);
     private reloadSub?: Subscription;
     private saveSub?: Subscription;
     private langSub?: Subscription;
@@ -244,26 +248,33 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
     }
 
     private buildRowActions(): void {
+        const isAdmin = this.roleService.isAdmin();
+
         this.rowActions = [
             {
                 id: 'detail',
                 label: this.translate.instant('grantTypes.action.detail'),
                 icon: 'fa-solid fa-eye',
                 handler: (row) => this.onDetail(row)
-            },
-            {
-                id: 'edit',
-                label: this.translate.instant('grantTypes.action.edit'),
-                icon: 'fa-solid fa-pen',
-                handler: (row) => this.onEdit(row)
-            },
-            {
-                id: 'delete',
-                label: this.translate.instant('grantTypes.action.delete'),
-                icon: 'fa-solid fa-trash',
-                handler: (row) => this.onDelete(row)
             }
         ];
+
+        if (isAdmin) {
+            this.rowActions.push(
+                {
+                    id: 'edit',
+                    label: this.translate.instant('grantTypes.action.edit'),
+                    icon: 'fa-solid fa-pen',
+                    handler: (row) => this.onEdit(row)
+                },
+                {
+                    id: 'delete',
+                    label: this.translate.instant('grantTypes.action.delete'),
+                    icon: 'fa-solid fa-trash',
+                    handler: (row) => this.onDelete(row)
+                }
+            );
+        }
     }
 
     loadGrantTypes = (query: DataTableQuery): Observable<DataTableResult<GrantType>> => {

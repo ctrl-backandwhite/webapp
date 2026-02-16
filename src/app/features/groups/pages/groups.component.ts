@@ -11,16 +11,18 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import { NestedEntitiesComponent } from '../../../shared/nested-entities/nested-entities.component';
+import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { RoleService } from '../../../core/auth/services/role.service';
 
 @Component({
     selector: 'app-groups',
     standalone: true,
-    imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, NestedEntitiesComponent, TranslateModule],
+    imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, NestedEntitiesComponent, HasRoleDirective, TranslateModule],
     templateUrl: './groups.component.html',
 })
 export class GroupsComponent implements OnInit, OnDestroy {
@@ -29,6 +31,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
     private rolesService = inject(RolesService);
     private fb = inject(FormBuilder);
     private translate = inject(TranslateService);
+    private roleService = inject(RoleService);
     private reloadSub?: Subscription;
     private saveSub?: Subscription;
     private uniqueNameSub?: Subscription;
@@ -232,26 +235,33 @@ export class GroupsComponent implements OnInit, OnDestroy {
     }
 
     private buildRowActions(): void {
+        const isAdmin = this.roleService.isAdmin();
+
         this.rowActions = [
             {
                 id: 'detail',
                 label: this.translate.instant('groups.action.detail'),
                 icon: 'fa-solid fa-eye',
                 handler: (row) => this.onDetailGroup(row)
-            },
-            {
-                id: 'edit',
-                label: this.translate.instant('groups.action.edit'),
-                icon: 'fa-solid fa-pen',
-                handler: (row) => this.onEditGroup(row)
-            },
-            {
-                id: 'delete',
-                label: this.translate.instant('groups.action.delete'),
-                icon: 'fa-solid fa-trash',
-                handler: (row) => this.onDeleteGroup(row)
             }
         ];
+
+        if (isAdmin) {
+            this.rowActions.push(
+                {
+                    id: 'edit',
+                    label: this.translate.instant('groups.action.edit'),
+                    icon: 'fa-solid fa-pen',
+                    handler: (row) => this.onEditGroup(row)
+                },
+                {
+                    id: 'delete',
+                    label: this.translate.instant('groups.action.delete'),
+                    icon: 'fa-solid fa-trash',
+                    handler: (row) => this.onDeleteGroup(row)
+                }
+            );
+        }
     }
 
     submitGroup() {

@@ -12,6 +12,7 @@ import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-d
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import { NestedEntitiesComponent } from '../../../shared/nested-entities/nested-entities.component';
+import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import { OauthClientsService } from '../services/oauth-clients.service';
 import { OauthClientsReloadService } from '../services/oauth-clients-reload.service';
 import { OAuthClient, OAuthClientInput } from '../interfaces/oauth-client.model';
@@ -21,6 +22,7 @@ import { GrantTypesService } from '../../grant-types/services/grant-types.servic
 import { Scope } from '../../scopes/interfaces/scope.model';
 import { RedirectUri } from '../../redirect-uris/interfaces/redirect-uri.model';
 import { GrantType } from '../../grant-types/interfaces/grant-type.model';
+import { RoleService } from '../../../core/auth/services/role.service';
 
 @Component({
     selector: 'app-oauth-clients',
@@ -33,6 +35,7 @@ import { GrantType } from '../../grant-types/interfaces/grant-type.model';
         DetailSidebarComponent,
         AuditInfoComponent,
         NestedEntitiesComponent,
+        HasRoleDirective,
         TranslateModule
     ],
     templateUrl: './oauth-clients.component.html',
@@ -45,6 +48,7 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     private grantTypesService = inject(GrantTypesService);
     private fb = inject(FormBuilder);
     private translate = inject(TranslateService);
+    private roleService = inject(RoleService);
     private reloadSub?: Subscription;
     private saveSub?: Subscription;
     private langSub?: Subscription;
@@ -297,26 +301,33 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     }
 
     private buildRowActions(): void {
+        const isAdmin = this.roleService.isAdmin();
+
         this.rowActions = [
             {
                 id: 'detail',
                 label: this.translate.instant('oauthClients.action.detail'),
                 icon: 'fa-solid fa-eye',
                 handler: (row) => this.onDetail(row)
-            },
-            {
-                id: 'edit',
-                label: this.translate.instant('oauthClients.action.edit'),
-                icon: 'fa-solid fa-pen',
-                handler: (row) => this.onEdit(row)
-            },
-            {
-                id: 'delete',
-                label: this.translate.instant('oauthClients.action.delete'),
-                icon: 'fa-solid fa-trash',
-                handler: (row) => this.onDelete(row)
             }
         ];
+
+        if (isAdmin) {
+            this.rowActions.push(
+                {
+                    id: 'edit',
+                    label: this.translate.instant('oauthClients.action.edit'),
+                    icon: 'fa-solid fa-pen',
+                    handler: (row) => this.onEdit(row)
+                },
+                {
+                    id: 'delete',
+                    label: this.translate.instant('oauthClients.action.delete'),
+                    icon: 'fa-solid fa-trash',
+                    handler: (row) => this.onDelete(row)
+                }
+            );
+        }
     }
 
     loadOauthClients = (query: DataTableQuery): Observable<DataTableResult<OAuthClient>> => {

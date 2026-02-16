@@ -9,16 +9,18 @@ import { DataTableComponent } from '../../../shared/data-table/data-table.compon
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
+import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
+import { RoleService } from '../../../core/auth/services/role.service';
 
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, TranslateModule],
+  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, HasRoleDirective, TranslateModule],
   templateUrl: './roles.component.html',
 })
 export class RolesComponent implements OnInit, OnDestroy {
@@ -26,6 +28,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   private rolesService = inject(RolesService);
   private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
+  private roleService = inject(RoleService);
   private reloadSub?: Subscription;
   private saveSub?: Subscription;
   private uniqueNameSub?: Subscription;
@@ -220,26 +223,33 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   private buildRowActions(): void {
+    const isAdmin = this.roleService.isAdmin();
+
     this.rowActions = [
       {
         id: 'detail',
         label: this.translate.instant('roles.action.detail'),
         icon: 'fa-solid fa-eye',
         handler: (row) => this.onDetailRole(row)
-      },
-      {
-        id: 'edit',
-        label: this.translate.instant('roles.action.edit'),
-        icon: 'fa-solid fa-pen',
-        handler: (row) => this.onEditRole(row)
-      },
-      {
-        id: 'delete',
-        label: this.translate.instant('roles.action.delete'),
-        icon: 'fa-solid fa-trash',
-        handler: (row) => this.onDeleteRole(row)
       }
     ];
+
+    if (isAdmin) {
+      this.rowActions.push(
+        {
+          id: 'edit',
+          label: this.translate.instant('roles.action.edit'),
+          icon: 'fa-solid fa-pen',
+          handler: (row) => this.onEditRole(row)
+        },
+        {
+          id: 'delete',
+          label: this.translate.instant('roles.action.delete'),
+          icon: 'fa-solid fa-trash',
+          handler: (row) => this.onDeleteRole(row)
+        }
+      );
+    }
   }
 
   submitRole() {
