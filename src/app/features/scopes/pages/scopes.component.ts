@@ -30,7 +30,6 @@ export class ScopesComponent implements OnInit, OnDestroy {
     private roleService = inject(RoleService);
     private reloadSub?: Subscription;
     private saveSub?: Subscription;
-    private uniqueNameSub?: Subscription;
     private langSub?: Subscription;
 
     reloadToken = 0;
@@ -89,19 +88,11 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.reloadSub = this.scopesReloadService.reload$.subscribe(() => {
             this.reloadToken += 1;
         });
-
-        this.uniqueNameSub = this.scopeForm.controls.uniqueName.valueChanges.subscribe((value) => {
-            const upper = (value ?? '').toUpperCase();
-            if (value !== upper) {
-                this.scopeForm.controls.uniqueName.setValue(upper, { emitEvent: false });
-            }
-        });
     }
 
     ngOnDestroy(): void {
         this.reloadSub?.unsubscribe();
         this.saveSub?.unsubscribe();
-        this.uniqueNameSub?.unsubscribe();
         this.langSub?.unsubscribe();
     }
 
