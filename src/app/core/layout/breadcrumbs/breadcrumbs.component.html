@@ -2,17 +2,16 @@
     <nav aria-label="Breadcrumb">
         <div class="breadcrumb flex flex-wrap items-center gap-1 text-[10px] text-base-content/50">
             <span class="text-base-content/40">/</span>
-            <ng-container *ngFor="let crumb of crumbs(); let isLast = last; let isFirst = first">
-                <ng-container *ngIf="!isFirst">
-                    <span class="text-base-content/40">/</span>
-                </ng-container>
-                <ng-container *ngIf="!isLast; else lastCrumb">
-                    <a [routerLink]="crumb.url" class="hover:text-primary">{{ crumb.label }}</a>
-                </ng-container>
-                <ng-template #lastCrumb>
-                    <span class="text-primary font-semibold">{{ crumb.label }}</span>
-                </ng-template>
-            </ng-container>
+            @for (crumb of crumbs(); track $index; let isLast = $last; let isFirst = $first) {
+            @if (!isFirst) {
+            <span class="text-base-content/40">/</span>
+            }
+            @if (!isLast) {
+            <a [routerLink]="crumb.url" class="hover:text-primary">{{ crumb.label }}</a>
+            } @else {
+            <span class="text-primary font-semibold">{{ crumb.label }}</span>
+            }
+            }
         </div>
     </nav>
 </div>

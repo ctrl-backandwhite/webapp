@@ -4,7 +4,9 @@
         <div class="dt-sidebar-header">
             <div class="dt-sidebar-title-wrap">
                 <h3 class="dt-sidebar-title">{{ title }}</h3>
-                <p *ngIf="subtitle" class="dt-sidebar-subtitle">{{ subtitle }}</p>
+                @if (subtitle) {
+                <p class="dt-sidebar-subtitle">{{ subtitle }}</p>
+                }
             </div>
             <button type="button" class="btn btn-ghost btn-sm" [attr.aria-label]="'common.close' | translate"
                 (click)="onClose()">
@@ -14,8 +16,10 @@
         <div class="dt-sidebar-body">
             <ng-content></ng-content>
         </div>
-        <div *ngIf="showFooter" class="dt-sidebar-footer">
+        @if (showFooter) {
+        <div class="dt-sidebar-footer">
             <ng-content select="[sidebar-footer]"></ng-content>
         </div>
+        }
     </aside>
 </div>

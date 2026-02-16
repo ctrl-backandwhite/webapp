@@ -1,8 +1,12 @@
 <div class="flex h-full w-full items-center justify-center gap-1">
-    <button *ngFor="let action of actions" class="btn btn-ghost btn-xs" type="button" [attr.aria-label]="action.label"
-        [attr.title]="action.label" [attr.data-tour]="'tour-action-' + action.id"
-        (click)="$event.stopPropagation(); onAction(action)">
-        <i *ngIf="action.icon" [class]="action.icon"></i>
-        <span *ngIf="!action.icon">{{ action.label }}</span>
+    @for (action of actions; track action.id) {
+    <button class="btn btn-ghost btn-xs" type="button" [attr.aria-label]="action.label" [attr.title]="action.label"
+        [attr.data-tour]="'tour-action-' + action.id" (click)="$event.stopPropagation(); onAction(action)">
+        @if (action.icon) {
+        <i [class]="action.icon"></i>
+        } @else {
+        <span>{{ action.label }}</span>
+        }
     </button>
+    }
 </div>

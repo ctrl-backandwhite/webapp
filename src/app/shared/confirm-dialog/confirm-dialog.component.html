@@ -5,7 +5,9 @@
         </div>
         <div class="dt-confirm-body">
             <p class="dt-confirm-message">{{ message }}</p>
-            <div *ngIf="error" class="dt-error">{{ error }}</div>
+            @if (error) {
+            <div class="dt-error">{{ error }}</div>
+            }
         </div>
         <div class="dt-actions dt-modal-actions">
             <button type="button" class="btn btn-ghost btn-sm dt-btn-outline" (click)="onCancel()">{{ cancelLabel

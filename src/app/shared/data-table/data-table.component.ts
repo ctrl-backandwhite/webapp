@@ -94,8 +94,6 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
       this.localeText.set(this.buildLocaleText());
       if (this.gridApi) {
         this.gridApi.setGridOption('columnDefs', this.gridColumnDefs);
-        (this.gridApi as unknown as { setGridOption: (key: string, value: unknown) => void })
-          .setGridOption('localeText', this.localeText());
       }
     });
     this.pageSizeSignal.set(this.pageSize);
@@ -136,20 +134,6 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
 
   get gridColumnDefs(): ColDef[] {
     const defs = [...this.columnDefs];
-
-    if (this.enableSelection) {
-      defs.unshift({
-        headerName: '',
-        checkboxSelection: true,
-        headerCheckboxSelection: true,
-        width: 52,
-        maxWidth: 52,
-        pinned: 'left',
-        sortable: false,
-        filter: false,
-        resizable: false,
-      });
-    }
 
     if (this.rowActions.length > 0) {
       defs.push({
@@ -200,8 +184,6 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   onGridReady(event: GridReadyEvent) {
     this.gridApi = event.api;
     this.restoreState();
-    (this.gridApi as unknown as { setGridOption: (key: string, value: unknown) => void })
-      .setGridOption('localeText', this.localeText());
     this.load();
   }
 

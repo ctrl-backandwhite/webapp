@@ -18,24 +18,28 @@
         <div class="modal-box dt-modal-box">
             <div class="dt-modal-header">
                 <h3 class="dt-modal-title">
-                    <span *ngIf="isEditMode()">{{ 'groups.editTitle' | translate }}</span>
-                    <span *ngIf="!isEditMode()">{{ 'groups.createTitle' | translate }}</span>
+                    @if (isEditMode()) {
+                    <span>{{ 'groups.editTitle' | translate }}</span>
+                    } @else {
+                    <span>{{ 'groups.createTitle' | translate }}</span>
+                    }
                 </h3>
             </div>
             <form class="dt-form dt-form-grid" [formGroup]="groupForm" (ngSubmit)="submitGroup()">
                 <label class="dt-field">
                     <span class="dt-label">{{ 'groups.nameLabel' | translate }}</span>
                     <input class="dt-input" type="text" formControlName="name" />
-                    <span *ngIf="groupForm.controls.name.touched && groupForm.controls.name.invalid" class="dt-error">{{
-                        'groups.nameRequired' | translate }}</span>
+                    @if (groupForm.controls.name.touched && groupForm.controls.name.invalid) {
+                    <span class="dt-error">{{ 'groups.nameRequired' | translate }}</span>
+                    }
                 </label>
 
                 <label class="dt-field">
                     <span class="dt-label">{{ 'groups.uniqueNameLabel' | translate }}</span>
                     <input class="dt-input" type="text" formControlName="uniqueName" />
-                    <span *ngIf="groupForm.controls.uniqueName.touched && groupForm.controls.uniqueName.invalid"
-                        class="dt-error">{{
-                        'groups.uniqueNameRequired' | translate }}</span>
+                    @if (groupForm.controls.uniqueName.touched && groupForm.controls.uniqueName.invalid) {
+                    <span class="dt-error">{{ 'groups.uniqueNameRequired' | translate }}</span>
+                    }
                 </label>
 
                 <label class="dt-field dt-field-full">
@@ -69,15 +73,20 @@
                     <input type="checkbox" class="toggle toggle-primary" formControlName="enabled" />
                 </label>
 
-                <div *ngIf="errorMsg()" class="dt-error dt-field-full">{{ errorMsg() }}</div>
+                @if (errorMsg()) {
+                <div class="dt-error dt-field-full">{{ errorMsg() }}</div>
+                }
 
                 <div class="dt-actions dt-field-full">
                     <button type="button" class="btn btn-ghost btn-sm" (click)="closeModal()">
                         {{ 'common.cancel' | translate }}
                     </button>
                     <button type="submit" class="btn btn-primary btn-sm" [disabled]="saving()">
-                        <span *ngIf="saving()">{{ 'common.saving' | translate }}</span>
-                        <span *ngIf="!saving()">{{ 'common.save' | translate }}</span>
+                        @if (saving()) {
+                        <span>{{ 'common.saving' | translate }}</span>
+                        } @else {
+                        <span>{{ 'common.save' | translate }}</span>
+                        }
                     </button>
                 </div>
             </form>
@@ -92,7 +101,8 @@
     </app-confirm-dialog>
 
     <app-detail-sidebar [open]="isDetailOpen()" [title]="'groups.detailTitle' | translate" (close)="closeDetail()">
-        <div class="dt-detail-list" *ngIf="detailGroup() as group">
+        @if (detailGroup(); as group) {
+        <div class="dt-detail-list">
             <div class="dt-detail-row dt-detail-row-center">
                 <strong class="dt-detail-id">ID {{ group.id }}</strong>
             </div>
@@ -112,12 +122,16 @@
                 <span class="dt-detail-label">{{ 'groups.activeLabel' | translate }}</span>
                 <span class="dt-detail-value" [class.dt-badge-active]="group.enabled"
                     [class.dt-badge-inactive]="!group.enabled">
-                    <span *ngIf="group.enabled">{{ 'common.yes' | translate }}</span>
-                    <span *ngIf="!group.enabled">{{ 'common.no' | translate }}</span>
+                    @if (group.enabled) {
+                    <span>{{ 'common.yes' | translate }}</span>
+                    } @else {
+                    <span>{{ 'common.no' | translate }}</span>
+                    }
                 </span>
             </div>
             <app-audit-info [data]="group" />
             <app-nested-entities [title]="'groups.rolesLabel' | translate" [entities]="group.roles" />
         </div>
+        }
     </app-detail-sidebar>
 </div>
