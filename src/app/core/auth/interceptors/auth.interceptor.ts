@@ -15,7 +15,9 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
 
     const isAuthEndpoint = (url: string): boolean =>
         url.includes('/oauth2/token') ||
-        url.includes('/oauth2/authorize');
+        url.includes('/oauth2/authorize') ||
+        url.includes('/api/v1/auth/logout') ||
+        url.includes('/api/v1/auth/revoke');
 
     // Skip token attachment for OAuth endpoints.
     if (isAuthEndpoint(req.url)) {
@@ -42,9 +44,15 @@ export const authInterceptor: HttpInterceptorFn = (req: HttpRequest<any>, next: 
                 console.warn('[AuthInterceptor] Session expired (401). Logging out...');
 
                 // Hacer logout y redirigir
-                authService.logout().then(() => {
-                    window.location.href = environment.oauth2LoginUrl;
-                    isLoggingOut = false;
+                authService.logout().subscribe({
+                    next: () => {
+                        window.location.href = environment.oauth2LoginUrl;
+                        isLoggingOut = false;
+                    },
+                    error: () => {
+                        window.location.href = environment.oauth2LoginUrl;
+                        isLoggingOut = false;
+                    }
                 });
             }
 

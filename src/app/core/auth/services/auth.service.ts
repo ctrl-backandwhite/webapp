@@ -1,146 +1,187 @@
 import { Injectable, inject } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpParams } from '@angular/common/http';
 import { environment } from '../../../../environments/environment';
 import { TokenService } from './token.service';
 import { AuthStateService } from './auth-state.service';
 import { PKCEService } from './pkce.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
+import { catchError, tap, map } from 'rxjs/operators';
 
 export interface TokenResponse {
-    access_token: string;
-    refresh_token?: string;
-    token_type: string;
-    expires_in: number;
+  access_token: string;
+  refresh_token?: string;
+  token_type: string;
+  expires_in: number;
 }
 
 @Injectable({
-    providedIn: 'root'
+  providedIn: 'root'
 })
 export class AuthService {
-    private readonly http = inject(HttpClient);
-    private readonly tokenService = inject(TokenService);
-    private readonly authStateService = inject(AuthStateService);
-    private readonly pkceService = inject(PKCEService);
+  private readonly http = inject(HttpClient);
+  private readonly tokenService = inject(TokenService);
+  private readonly authStateService = inject(AuthStateService);
+  private readonly pkceService = inject(PKCEService);
 
-    private readonly tokenEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/oauth2/token';
-    private readonly logoutEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/logout';
+  private readonly tokenEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/oauth2/token';
+  private readonly logoutEndpoint = `${environment.apiBaseUrl}/auth/logout`;
+  private readonly revokeEndpoint = `${environment.apiBaseUrl}/auth/revoke`;
 
-    // Exchange authorization code for tokens using PKCE.
-    async exchangeCodeForToken(code: string): Promise<TokenResponse> {
-        const codeVerifier = this.pkceService.getStoredVerifier();
+  // Exchange authorization code for tokens using PKCE.
+  async exchangeCodeForToken(code: string): Promise<TokenResponse> {
+    const codeVerifier = this.pkceService.getStoredVerifier();
 
-        if (!codeVerifier) {
-            throw new Error('PKCE verifier not found');
-        }
-
-        try {
-            const response = await this.requestToken({
-                grant_type: 'authorization_code',
-                client_id: environment.clientId,
-                code,
-                redirect_uri: environment.redirectUri,
-                code_verifier: codeVerifier,
-            });
-
-            this.tokenService.setTokens(
-                response.access_token,
-                response.refresh_token,
-                response.expires_in,
-                response.token_type
-            );
-
-            this.pkceService.clearVerifier();
-            this.authStateService.setAuthenticated();
-
-            console.log('[Auth] Token exchange successful');
-            return response;
-        } catch (error) {
-            console.error('[Auth] Token exchange failed:', error);
-            this.authStateService.setError('Token exchange failed');
-            throw error;
-        }
+    if (!codeVerifier) {
+      throw new Error('PKCE verifier not found');
     }
 
-    // Refresh access token using the stored refresh token.
-    async refreshToken(): Promise<TokenResponse> {
-        const refreshToken = this.tokenService.getRefreshToken();
+    try {
+      const response = await this.requestToken({
+        grant_type: 'authorization_code',
+        client_id: environment.clientId,
+        code,
+        redirect_uri: environment.redirectUri,
+        code_verifier: codeVerifier,
+      });
 
-        if (!refreshToken) {
-            throw new Error('No refresh token available');
-        }
+      this.tokenService.setTokens(
+        response.access_token,
+        response.refresh_token,
+        response.expires_in,
+        response.token_type
+      );
 
-        try {
-            const response = await this.requestToken({
-                grant_type: 'refresh_token',
-                client_id: environment.clientId,
-                refresh_token: refreshToken,
-            });
+      this.pkceService.clearVerifier();
+      this.authStateService.setAuthenticated();
 
-            this.tokenService.setTokens(
-                response.access_token,
-                response.refresh_token,
-                response.expires_in,
-                response.token_type
-            );
+      console.log('[Auth] Token exchange successful');
+      return response;
+    } catch (error) {
+      console.error('[Auth] Token exchange failed:', error);
+      this.authStateService.setError('Token exchange failed');
+      throw error;
+    }
+  }
 
-            console.log('[Auth] Token refreshed successfully');
-            return response;
-        } catch (error) {
-            console.error('[Auth] Token refresh failed:', error);
-            this.logout();
-            throw error;
-        }
+  // Refresh access token using the stored refresh token.
+  async refreshToken(): Promise<TokenResponse> {
+    const refreshToken = this.tokenService.getRefreshToken();
+
+    if (!refreshToken) {
+      throw new Error('No refresh token available');
     }
 
-    isAuthenticated(): boolean {
-        return this.tokenService.hasAccessToken() && !this.tokenService.isTokenExpired();
+    try {
+      const response = await this.requestToken({
+        grant_type: 'refresh_token',
+        client_id: environment.clientId,
+        refresh_token: refreshToken,
+      });
+
+      this.tokenService.setTokens(
+        response.access_token,
+        response.refresh_token,
+        response.expires_in,
+        response.token_type
+      );
+
+      console.log('[Auth] Token refreshed successfully');
+      return response;
+    } catch (error) {
+      console.error('[Auth] Token refresh failed:', error);
+      this.logout().subscribe();
+      throw error;
     }
+  }
 
-    getAccessToken(): string | null {
-        return this.tokenService.getAccessToken();
-    }
+  isAuthenticated(): boolean {
+    return this.tokenService.hasAccessToken() && !this.tokenService.isTokenExpired();
+  }
 
-    isTokenExpired(): boolean {
-        return this.tokenService.isTokenExpired();
-    }
+  getAccessToken(): string | null {
+    return this.tokenService.getAccessToken();
+  }
 
-    async logout(): Promise<void> {
-        console.log('[Auth] Starting logout process...');
+  isTokenExpired(): boolean {
+    return this.tokenService.isTokenExpired();
+  }
 
-        try {
-            console.log('[Auth] Calling POST /logout to invalidate server session...');
-            await firstValueFrom(
-                this.http.post(this.logoutEndpoint, {}, { withCredentials: true })
-            );
-            console.log('[Auth] Server logout response received');
-        } catch (error) {
-            console.warn('[Auth] Server logout failed (will continue with local cleanup):', error);
-        }
+  logout(): Observable<void> {
+    console.log('[Auth] Starting logout process...');
 
-        // Limpiar los tokens del localStorage
-        this.tokenService.clearTokens();
-        this.pkceService.clearVerifier();
-        localStorage.removeItem('authInitiated');
-        localStorage.setItem('forceLogin', '1');
-
-        // Actualizar el estado de autenticación
-        this.authStateService.setUnauthenticated();
+    return this.http.post(
+      `${environment.apiBaseUrl}/auth/logout`,
+      null,
+      {
+        withCredentials: true,
+        responseType: 'text'
+      }
+    ).pipe(
+      map(() => void 0),
+      tap(() => {
+        console.log('[Auth] Logout response received');
+        this.cleanupLocalAuth();
         console.log('[Auth] User logged out successfully');
+      }),
+      catchError((error) => {
+        console.warn('[Auth] Server logout failed (will continue with local cleanup):', error);
+        this.cleanupLocalAuth();
+        return of(void 0);
+      })
+    );
+  }
+
+  revokeToken(token: string): Observable<void> {
+    const params = new HttpParams()
+      .set('token', token)
+      .set('tokenTypeHint', 'access_token');
+
+    return this.http.post(this.revokeEndpoint, null, {
+      params,
+      withCredentials: true,
+      responseType: 'text'
+    }).pipe(
+      map(() => void 0),
+      tap(() => {
+        console.log('[Auth] Token revoked successfully');
+      }),
+      catchError((error) => {
+        console.warn('[Auth] Token revocation failed:', error);
+        return of(void 0);
+      })
+    );
+  }
+
+  private cleanupLocalAuth(): void {
+    console.log('[Auth] Clearing tokens and session storage...');
+
+    // Limpiar solo los tokens, mantener otros valores para debugging
+    this.tokenService.clearTokens();
+    this.pkceService.clearVerifier();
+    localStorage.removeItem('authInitiated');
+    localStorage.setItem('forceLogin', '1');
+    sessionStorage.clear();
+
+    this.authStateService.setUnauthenticated();
+
+    console.log('[Auth] Local cleanup complete');
+    console.log('[Auth] localStorage keys remaining:', Object.keys(localStorage));
+    console.log('[Auth] Current forceLogin flag:', localStorage.getItem('forceLogin'));
+  }
+
+  private async requestToken(params: Record<string, string>): Promise<TokenResponse> {
+    const body = new URLSearchParams(params);
+
+    const response = await firstValueFrom(
+      this.http.post<TokenResponse>(this.tokenEndpoint, body.toString(), {
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
+      })
+    );
+
+    if (!response) {
+      throw new Error('No token response received');
     }
 
-    private async requestToken(params: Record<string, string>): Promise<TokenResponse> {
-        const body = new URLSearchParams(params);
-
-        const response = await firstValueFrom(
-            this.http.post<TokenResponse>(this.tokenEndpoint, body.toString(), {
-                headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-            })
-        );
-
-        if (!response) {
-            throw new Error('No token response received');
-        }
-
-        return response;
-    }
+    return response;
+  }
 }
