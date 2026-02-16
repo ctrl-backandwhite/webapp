@@ -41,7 +41,7 @@
     <div class="dropdown dropdown-end mr-2 sm:mr-4">
       <div tabindex="0" role="button" class="avatar placeholder">
         <div class="bg-primary text-primary-content w-8 h-8 rounded-full flex items-center justify-center">
-          <span>{{ userInitials }}</span>
+          <span>{{ userInitials() }}</span>
         </div>
       </div>
       <ul tabindex="0"
@@ -50,10 +50,10 @@
           <div class="avatar">
             <div
               class="w-12 h-12 rounded-full bg-primary text-primary-content flex items-center justify-center text-lg font-semibold">
-              <span>{{ userInitials }}</span>
+              <span>{{ userInitials() }}</span>
             </div>
           </div>
-          <span class="font-medium text-sm text-base-content">{{ userName }}</span>
+          <span class="font-medium text-sm text-base-content">{{ userName() }}</span>
         </li>
         <li>
           <a

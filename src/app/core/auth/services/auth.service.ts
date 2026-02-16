@@ -23,6 +23,7 @@ export class AuthService {
     private readonly pkceService = inject(PKCEService);
 
     private readonly tokenEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/oauth2/token';
+    private readonly logoutEndpoint = environment.apiBaseUrl.replace('/api/v1', '') + '/logout';
 
     // Exchange authorization code for tokens using PKCE.
     async exchangeCodeForToken(code: string): Promise<TokenResponse> {
@@ -103,12 +104,28 @@ export class AuthService {
         return this.tokenService.isTokenExpired();
     }
 
-    logout(): void {
+    async logout(): Promise<void> {
+        console.log('[Auth] Starting logout process...');
+
+        try {
+            console.log('[Auth] Calling POST /logout to invalidate server session...');
+            await firstValueFrom(
+                this.http.post(this.logoutEndpoint, {}, { withCredentials: true })
+            );
+            console.log('[Auth] Server logout response received');
+        } catch (error) {
+            console.warn('[Auth] Server logout failed (will continue with local cleanup):', error);
+        }
+
+        // Limpiar los tokens del localStorage
         this.tokenService.clearTokens();
         this.pkceService.clearVerifier();
-        this.authStateService.setUnauthenticated();
         localStorage.removeItem('authInitiated');
-        console.log('[Auth] User logged out');
+        localStorage.setItem('forceLogin', '1');
+
+        // Actualizar el estado de autenticación
+        this.authStateService.setUnauthenticated();
+        console.log('[Auth] User logged out successfully');
     }
 
     private async requestToken(params: Record<string, string>): Promise<TokenResponse> {

@@ -1,9 +1,10 @@
-import { Component, inject, output } from '@angular/core';
+import { Component, inject, output, computed, signal, effect } from '@angular/core';
 import { Router } from '@angular/router';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { AuthService } from '../../auth/services/auth.service';
 import { TokenService } from '../../auth/services/token.service';
 import { TourService } from '../../tour/tour.service';
+import { environment } from '../../../../environments/environment';
 
 @Component({
     selector: 'app-navbar',
@@ -18,6 +19,12 @@ export class NavbarComponent {
     private readonly translate = inject(TranslateService);
     private readonly tourService = inject(TourService);
     toggleSidebar = output<void>();
+
+    // Signals para el estado del usuario
+    private authState = signal(this.tokenService.getAccessTokenPayload());
+    userName = computed(() => this.computeUserName());
+    userInitials = computed(() => this.computeUserInitials());
+
     user = {
         initials: 'AD',
         fullName: 'Andrea Domínguez',
@@ -25,13 +32,27 @@ export class NavbarComponent {
         role: 'Administrador'
     };
 
+    constructor() {
+        // Cuando cambien los tokens, actualizar el signal de estado
+        effect(() => {
+            this.authState.set(this.tokenService.getAccessTokenPayload());
+        });
+    }
+
     onToggleSidebar() {
         this.toggleSidebar.emit();
     }
 
     onLogout(): void {
-        this.authService.logout();
-        this.router.navigate(['/']);
+        console.log('[Navbar] Logout button clicked');
+        this.authService.logout().then(() => {
+            console.log('[Navbar] Logout completed, redirecting to login form');
+            window.location.href = environment.oauth2LoginUrl;
+        }).catch((error) => {
+            console.error('[Navbar] Logout error:', error);
+            // Incluso si hay error, redirigir al login
+            window.location.href = environment.oauth2LoginUrl;
+        });
     }
 
     onStartTour(): void {
@@ -43,8 +64,8 @@ export class NavbarComponent {
         this.translate.use(locale);
     }
 
-    get userName(): string {
-        const payload = this.tokenService.getAccessTokenPayload();
+    private computeUserName(): string {
+        const payload = this.authState();
         const firstName = this.getStringClaim(payload, ['firstName', 'first_name', 'given_name']);
         const lastName = this.getStringClaim(payload, ['lastName', 'last_name', 'family_name']);
         const name = this.getStringClaim(payload, ['name', 'full_name']);
@@ -63,18 +84,14 @@ export class NavbarComponent {
         return preferredUsername || email || this.user.fullName;
     }
 
-    get userEmail(): string {
-        return '';
-    }
-
-    get userInitials(): string {
-        const payload = this.tokenService.getAccessTokenPayload();
+    private computeUserInitials(): string {
+        const payload = this.authState();
         const initials = this.getStringClaim(payload, ['initials']);
         if (initials) {
             return initials.toUpperCase();
         }
 
-        const name = this.userName.trim();
+        const name = this.computeUserName().trim();
         if (!name) {
             return this.user.initials;
         }
@@ -99,5 +116,4 @@ export class NavbarComponent {
 
         return '';
     }
-
 }

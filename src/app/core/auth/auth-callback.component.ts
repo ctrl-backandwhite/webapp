@@ -35,6 +35,7 @@ export class AuthCallbackComponent implements OnInit {
       this.authService.exchangeCodeForToken(code)
         .then(() => {
           localStorage.removeItem('authInitiated');
+          localStorage.removeItem('forceLogin');
           console.log('[AuthCallback] Successfully authenticated');
           this.router.navigate(['/admin']);
         })
