@@ -8,6 +8,7 @@ import { RolesReloadService } from '../services/roles-reload.service';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
+import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
@@ -17,7 +18,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, TranslateModule],
+  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, TranslateModule],
   templateUrl: './roles.component.html',
 })
 export class RolesComponent implements OnInit, OnDestroy {

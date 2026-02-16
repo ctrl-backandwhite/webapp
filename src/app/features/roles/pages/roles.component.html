@@ -92,6 +92,7 @@
           <span *ngIf="!role.enabled">{{ 'common.no' | translate }}</span>
         </span>
       </div>
+      <app-audit-info [data]="role" />
     </div>
   </app-detail-sidebar>
 </div>

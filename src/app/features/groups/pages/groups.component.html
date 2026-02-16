@@ -108,10 +108,6 @@
                 <span class="dt-detail-value">{{ group.description || '-' }}</span>
             </div>
             <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'groups.rolesLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getRoleNames(group) }}</span>
-            </div>
-            <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'groups.activeLabel' | translate }}</span>
                 <span class="dt-detail-value" [class.dt-badge-active]="group.enabled"
                     [class.dt-badge-inactive]="!group.enabled">
@@ -119,6 +115,8 @@
                     <span *ngIf="!group.enabled">{{ 'common.no' | translate }}</span>
                 </span>
             </div>
+            <app-audit-info [data]="group" />
+            <app-nested-entities [title]="'groups.rolesLabel' | translate" [entities]="group.roles" />
         </div>
     </app-detail-sidebar>
 </div>

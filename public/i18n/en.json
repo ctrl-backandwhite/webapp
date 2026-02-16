@@ -277,7 +277,12 @@
     "saving": "Saving...",
     "cancel": "Cancel",
     "delete": "Delete",
-    "close": "Close"
+    "close": "Close",
+    "auditInfo": "Audit Information",
+    "createdAt": "Created at",
+    "updatedAt": "Updated at",
+    "createdBy": "Created by",
+    "updatedBy": "Updated by"
   },
   "confirm": {
     "title": "Confirm",

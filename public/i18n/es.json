@@ -277,7 +277,12 @@
     "saving": "Guardando...",
     "cancel": "Cancelar",
     "delete": "Eliminar",
-    "close": "Cerrar"
+    "close": "Cerrar",
+    "auditInfo": "Información de auditoría",
+    "createdAt": "Creado el",
+    "updatedAt": "Actualizado el",
+    "createdBy": "Creado por",
+    "updatedBy": "Actualizado por"
   },
   "confirm": {
     "title": "Confirmar",

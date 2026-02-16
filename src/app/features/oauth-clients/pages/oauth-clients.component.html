@@ -142,18 +142,11 @@
                 <span class="dt-detail-label">{{ 'oauthClients.clientIdLabel' | translate }}</span>
                 <span class="dt-detail-value">{{ item.clientId }}</span>
             </div>
-            <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'oauthClients.scopesLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getScopeNames(item) }}</span>
-            </div>
-            <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'oauthClients.redirectUrisLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getRedirectUriNames(item) }}</span>
-            </div>
-            <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'oauthClients.grantTypesLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getGrantTypeValues(item) }}</span>
-            </div>
+            <app-audit-info [data]="item" />
+            <app-nested-entities [title]="'oauthClients.scopesLabel' | translate" [entities]="item.scopes" />
+            <app-nested-entities [title]="'oauthClients.redirectUrisLabel' | translate"
+                [entities]="item.redirectUris" />
+            <app-nested-entities [title]="'oauthClients.grantTypesLabel' | translate" [entities]="item.grantTypes" />
         </div>
         }
     </app-detail-sidebar>

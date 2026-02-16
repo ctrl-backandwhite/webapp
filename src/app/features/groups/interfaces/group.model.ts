@@ -1,6 +1,7 @@
 import { Role } from '../../roles/interfaces/role.model';
+import { AuditFields } from '../../../shared/interfaces/audit.model';
 
-export interface Group {
+export interface Group extends AuditFields {
     id: number;
     name: string;
     uniqueName: string;

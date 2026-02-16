@@ -190,18 +190,6 @@
                 <span class="dt-detail-value">{{ user.email }}</span>
             </div>
             <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'users.scopesLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getScopeNames(user) }}</span>
-            </div>
-            <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'users.rolesLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getRoleNames(user) }}</span>
-            </div>
-            <div class="dt-detail-row">
-                <span class="dt-detail-label">{{ 'users.groupsLabel' | translate }}</span>
-                <span class="dt-detail-value dt-badge-outline-info">{{ getGroupNames(user) }}</span>
-            </div>
-            <div class="dt-detail-row">
                 <span class="dt-detail-label">{{ 'users.activeLabel' | translate }}</span>
                 <span class="dt-detail-value" [class.dt-badge-active]="user.enabled"
                     [class.dt-badge-inactive]="!user.enabled">
@@ -209,6 +197,10 @@
                     <span *ngIf="!user.enabled">{{ 'common.no' | translate }}</span>
                 </span>
             </div>
+            <app-audit-info [data]="user" />
+            <app-nested-entities [title]="'users.rolesLabel' | translate" [entities]="user.roles" />
+            <app-nested-entities [title]="'users.groupsLabel' | translate" [entities]="user.groups" />
+            <app-nested-entities [title]="'users.scopesLabel' | translate" [entities]="user.scopes" />
         </div>
     </app-detail-sidebar>
 </div>

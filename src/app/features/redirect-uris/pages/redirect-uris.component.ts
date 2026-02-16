@@ -10,6 +10,7 @@ import type { DataTableAction } from '../../../shared/data-table/data-table-acti
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
+import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import { RedirectUrisService } from '../services/redirect-uris.service';
 import { RedirectUrisReloadService } from '../services/redirect-uris-reload.service';
 import { RedirectUri, RedirectUriInput } from '../interfaces/redirect-uri.model';
@@ -23,6 +24,7 @@ import { RedirectUri, RedirectUriInput } from '../interfaces/redirect-uri.model'
         ReactiveFormsModule,
         ConfirmDialogComponent,
         DetailSidebarComponent,
+        AuditInfoComponent,
         TranslateModule
     ],
     templateUrl: './redirect-uris.component.html',

@@ -10,6 +10,7 @@ import type { DataTableAction } from '../../../shared/data-table/data-table-acti
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
+import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import { GrantTypesService } from '../services/grant-types.service';
 import { GrantTypesReloadService } from '../services/grant-types-reload.service';
 import { GrantType, GrantTypeInput } from '../interfaces/grant-type.model';
@@ -23,6 +24,7 @@ import { GrantType, GrantTypeInput } from '../interfaces/grant-type.model';
         ReactiveFormsModule,
         ConfirmDialogComponent,
         DetailSidebarComponent,
+        AuditInfoComponent,
         TranslateModule
     ],
     templateUrl: './grant-types.component.html',

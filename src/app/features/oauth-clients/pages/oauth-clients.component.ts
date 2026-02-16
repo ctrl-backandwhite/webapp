@@ -10,6 +10,8 @@ import type { DataTableAction } from '../../../shared/data-table/data-table-acti
 import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
+import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
+import { NestedEntitiesComponent } from '../../../shared/nested-entities/nested-entities.component';
 import { OauthClientsService } from '../services/oauth-clients.service';
 import { OauthClientsReloadService } from '../services/oauth-clients-reload.service';
 import { OAuthClient, OAuthClientInput } from '../interfaces/oauth-client.model';
@@ -29,6 +31,8 @@ import { GrantType } from '../../grant-types/interfaces/grant-type.model';
         ReactiveFormsModule,
         ConfirmDialogComponent,
         DetailSidebarComponent,
+        AuditInfoComponent,
+        NestedEntitiesComponent,
         TranslateModule
     ],
     templateUrl: './oauth-clients.component.html',

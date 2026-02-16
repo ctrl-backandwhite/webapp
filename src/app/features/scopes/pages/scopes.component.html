@@ -94,6 +94,7 @@
                     <span *ngIf="!scope.enabled">{{ 'common.no' | translate }}</span>
                 </span>
             </div>
+            <app-audit-info [data]="scope" />
         </div>
     </app-detail-sidebar>
 </div>
