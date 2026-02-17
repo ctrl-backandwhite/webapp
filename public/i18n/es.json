@@ -1,31 +1,31 @@
 {
   "nav": {
-    "openMenu": "Abrir menu",
-    "pinMenu": "Acoplar menu",
+    "openMenu": "Abrir menú",
+    "pinMenu": "Fijar menú",
     "translations": "Traducciones",
     "notifications": "Notificaciones",
-    "settings": "Configuracion",
-    "tour": "Guia",
-    "logout": "Cerrar sesion",
-    "closeMenu": "Cerrar menu"
+    "settings": "Configuración",
+    "tour": "Guía",
+    "logout": "Cerrar sesión",
+    "closeMenu": "Cerrar menú"
   },
   "lang": {
-    "spanish": "Espanol",
-    "english": "English"
+    "spanish": "Español",
+    "english": "Inglés"
   },
   "brand": {
     "name": "Back & White",
-    "subtitle": "Administracion"
+    "subtitle": "Administración"
   },
   "menu": {
     "users": "Usuarios",
     "usersList": "Usuarios",
     "roles": "Roles",
     "groups": "Grupos",
-    "scopes": "Scopes",
+    "scopes": "Ámbitos",
     "applications": "Aplicaciones",
-    "redirectUris": "Redirect URIs",
-    "grantTypes": "Tipos de grant",
+    "redirectUris": "URIs de redirección",
+    "grantTypes": "Tipos de concesión",
     "oauthClients": "Clientes OAuth"
   },
   "table": {
@@ -208,18 +208,18 @@
     }
   },
   "grantTypes": {
-    "title": "Tipos de grant",
-    "add": "Agregar tipo de grant",
-    "editTitle": "Editar tipo de grant",
-    "createTitle": "Crear tipo de grant",
+    "title": "Tipos de concesión",
+    "add": "Agregar tipo de concesión",
+    "editTitle": "Editar tipo de concesión",
+    "createTitle": "Crear tipo de concesión",
     "valueLabel": "Valor",
     "valueRequired": "El valor es obligatorio",
     "activeLabel": "Activo",
-    "deleteTitle": "Eliminar tipo de grant",
-    "deleteMessage": "Seguro que deseas eliminar el tipo de grant {{name}}?",
+    "deleteTitle": "Eliminar tipo de concesión",
+    "deleteMessage": "¿Seguro que deseas eliminar el tipo de concesión {{name}}?",
     "detailTitle": "Detalle",
-    "deleteError": "No se pudo eliminar el tipo de grant.",
-    "saveError": "No se pudo guardar el tipo de grant.",
+    "deleteError": "No se pudo eliminar el tipo de concesión.",
+    "saveError": "No se pudo guardar el tipo de concesión.",
     "table": {
       "id": "ID",
       "value": "Valor",
@@ -236,33 +236,33 @@
     "add": "Agregar cliente OAuth",
     "editTitle": "Editar cliente OAuth",
     "createTitle": "Crear cliente OAuth",
-    "clientIdLabel": "Client ID",
-    "clientIdRequired": "El Client ID es obligatorio",
-    "clientSecretLabel": "Client secret",
-    "secretRequired": "El Client secret es obligatorio",
-    "scopeIdsLabel": "Scopes",
-    "scopeSearchPlaceholder": "Buscar scopes",
-    "noScopes": "No existen scopes",
-    "redirectUriIdsLabel": "Redirect URIs",
-    "redirectUriSearchPlaceholder": "Buscar redirect URIs",
-    "noRedirectUris": "No existen redirect URIs",
-    "grantTypeIdsLabel": "Tipos de grant",
-    "grantTypeSearchPlaceholder": "Buscar tipos de grant",
-    "noGrantTypes": "No existen tipos de grant",
+    "clientIdLabel": "ID de cliente",
+    "clientIdRequired": "El ID de cliente es obligatorio",
+    "clientSecretLabel": "Secreto de cliente",
+    "secretRequired": "El secreto de cliente es obligatorio",
+    "scopeIdsLabel": "Ámbitos",
+    "scopeSearchPlaceholder": "Buscar ámbitos",
+    "noScopes": "No existen ámbitos",
+    "redirectUriIdsLabel": "URIs de redirección",
+    "redirectUriSearchPlaceholder": "Buscar URIs de redirección",
+    "noRedirectUris": "No existen URIs de redirección",
+    "grantTypeIdsLabel": "Tipos de concesión",
+    "grantTypeSearchPlaceholder": "Buscar tipos de concesión",
+    "noGrantTypes": "No existen tipos de concesión",
     "deleteTitle": "Eliminar cliente OAuth",
     "deleteMessage": "Seguro que deseas eliminar el cliente OAuth {{name}}?",
     "detailTitle": "Detalle",
     "deleteError": "No se pudo eliminar el cliente OAuth.",
     "saveError": "No se pudo guardar el cliente OAuth.",
-    "scopesLabel": "Scopes",
-    "redirectUrisLabel": "Redirect URIs",
-    "grantTypesLabel": "Tipos de grant",
+    "scopesLabel": "Ámbitos",
+    "redirectUrisLabel": "URIs de redirección",
+    "grantTypesLabel": "Tipos de concesión",
     "table": {
       "id": "ID",
-      "clientId": "Client ID",
-      "scopes": "Scopes",
-      "redirectUris": "Redirect URIs",
-      "grantTypes": "Tipos de grant"
+      "clientId": "ID de cliente",
+      "scopes": "Ámbitos",
+      "redirectUris": "URIs de redirección",
+      "grantTypes": "Tipos de concesión"
     },
     "action": {
       "detail": "Detalle",
@@ -271,7 +271,7 @@
     }
   },
   "common": {
-    "yes": "Si",
+    "yes": "Sí",
     "no": "No",
     "save": "Guardar",
     "saving": "Guardando...",
@@ -290,18 +290,18 @@
     "deleting": "Eliminando..."
   },
   "auth": {
-    "completing": "Completando autenticacion..."
+    "completing": "Completando autenticación..."
   },
   "breadcrumb": {
-    "admin": "Administracion",
-    "dashboard": "Dashboard",
+    "admin": "Administración",
+    "dashboard": "Tablero",
     "roles": "Roles",
     "users": "Usuarios",
     "groups": "Grupos",
-    "scopes": "Scopes",
+    "scopes": "Ámbitos",
     "applications": "Aplicaciones",
-    "redirectUris": "Redirect URIs",
-    "grantTypes": "Tipos de grant",
+    "redirectUris": "URIs de redirección",
+    "grantTypes": "Tipos de concesión",
     "oauthClients": "Clientes OAuth"
   },
   "grid": {
