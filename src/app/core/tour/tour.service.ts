@@ -59,35 +59,23 @@ export class TourService {
     this.tour.drive();
   }
 
-  private getSectionKey(): 'roles' | 'users' | 'groups' | 'scopes' | null {
+  private getSectionKey(): string | null {
     const path = window.location.pathname;
-
-    if (path.includes('/admin/roles')) {
-      return 'roles';
-    }
-
-    if (path.includes('/admin/users')) {
-      return 'users';
-    }
-
-    if (path.includes('/admin/groups')) {
-      return 'groups';
-    }
-
-    if (path.includes('/admin/scopes')) {
-      return 'scopes';
-    }
-
+    if (path.includes('/admin/roles')) return 'roles';
+    if (path.includes('/admin/users')) return 'users';
+    if (path.includes('/admin/groups')) return 'groups';
+    if (path.includes('/admin/scopes')) return 'scopes';
+    if (path.includes('/admin/applications/scopes')) return 'scopes';
+    if (path.includes('/admin/applications/granttypes')) return 'grantTypes';
+    if (path.includes('/admin/applications/redirecturis')) return 'redirectUris';
+    if (path.includes('/admin/applications/oauthclients')) return 'oauthClients';
+    // Puedes agregar más rutas aquí según los cruds
     return null;
   }
 
-  private getCrudSteps(sectionKey: 'roles' | 'users' | 'groups' | 'scopes' | null) {
-    if (!sectionKey) {
-      return [];
-    }
-
+  private getCrudSteps(sectionKey: string | null) {
+    if (!sectionKey) return [];
     const prefix = `tour.${sectionKey}`;
-
     return [
       {
         element: '[data-tour="tour-create"]',
