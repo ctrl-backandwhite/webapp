@@ -1,3 +1,27 @@
+/* Reducir padding izquierdo del sidebar */
+.sidebar, .bw-sidebar-menu {
+	padding-left: 0.75rem !important;
+}
+.sidebar .menu, .bw-sidebar-menu .menu {
+	padding-left: 0.5rem !important;
+}
+/* Tamaño de fuente del menú lateral (forzado) */
+.sidebar, .sidebar * {
+  font-size: 10px !important;
+}
+/* Íconos del menú lateral más pequeños (forzado) */
+.sidebar i,
+.sidebar svg,
+.sidebar [class*="fa-"],
+.sidebar [class^="fa"] {
+  font-size: 10px !important;
+  width: 10px !important;
+  height: 10px !important;
+  min-width: 10px !important;
+  min-height: 10px !important;
+  line-height: 1 !important;
+}
+
 @import "tailwindcss";
 @import "@fortawesome/fontawesome-free/css/all.min.css";
 @import "driver.js/dist/driver.css";
@@ -733,4 +757,9 @@ body {
 		min-height: 50vh;
 		padding: 12px;
 	}
+}
+
+/* Fuente global de 12px excepto títulos */
+body, body *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+  font-size: 12px !important;
 }

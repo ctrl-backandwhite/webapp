@@ -324,6 +324,7 @@
     "next": "Siguiente",
     "prev": "Anterior",
     "done": "Listo",
+    "progressText": "{current} of {total}",
     "sidebar": {
       "title": "Menú principal",
       "description": "Accede rápidamente a las secciones del sistema."
