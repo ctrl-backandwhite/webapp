@@ -168,6 +168,28 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.isModalOpen.set(true);
   }
 
+  openClone(user: User) {
+    this.isEditMode.set(false);
+    this.editingUserId.set(null);
+    this.errorMsg.set('');
+    this.userForm.reset({
+      name: user.name ?? '',
+      lastName: user.lastName ?? '',
+      nickName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      enabled: user.enabled ?? true,
+      accountNonExpired: user.accountNonExpired ?? true,
+      accountNonLocked: user.accountNonLocked ?? true,
+      credentialsNonExpired: user.credentialsNonExpired ?? true,
+      scopeIds: this.collectIds(user.scopes),
+      roleIds: this.collectIds(user.roles),
+      groupIds: this.collectIds(user.groups),
+    });
+    this.isModalOpen.set(true);
+  }
+
   closeModal() {
     if (this.saving()) {
       return;
@@ -266,6 +288,12 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     if (isAdmin) {
       this.rowActions.push(
+        {
+          id: 'clone',
+          label: this.translate.instant('users.action.clone'),
+          icon: 'fa-solid fa-clone',
+          handler: (row) => this.openClone(row)
+        },
         {
           id: 'edit',
           label: this.translate.instant('users.action.edit'),

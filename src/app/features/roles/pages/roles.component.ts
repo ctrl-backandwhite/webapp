@@ -131,6 +131,19 @@ export class RolesComponent implements OnInit, OnDestroy {
     this.isModalOpen.set(true);
   }
 
+  openClone(role: Role) {
+    this.isEditMode.set(false);
+    this.editingRoleId.set(null);
+    this.errorMsg.set('');
+    this.roleForm.reset({
+      name: role.name ?? '',
+      uniqueName: '',
+      description: role.description ?? '',
+      enabled: role.enabled ?? true,
+    });
+    this.isModalOpen.set(true);
+  }
+
   closeModal() {
     if (this.saving()) {
       return;
@@ -236,6 +249,12 @@ export class RolesComponent implements OnInit, OnDestroy {
 
     if (isAdmin) {
       this.rowActions.push(
+        {
+          id: 'clone',
+          label: this.translate.instant('roles.action.clone'),
+          icon: 'fa-solid fa-clone',
+          handler: (row) => this.openClone(row)
+        },
         {
           id: 'edit',
           label: this.translate.instant('roles.action.edit'),

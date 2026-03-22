@@ -1,5 +1,5 @@
 import { APP_INITIALIZER, ApplicationConfig, importProvidersFrom, provideBrowserGlobalErrorListeners } from '@angular/core';
-import { HttpClient, provideHttpClient, withInterceptors } from '@angular/common/http';
+import { HttpClient, provideHttpClient, withInterceptors, withNoXsrfProtection } from '@angular/common/http';
 import { provideRouter, withComponentInputBinding, withRouterConfig } from '@angular/router';
 import { TranslateLoader, TranslateModule, TranslateService } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
@@ -7,6 +7,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
+import { mockFallbackInterceptor } from './core/mock/mock-fallback.interceptor';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,7 +25,8 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
-      withInterceptors([authInterceptor])
+      withInterceptors([authInterceptor, mockFallbackInterceptor]),
+      withNoXsrfProtection()
     ),
     importProvidersFrom(
       TranslateModule.forRoot({

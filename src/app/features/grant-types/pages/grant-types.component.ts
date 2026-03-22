@@ -126,6 +126,17 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
         this.isModalOpen.set(true);
     }
 
+    openClone(item: GrantType) {
+        this.isEditMode.set(false);
+        this.editingId.set(null);
+        this.errorMsg.set('');
+        this.grantTypeForm.reset({
+            value: item.value ?? '',
+            enabled: item.enabled ?? true,
+        });
+        this.isModalOpen.set(true);
+    }
+
     closeModal() {
         if (this.saving()) {
             return;
@@ -261,6 +272,12 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
 
         if (isAdmin) {
             this.rowActions.push(
+                {
+                    id: 'clone',
+                    label: this.translate.instant('grantTypes.action.clone'),
+                    icon: 'fa-solid fa-clone',
+                    handler: (row) => this.openClone(row)
+                },
                 {
                     id: 'edit',
                     label: this.translate.instant('grantTypes.action.edit'),

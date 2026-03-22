@@ -338,6 +338,12 @@ body {
 	color: #dc2626;
 }
 
+.dt-hint {
+	font-size: 11px;
+	color: var(--bc, #6b7280);
+	opacity: 0.5;
+}
+
 .dt-actions {
 	margin: 6px 0 18px;
 	display: flex;
@@ -495,6 +501,15 @@ body {
 	display: flex;
 	justify-content: center;
 	gap: 2px;
+}
+
+.dt-detail-divider {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 8px 0 2px;
+	border-top: 1px solid var(--bc, #e5e7eb);
+	opacity: 0.2;
 }
 
 .dt-detail-label {
@@ -761,5 +776,31 @@ body {
 
 /* Fuente global de 12px excepto títulos */
 body, body *:not(h1):not(h2):not(h3):not(h4):not(h5):not(h6) {
+  font-size: 12px !important;
+}
+
+/* ── Mock data banner ─────────────────────────────────────────── */
+.mock-banner {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background-color: #fbbf24;
+  color: #78350f;
+  font-weight: 600;
+  font-size: 12px !important;
+  border-bottom: 2px solid #f59e0b;
+}
+.mock-banner i {
+  font-size: 14px !important;
+  color: #78350f !important;
+}
+.mock-banner strong {
+  margin-right: 0.25rem;
+  font-size: 12px !important;
+}
+.mock-banner em {
+  font-style: normal;
+  text-decoration: underline;
   font-size: 12px !important;
 }

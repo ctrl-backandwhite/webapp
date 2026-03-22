@@ -26,7 +26,9 @@
     "applications": "Aplicaciones",
     "redirectUris": "URIs de redirección",
     "grantTypes": "Tipos de concesión",
-    "oauthClients": "Clientes OAuth"
+    "oauthClients": "Clientes OAuth",
+    "gateway": "Gateway",
+    "gatewayRoutes": "Rutas"
   },
   "table": {
     "exportCsv": "Exportar CSV",
@@ -63,7 +65,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "users": {
@@ -115,7 +118,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "groups": {
@@ -143,7 +147,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     },
     "noRoles": "No existen roles"
   },
@@ -173,7 +178,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "redirectUris": {
@@ -200,7 +206,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "grantTypes": {
@@ -224,7 +231,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "oauthClients": {
@@ -263,7 +271,55 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
+    }
+  },
+  "gatewayRoutes": {
+    "title": "Rutas del Gateway",
+    "add": "Agregar ruta",
+    "refresh": "Refrescar gateway",
+    "editTitle": "Editar ruta",
+    "createTitle": "Crear ruta",
+    "idLabel": "ID de ruta",
+    "idRequired": "El ID es obligatorio",
+    "uriLabel": "URI de destino",
+    "uriRequired": "La URI es obligatoria",
+    "orderLabel": "Orden",
+    "predicatesLabel": "Predicados",
+    "predicatePlaceholder": "Ej: Path=/api/v1/servicio/**",
+    "addPredicate": "Agregar predicado",
+    "filtersLabel": "Filtros",
+    "filterPlaceholder": "Ej: StripPrefix=2",
+    "addFilter": "Agregar filtro",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar ruta",
+    "deleteMessage": "¿Seguro que deseas eliminar la ruta {{id}}?",
+    "detailTitle": "Detalle de ruta",
+    "deleteError": "No se pudo eliminar la ruta.",
+    "saveError": "No se pudo guardar la ruta.",
+    "rateLimitTitle": "Límite de tasa",
+    "replenishRateLabel": "Tasa de reposición",
+    "replenishRatePlaceholder": "Ej: 10",
+    "replenishRateHint": "Tokens por segundo (tráfico sostenido)",
+    "burstCapacityLabel": "Capacidad de ráfaga",
+    "burstCapacityPlaceholder": "Ej: 20",
+    "burstCapacityHint": "Máximo de tokens acumulados para ráfagas",
+    "requestedTokensLabel": "Tokens por petición",
+    "requestedTokensPlaceholder": "Ej: 1",
+    "requestedTokensHint": "Costo en tokens de cada petición",
+    "table": {
+      "id": "ID",
+      "uri": "URI",
+      "order": "Orden",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
+      "edit": "Editar",
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "common": {
@@ -286,7 +342,9 @@
     "deleting": "Eliminando..."
   },
   "auth": {
-    "completing": "Completando autenticación..."
+    "completing": "Completando autenticación...",
+    "error": "Error de autenticación",
+    "retry": "Reintentar"
   },
   "breadcrumb": {
     "admin": "Administración",
@@ -298,7 +356,8 @@
     "applications": "Aplicaciones",
     "redirectUris": "URIs de redirección",
     "grantTypes": "Tipos de concesión",
-    "oauthClients": "Clientes OAuth"
+    "oauthClients": "Clientes OAuth",
+    "gatewayRoutes": "Rutas del Gateway"
   },
   "grid": {
     "filter": {
