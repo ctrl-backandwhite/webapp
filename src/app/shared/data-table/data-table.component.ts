@@ -252,6 +252,10 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
     this.load();
   }
 
+  refresh() {
+    this.load();
+  }
+
   exportCsv() {
     this.gridApi?.exportDataAsCsv();
   }

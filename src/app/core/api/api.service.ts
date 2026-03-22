@@ -25,6 +25,10 @@ export abstract class ApiService<T, CreatePayload = Partial<T>, UpdatePayload = 
     return this.http.put<T>(`${this.resourceUrl}/${id}`, payload);
   }
 
+  toggle(id: number): Observable<T> {
+    return this.http.patch<T>(`${this.resourceUrl}/${id}/toggle`, {});
+  }
+
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.resourceUrl}/${id}`);
   }

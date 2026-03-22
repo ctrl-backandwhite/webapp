@@ -31,6 +31,7 @@
     "gatewayRoutes": "Rutas"
   },
   "table": {
+    "refresh": "Refrescar",
     "exportCsv": "Exportar CSV",
     "selected": "{{count}} seleccionados",
     "loading": "Cargando datos...",
@@ -64,6 +65,7 @@
     },
     "action": {
       "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"
@@ -117,6 +119,7 @@
     },
     "action": {
       "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"
@@ -146,6 +149,7 @@
     },
     "action": {
       "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"
@@ -177,6 +181,7 @@
     },
     "action": {
       "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"
@@ -205,6 +210,7 @@
     },
     "action": {
       "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"
@@ -230,6 +236,7 @@
     },
     "action": {
       "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"

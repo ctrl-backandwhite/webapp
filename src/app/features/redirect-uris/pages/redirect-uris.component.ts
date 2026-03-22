@@ -200,6 +200,16 @@ export class RedirectUrisComponent implements OnInit, OnDestroy {
       });
   }
 
+  toggleRedirectUri(redirectUri: RedirectUri) {
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.redirectUrisService.toggle(redirectUri.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.redirectUrisReloadService.triggerReload(),
+        error: () => { },
+      });
+  }
+
   submitRedirectUri() {
     if (this.redirectUriForm.invalid) {
       this.redirectUriForm.markAllAsTouched();
@@ -277,6 +287,12 @@ export class RedirectUrisComponent implements OnInit, OnDestroy {
 
     if (isAdmin) {
       this.rowActions.push(
+        {
+          id: 'toggle',
+          label: this.translate.instant('redirectUris.action.toggle'),
+          icon: 'fa-solid fa-power-off',
+          handler: (row) => this.toggleRedirectUri(row)
+        },
         {
           id: 'clone',
           label: this.translate.instant('redirectUris.action.clone'),

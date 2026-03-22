@@ -241,6 +241,12 @@ export class ScopesComponent implements OnInit, OnDestroy {
         if (isAdmin) {
             this.rowActions.push(
                 {
+                    id: 'toggle',
+                    label: this.translate.instant('scopes.action.toggle'),
+                    icon: 'fa-solid fa-power-off',
+                    handler: (row) => this.toggleScope(row)
+                },
+                {
                     id: 'clone',
                     label: this.translate.instant('scopes.action.clone'),
                     icon: 'fa-solid fa-clone',
@@ -260,6 +266,16 @@ export class ScopesComponent implements OnInit, OnDestroy {
                 }
             );
         }
+    }
+
+    toggleScope(scope: Scope) {
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.scopesService.toggle(scope.id)
+            .pipe(take(1))
+            .subscribe({
+                next: () => this.scopesReloadService.triggerReload(),
+                error: () => { },
+            });
     }
 
     submitScope() {

@@ -31,6 +31,7 @@
     "gatewayRoutes": "Routes"
   },
   "table": {
+    "refresh": "Refresh",
     "exportCsv": "Export CSV",
     "selected": "{{count}} selected",
     "loading": "Loading data...",
@@ -64,6 +65,7 @@
     },
     "action": {
       "detail": "Detail",
+      "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"
@@ -117,6 +119,7 @@
     },
     "action": {
       "detail": "Detail",
+      "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"
@@ -150,6 +153,7 @@
     },
     "action": {
       "detail": "Detail",
+      "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"
@@ -181,6 +185,7 @@
     },
     "action": {
       "detail": "Detail",
+      "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"
@@ -209,6 +214,7 @@
     },
     "action": {
       "detail": "Detail",
+      "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"
@@ -234,6 +240,7 @@
     },
     "action": {
       "detail": "Detail",
+      "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"

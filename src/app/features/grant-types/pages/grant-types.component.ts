@@ -273,6 +273,12 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
         if (isAdmin) {
             this.rowActions.push(
                 {
+                    id: 'toggle',
+                    label: this.translate.instant('grantTypes.action.toggle'),
+                    icon: 'fa-solid fa-power-off',
+                    handler: (row) => this.toggleGrantType(row)
+                },
+                {
                     id: 'clone',
                     label: this.translate.instant('grantTypes.action.clone'),
                     icon: 'fa-solid fa-clone',
@@ -292,6 +298,16 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
                 }
             );
         }
+    }
+
+    toggleGrantType(grantType: GrantType) {
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.grantTypesService.toggle(grantType.id)
+            .pipe(take(1))
+            .subscribe({
+                next: () => this.grantTypesReloadService.triggerReload(),
+                error: () => { },
+            });
     }
 
     loadGrantTypes = (query: DataTableQuery): Observable<DataTableResult<GrantType>> => {

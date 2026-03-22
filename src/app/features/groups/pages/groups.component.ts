@@ -263,6 +263,12 @@ export class GroupsComponent implements OnInit, OnDestroy {
         if (isAdmin) {
             this.rowActions.push(
                 {
+                    id: 'toggle',
+                    label: this.translate.instant('groups.action.toggle'),
+                    icon: 'fa-solid fa-power-off',
+                    handler: (row) => this.toggleGroup(row)
+                },
+                {
                     id: 'clone',
                     label: this.translate.instant('groups.action.clone'),
                     icon: 'fa-solid fa-clone',
@@ -282,6 +288,16 @@ export class GroupsComponent implements OnInit, OnDestroy {
                 }
             );
         }
+    }
+
+    toggleGroup(group: Group) {
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.groupsService.toggle(group.id)
+            .pipe(take(1))
+            .subscribe({
+                next: () => this.groupsReloadService.triggerReload(),
+                error: () => { },
+            });
     }
 
     submitGroup() {

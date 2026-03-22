@@ -1,6 +1,10 @@
 <div data-tour="table" class="w-full flex flex-col gap-3 dt-table-fade">
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
     <div class="flex flex-wrap items-center justify-end gap-2">
+      <button class="btn btn-ghost btn-sm" type="button" [disabled]="loading()" (click)="refresh()">
+        <i class="fa-solid fa-arrows-rotate" [class.animate-spin]="loading()"></i>
+        <span>{{ 'table.refresh' | translate }}</span>
+      </button>
       <button class="btn btn-ghost btn-sm" type="button" (click)="exportCsv()">
         <span>{{ 'table.exportCsv' | translate }}</span>
       </button>

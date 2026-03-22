@@ -250,6 +250,12 @@ export class RolesComponent implements OnInit, OnDestroy {
     if (isAdmin) {
       this.rowActions.push(
         {
+          id: 'toggle',
+          label: this.translate.instant('roles.action.toggle'),
+          icon: 'fa-solid fa-power-off',
+          handler: (row) => this.toggleRole(row)
+        },
+        {
           id: 'clone',
           label: this.translate.instant('roles.action.clone'),
           icon: 'fa-solid fa-clone',
@@ -269,6 +275,16 @@ export class RolesComponent implements OnInit, OnDestroy {
         }
       );
     }
+  }
+
+  toggleRole(role: Role) {
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.rolesService.toggle(role.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.rolesReloadService.triggerReload(),
+        error: () => { },
+      });
   }
 
   submitRole() {

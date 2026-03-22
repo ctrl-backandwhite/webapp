@@ -289,6 +289,12 @@ export class UsersComponent implements OnInit, OnDestroy {
     if (isAdmin) {
       this.rowActions.push(
         {
+          id: 'toggle',
+          label: this.translate.instant('users.action.toggle'),
+          icon: 'fa-solid fa-power-off',
+          handler: (row) => this.toggleUser(row)
+        },
+        {
           id: 'clone',
           label: this.translate.instant('users.action.clone'),
           icon: 'fa-solid fa-clone',
@@ -308,6 +314,16 @@ export class UsersComponent implements OnInit, OnDestroy {
         }
       );
     }
+  }
+
+  toggleUser(user: User) {
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.usersService.toggle(user.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.usersReloadService.triggerReload(),
+        error: () => { },
+      });
   }
 
   submitUser() {
