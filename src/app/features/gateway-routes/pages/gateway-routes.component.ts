@@ -1,7 +1,7 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormArray, FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { GatewayRoute, GatewayRouteInput } from '../interfaces/gateway-route.model';
+import { GatewayRoute, GatewayRouteInput, BulkImportResult } from '../interfaces/gateway-route.model';
 import { GatewayRoutesService } from '../services/gateway-routes.service';
 import { GatewayRoutesReloadService } from '../services/gateway-routes-reload.service';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
@@ -59,6 +59,12 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
   detailRoute = signal<GatewayRoute | null>(null);
 
   isRefreshing = signal(false);
+
+  isBulkOpen = signal(false);
+  bulkJson = signal('');
+  bulkImporting = signal(false);
+  bulkError = signal('');
+  bulkResult = signal<BulkImportResult | null>(null);
 
   routeForm = this.fb.nonNullable.group({
     id: ['', [Validators.required]],
@@ -205,6 +211,94 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => this.isRefreshing.set(false),
         error: () => this.isRefreshing.set(false),
+      });
+  }
+
+  openBulkImport() {
+    this.bulkJson.set('');
+    this.bulkError.set('');
+    this.bulkResult.set(null);
+    this.bulkImporting.set(false);
+    this.isBulkOpen.set(true);
+  }
+
+  closeBulkImport() {
+    if (this.bulkImporting()) return;
+    this.isBulkOpen.set(false);
+    this.bulkError.set('');
+    this.bulkResult.set(null);
+  }
+
+  loadTemplate() {
+    const template: GatewayRouteInput[] = [
+      {
+        id: 'my-service',
+        uri: 'http://localhost:8080',
+        predicates: ['Path=/api/v1/my-resource/**'],
+        filters: [],
+        order: 0,
+        rateLimitReplenishRate: 10,
+        rateLimitBurstCapacity: 20,
+        rateLimitRequestedTokens: 1,
+      },
+      {
+        id: 'another-service',
+        uri: 'http://localhost:9090',
+        predicates: ['Path=/api/v1/another/**', 'Path=/api/v1/extra/**'],
+        filters: [],
+        order: 1,
+        rateLimitReplenishRate: null,
+        rateLimitBurstCapacity: null,
+        rateLimitRequestedTokens: null,
+      },
+    ];
+    this.bulkJson.set(JSON.stringify(template, null, 2));
+    this.bulkError.set('');
+    this.bulkResult.set(null);
+  }
+
+  onBulkJsonChange(value: string) {
+    this.bulkJson.set(value);
+    this.bulkError.set('');
+    this.bulkResult.set(null);
+  }
+
+  submitBulkImport() {
+    const raw = this.bulkJson().trim();
+    if (!raw) {
+      this.bulkError.set(this.translate.instant('gatewayRoutes.bulk.emptyJson'));
+      return;
+    }
+
+    let parsed: GatewayRouteInput[];
+    try {
+      parsed = JSON.parse(raw);
+    } catch {
+      this.bulkError.set(this.translate.instant('gatewayRoutes.bulk.invalidJson'));
+      return;
+    }
+
+    if (!Array.isArray(parsed) || parsed.length === 0) {
+      this.bulkError.set(this.translate.instant('gatewayRoutes.bulk.mustBeArray'));
+      return;
+    }
+
+    this.bulkImporting.set(true);
+    this.bulkError.set('');
+    this.bulkResult.set(null);
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.routesService.bulkImport(parsed)
+      .pipe(take(1))
+      .subscribe({
+        next: (result) => {
+          this.bulkImporting.set(false);
+          this.bulkResult.set(result);
+          this.reloadService.triggerReload();
+        },
+        error: () => {
+          this.bulkImporting.set(false);
+          this.bulkError.set(this.translate.instant('gatewayRoutes.bulk.importError'));
+        },
       });
   }
 

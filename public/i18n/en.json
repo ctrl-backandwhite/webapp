@@ -331,6 +331,21 @@
       "edit": "Edit",
       "delete": "Delete",
       "clone": "Clone"
+    },
+    "bulk": {
+      "import": "Import JSON",
+      "title": "Bulk route import",
+      "description": "Paste a JSON array with the routes to import. Routes whose ID already exists will be skipped.",
+      "loadTemplate": "Load template",
+      "placeholder": "[{ \"id\": \"my-service\", \"uri\": \"http://...\", ... }]",
+      "importBtn": "Import",
+      "importing": "Importing...",
+      "emptyJson": "Paste the JSON before importing.",
+      "invalidJson": "Invalid JSON. Check the syntax.",
+      "mustBeArray": "JSON must be an array with at least one route.",
+      "importError": "Could not complete the import.",
+      "createdCount": "{{count}} route(s) created successfully.",
+      "skippedCount": "{{count}} route(s) skipped (ID already exists)."
     }
   },
   "common": {

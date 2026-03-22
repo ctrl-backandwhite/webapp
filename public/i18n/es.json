@@ -327,6 +327,21 @@
       "edit": "Editar",
       "delete": "Eliminar",
       "clone": "Clonar"
+    },
+    "bulk": {
+      "import": "Importar JSON",
+      "title": "Importación masiva de rutas",
+      "description": "Pega un arreglo JSON con las rutas a importar. Las rutas cuyo ID ya exista serán omitidas.",
+      "loadTemplate": "Cargar plantilla",
+      "placeholder": "[{ \"id\": \"mi-servicio\", \"uri\": \"http://...\", ... }]",
+      "importBtn": "Importar",
+      "importing": "Importando...",
+      "emptyJson": "Pega el JSON antes de importar.",
+      "invalidJson": "El JSON no es válido. Verifica la sintaxis.",
+      "mustBeArray": "El JSON debe ser un arreglo con al menos una ruta.",
+      "importError": "No se pudo completar la importación.",
+      "createdCount": "{{count}} ruta(s) creada(s) exitosamente.",
+      "skippedCount": "{{count}} ruta(s) omitida(s) (ID ya existente)."
     }
   },
   "common": {

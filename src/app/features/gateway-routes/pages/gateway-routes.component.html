@@ -11,6 +11,10 @@
             <i class="fa-solid fa-rotate text-base-content/60 text-lg" [class.animate-spin]="isRefreshing()"></i>
           </button>
           <button *hasRole="'ROLE_ADMIN'" class="btn btn-circle bg-base-200 border-none hover:bg-base-300"
+            [attr.title]="'gatewayRoutes.bulk.import' | translate" (click)="openBulkImport()">
+            <i class="fa-solid fa-file-import text-base-content/60 text-lg"></i>
+          </button>
+          <button *hasRole="'ROLE_ADMIN'" class="btn btn-circle bg-base-200 border-none hover:bg-base-300"
             [attr.title]="'gatewayRoutes.add' | translate" (click)="openCreate()">
             <i class="fa-solid fa-plus text-base-content/60 text-lg"></i>
           </button>
@@ -130,6 +134,72 @@
       </form>
     </div>
     <div class="modal-backdrop" (click)="closeModal()"></div>
+  </div>
+
+  <!-- Modal importación masiva -->
+  <div class="modal" [class.modal-open]="isBulkOpen()">
+    <div class="modal-box dt-modal-box">
+      <div class="dt-modal-header">
+        <h3 class="dt-modal-title">{{ 'gatewayRoutes.bulk.title' | translate }}</h3>
+      </div>
+      <div class="dt-form flex flex-col gap-3">
+        <p class="text-sm text-base-content/70">{{ 'gatewayRoutes.bulk.description' | translate }}</p>
+
+        <div class="flex justify-end">
+          <button type="button" class="btn btn-ghost btn-xs" (click)="loadTemplate()">
+            <i class="fa-solid fa-file-code mr-1"></i>{{ 'gatewayRoutes.bulk.loadTemplate' | translate }}
+          </button>
+        </div>
+
+        <textarea class="textarea textarea-bordered w-full font-mono text-xs leading-relaxed" rows="14"
+          [value]="bulkJson()" (input)="onBulkJsonChange($any($event.target).value)"
+          [placeholder]="'gatewayRoutes.bulk.placeholder' | translate" [disabled]="bulkImporting()"></textarea>
+
+        @if (bulkError()) {
+        <div class="dt-error">{{ bulkError() }}</div>
+        }
+
+        @if (bulkResult(); as result) {
+        <div class="flex flex-col gap-1 text-sm">
+          <span class="text-success">
+            <i class="fa-solid fa-check mr-1"></i>
+            {{ 'gatewayRoutes.bulk.createdCount' | translate:{ count: result.created } }}
+          </span>
+          @if (result.skipped > 0) {
+          <span class="text-warning">
+            <i class="fa-solid fa-forward mr-1"></i>
+            {{ 'gatewayRoutes.bulk.skippedCount' | translate:{ count: result.skipped } }}
+          </span>
+          <div class="text-xs text-base-content/50 pl-5">
+            @for (id of result.skippedIds; track id) {
+            <span class="badge badge-sm badge-ghost mr-1 mb-1">{{ id }}</span>
+            }
+          </div>
+          }
+          @for (err of result.errors; track $index) {
+          <span class="text-warning text-xs"><i class="fa-solid fa-triangle-exclamation mr-1"></i>{{ err }}</span>
+          }
+        </div>
+        }
+
+        <div class="dt-actions">
+          <button type="button" class="btn btn-ghost btn-sm" (click)="closeBulkImport()">
+            {{ 'common.cancel' | translate }}
+          </button>
+          <button type="button" class="btn btn-primary btn-sm" [disabled]="bulkImporting()"
+            (click)="submitBulkImport()">
+            @if (bulkImporting()) {
+            <span class="loading loading-spinner loading-xs mr-1"></span>
+            <span>{{ 'gatewayRoutes.bulk.importing' | translate }}</span>
+            } @else {
+            <i class="fa-solid fa-file-import mr-1"></i>
+            <span>{{ 'gatewayRoutes.bulk.importBtn' | translate }}</span>
+            }
+          </button>
+        </div>
+      </div>
+    </div>
+    <div class="modal-backdrop" (click)="closeBulkImport()"></div>
   </div>
 
   <!-- Confirmar eliminación -->

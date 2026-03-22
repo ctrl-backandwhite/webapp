@@ -22,3 +22,10 @@ export interface GatewayRouteInput {
   rateLimitBurstCapacity?: number | null;
   rateLimitRequestedTokens?: number | null;
 }
+
+export interface BulkImportResult {
+  created: number;
+  skipped: number;
+  skippedIds: string[];
+  errors: string[];
+}
