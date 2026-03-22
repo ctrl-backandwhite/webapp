@@ -44,6 +44,11 @@ export const routes: Routes = [
         data: { breadcrumb: 'breadcrumb.scopes' },
       },
       {
+        path: 'gateway',
+        loadComponent: () => import('./features/gateway-routes/pages/gateway-routes.component').then(m => m.GatewayRoutesComponent),
+        data: { breadcrumb: 'breadcrumb.gatewayRoutes' },
+      },
+      {
         path: 'applications',
         data: { breadcrumb: 'breadcrumb.applications' },
         children: [

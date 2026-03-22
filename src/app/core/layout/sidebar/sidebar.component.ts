@@ -48,6 +48,17 @@ export class SidebarComponent {
       ]
     },
     {
+      labelKey: 'menu.gateway',
+      icon: 'fa-solid fa-network-wired',
+      children: [
+        {
+          labelKey: 'menu.gatewayRoutes',
+          route: ['/admin/gateway'],
+          icon: 'fa-solid fa-route'
+        }
+      ]
+    },
+    {
       labelKey: 'menu.applications',
       icon: 'fa-solid fa-diagram-project',
       children: [

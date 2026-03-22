@@ -1,6 +1,7 @@
 export const environment = {
   production: true,
   apiBaseUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
+  gatewayApiUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
 
   oauth2AuthorizeUrl: 'https://mic-authservice-production.up.railway.app/oauth2/authorize?',
   oauth2LoginUrl: 'https://mic-authservice-production.up.railway.app/login',

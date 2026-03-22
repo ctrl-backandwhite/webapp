@@ -5,8 +5,8 @@ import { TokenService } from './token.service';
 import { AuthStateService } from './auth-state.service';
 import { PKCEService } from './pkce.service';
 import { RoleService } from './role.service';
-import { firstValueFrom, Observable, of } from 'rxjs';
-import { catchError, tap, map } from 'rxjs/operators';
+import { firstValueFrom, Observable, of, TimeoutError } from 'rxjs';
+import { catchError, tap, map, timeout } from 'rxjs/operators';
 
 export interface TokenResponse {
   access_token: string;
@@ -158,12 +158,10 @@ export class AuthService {
   private cleanupLocalAuth(): void {
     console.log('[Auth] Clearing tokens and session storage...');
 
-    // Limpiar solo los tokens, mantener otros valores para debugging
     this.tokenService.clearTokens();
     this.pkceService.clearVerifier();
     localStorage.removeItem('authInitiated');
     localStorage.setItem('forceLogin', '1');
-    sessionStorage.clear();
 
     this.authStateService.setUnauthenticated();
 
@@ -175,16 +173,32 @@ export class AuthService {
   private async requestToken(params: Record<string, string>): Promise<TokenResponse> {
     const body = new URLSearchParams(params);
 
-    const response = await firstValueFrom(
-      this.http.post<TokenResponse>(this.tokenEndpoint, body.toString(), {
-        headers: { 'Content-Type': 'application/x-www-form-urlencoded' }
-      })
-    );
+    console.log('[Auth] Sending token request to:', this.tokenEndpoint);
+    console.log('[Auth] Request params:', Object.keys(params).join(', '));
 
-    if (!response) {
-      throw new Error('No token response received');
+    try {
+      const response = await firstValueFrom(
+        this.http.post<TokenResponse>(this.tokenEndpoint, body.toString(), {
+          headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+          withCredentials: true
+        }).pipe(
+          timeout(30000)
+        )
+      );
+
+      if (!response) {
+        throw new Error('No token response received');
+      }
+
+      console.log('[Auth] Token response received successfully');
+      return response;
+    } catch (error) {
+      if (error instanceof TimeoutError) {
+        console.error('[Auth] Token request timed out after 30s');
+        throw new Error('Token request timed out. The server did not respond.');
+      }
+      console.error('[Auth] Token request failed:', error);
+      throw error;
     }
-
-    return response;
   }
 }

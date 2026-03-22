@@ -26,7 +26,9 @@
     "applications": "Aplicaciones",
     "redirectUris": "URIs de redirección",
     "grantTypes": "Tipos de concesión",
-    "oauthClients": "Clientes OAuth"
+    "oauthClients": "Clientes OAuth",
+    "gateway": "Gateway",
+    "gatewayRoutes": "Rutas"
   },
   "table": {
     "exportCsv": "Exportar CSV",
@@ -266,6 +268,42 @@
       "delete": "Eliminar"
     }
   },
+  "gatewayRoutes": {
+    "title": "Rutas del Gateway",
+    "add": "Agregar ruta",
+    "refresh": "Refrescar gateway",
+    "editTitle": "Editar ruta",
+    "createTitle": "Crear ruta",
+    "idLabel": "ID de ruta",
+    "idRequired": "El ID es obligatorio",
+    "uriLabel": "URI de destino",
+    "uriRequired": "La URI es obligatoria",
+    "orderLabel": "Orden",
+    "predicatesLabel": "Predicados",
+    "predicatePlaceholder": "Ej: Path=/api/v1/servicio/**",
+    "addPredicate": "Agregar predicado",
+    "filtersLabel": "Filtros",
+    "filterPlaceholder": "Ej: StripPrefix=2",
+    "addFilter": "Agregar filtro",
+    "activeLabel": "Activo",
+    "deleteTitle": "Eliminar ruta",
+    "deleteMessage": "¿Seguro que deseas eliminar la ruta {{id}}?",
+    "detailTitle": "Detalle de ruta",
+    "deleteError": "No se pudo eliminar la ruta.",
+    "saveError": "No se pudo guardar la ruta.",
+    "table": {
+      "id": "ID",
+      "uri": "URI",
+      "order": "Orden",
+      "active": "Activo"
+    },
+    "action": {
+      "detail": "Detalle",
+      "toggle": "Activar/Desactivar",
+      "edit": "Editar",
+      "delete": "Eliminar"
+    }
+  },
   "common": {
     "yes": "Sí",
     "no": "No",
@@ -286,7 +324,9 @@
     "deleting": "Eliminando..."
   },
   "auth": {
-    "completing": "Completando autenticación..."
+    "completing": "Completando autenticación...",
+    "error": "Error de autenticación",
+    "retry": "Reintentar"
   },
   "breadcrumb": {
     "admin": "Administración",
@@ -298,7 +338,8 @@
     "applications": "Aplicaciones",
     "redirectUris": "URIs de redirección",
     "grantTypes": "Tipos de concesión",
-    "oauthClients": "Clientes OAuth"
+    "oauthClients": "Clientes OAuth",
+    "gatewayRoutes": "Rutas del Gateway"
   },
   "grid": {
     "filter": {
