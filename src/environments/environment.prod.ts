@@ -1,13 +1,13 @@
 export const environment = {
   production: true,
   enableMockFallback: false,
-  apiBaseUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
-  gatewayApiUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
+  apiBaseUrl: 'https://auth-service-des.up.railway.app/api/v1',
+  gatewayApiUrl: 'https://auth-service-des.up.railway.app/api/v1',
 
-  oauth2AuthorizeUrl: 'https://mic-authservice-production.up.railway.app/oauth2/authorize?',
-  oauth2LoginUrl: 'https://mic-authservice-production.up.railway.app/login',
+  oauth2AuthorizeUrl: 'https://auth-service-des.up.railway.app/oauth2/authorize?',
+  oauth2LoginUrl: 'https://auth-service-des.up.railway.app/login',
   clientId: 'oidc-client',
-  redirectUri: 'https://webapp-production-68d2.up.railway.app/auth/callback',
+  redirectUri: 'https://web-auth-des.up.railway.app/auth/callback',
   scope: 'openid',
   responseType: 'code',
   responseMode: 'query',
