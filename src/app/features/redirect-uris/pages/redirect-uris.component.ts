@@ -129,6 +129,18 @@ export class RedirectUrisComponent implements OnInit, OnDestroy {
     this.isModalOpen.set(true);
   }
 
+  openClone(item: RedirectUri) {
+    this.isEditMode.set(false);
+    this.editingId.set(null);
+    this.errorMsg.set('');
+    this.redirectUriForm.reset({
+      name: item.name ?? '',
+      value: item.value ?? '',
+      enabled: item.enabled ?? true,
+    });
+    this.isModalOpen.set(true);
+  }
+
   closeModal() {
     if (this.saving()) {
       return;
@@ -265,6 +277,12 @@ export class RedirectUrisComponent implements OnInit, OnDestroy {
 
     if (isAdmin) {
       this.rowActions.push(
+        {
+          id: 'clone',
+          label: this.translate.instant('redirectUris.action.clone'),
+          icon: 'fa-solid fa-clone',
+          handler: (row) => this.openClone(row)
+        },
         {
           id: 'edit',
           label: this.translate.instant('redirectUris.action.edit'),

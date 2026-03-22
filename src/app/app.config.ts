@@ -7,6 +7,7 @@ import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { routes } from './app.routes';
 import { AllCommunityModule, ModuleRegistry } from 'ag-grid-community';
 import { authInterceptor } from './core/auth/interceptors/auth.interceptor';
+import { mockFallbackInterceptor } from './core/mock/mock-fallback.interceptor';
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
@@ -24,7 +25,7 @@ export const appConfig: ApplicationConfig = {
   providers: [
     provideBrowserGlobalErrorListeners(),
     provideHttpClient(
-      withInterceptors([authInterceptor]),
+      withInterceptors([authInterceptor, mockFallbackInterceptor]),
       withNoXsrfProtection()
     ),
     importProvidersFrom(

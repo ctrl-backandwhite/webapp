@@ -88,6 +88,29 @@
           </button>
         </div>
 
+        <!-- Rate Limiting -->
+        <div class="dt-field-full">
+          <div class="divider text-xs text-base-content/50 my-1">{{ 'gatewayRoutes.rateLimitTitle' | translate }}</div>
+        </div>
+        <label class="dt-field">
+          <span class="dt-label">{{ 'gatewayRoutes.replenishRateLabel' | translate }}</span>
+          <input class="dt-input" type="number" formControlName="rateLimitReplenishRate" min="1"
+            [placeholder]="'gatewayRoutes.replenishRatePlaceholder' | translate" />
+          <span class="dt-hint">{{ 'gatewayRoutes.replenishRateHint' | translate }}</span>
+        </label>
+        <label class="dt-field">
+          <span class="dt-label">{{ 'gatewayRoutes.burstCapacityLabel' | translate }}</span>
+          <input class="dt-input" type="number" formControlName="rateLimitBurstCapacity" min="1"
+            [placeholder]="'gatewayRoutes.burstCapacityPlaceholder' | translate" />
+          <span class="dt-hint">{{ 'gatewayRoutes.burstCapacityHint' | translate }}</span>
+        </label>
+        <label class="dt-field dt-field-full">
+          <span class="dt-label">{{ 'gatewayRoutes.requestedTokensLabel' | translate }}</span>
+          <input class="dt-input" type="number" formControlName="rateLimitRequestedTokens" min="1"
+            [placeholder]="'gatewayRoutes.requestedTokensPlaceholder' | translate" />
+          <span class="dt-hint">{{ 'gatewayRoutes.requestedTokensHint' | translate }}</span>
+        </label>
+
         @if (errorMsg()) {
         <div class="dt-error dt-field-full">{{ errorMsg() }}</div>
         }
@@ -158,6 +181,29 @@
           <code class="text-xs bg-base-200 px-2 py-0.5 rounded">{{ f }}</code>
           }
         </div>
+      </div>
+      }
+      @if (route.rateLimitReplenishRate || route.rateLimitBurstCapacity || route.rateLimitRequestedTokens) {
+      <div class="dt-detail-divider">
+        <span class="text-xs text-base-content/50">{{ 'gatewayRoutes.rateLimitTitle' | translate }}</span>
+      </div>
+      }
+      @if (route.rateLimitReplenishRate) {
+      <div class="dt-detail-row">
+        <span class="dt-detail-label">{{ 'gatewayRoutes.replenishRateLabel' | translate }}</span>
+        <span class="dt-detail-value">{{ route.rateLimitReplenishRate }}</span>
+      </div>
+      }
+      @if (route.rateLimitBurstCapacity) {
+      <div class="dt-detail-row">
+        <span class="dt-detail-label">{{ 'gatewayRoutes.burstCapacityLabel' | translate }}</span>
+        <span class="dt-detail-value">{{ route.rateLimitBurstCapacity }}</span>
+      </div>
+      }
+      @if (route.rateLimitRequestedTokens) {
+      <div class="dt-detail-row">
+        <span class="dt-detail-label">{{ 'gatewayRoutes.requestedTokensLabel' | translate }}</span>
+        <span class="dt-detail-value">{{ route.rateLimitRequestedTokens }}</span>
       </div>
       }
       <app-audit-info [data]="route" />

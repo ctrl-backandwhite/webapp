@@ -155,6 +155,20 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
         this.isModalOpen.set(true);
     }
 
+    openClone(item: OAuthClient) {
+        this.isEditMode.set(false);
+        this.editingId.set(null);
+        this.errorMsg.set('');
+        this.oauthClientForm.reset({
+            clientId: '',
+            clientSecret: '',
+            scopeIds: this.collectIds(item.scopes),
+            redirectUriIds: this.collectIds(item.redirectUris),
+            grantTypeIds: this.collectIds(item.grantTypes),
+        });
+        this.isModalOpen.set(true);
+    }
+
     closeModal() {
         if (this.saving()) {
             return;
@@ -314,6 +328,12 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
 
         if (isAdmin) {
             this.rowActions.push(
+                {
+                    id: 'clone',
+                    label: this.translate.instant('oauthClients.action.clone'),
+                    icon: 'fa-solid fa-clone',
+                    handler: (row) => this.openClone(row)
+                },
                 {
                     id: 'edit',
                     label: this.translate.instant('oauthClients.action.edit'),

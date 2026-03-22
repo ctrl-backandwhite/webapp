@@ -122,6 +122,19 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.isModalOpen.set(true);
     }
 
+    openClone(scope: Scope) {
+        this.isEditMode.set(false);
+        this.editingScopeId.set(null);
+        this.errorMsg.set('');
+        this.scopeForm.reset({
+            name: scope.name ?? '',
+            uniqueName: '',
+            description: scope.description ?? '',
+            enabled: scope.enabled ?? true,
+        });
+        this.isModalOpen.set(true);
+    }
+
     closeModal() {
         if (this.saving()) {
             return;
@@ -227,6 +240,12 @@ export class ScopesComponent implements OnInit, OnDestroy {
 
         if (isAdmin) {
             this.rowActions.push(
+                {
+                    id: 'clone',
+                    label: this.translate.instant('scopes.action.clone'),
+                    icon: 'fa-solid fa-clone',
+                    handler: (row) => this.openClone(row)
+                },
                 {
                     id: 'edit',
                     label: this.translate.instant('scopes.action.edit'),

@@ -65,7 +65,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "users": {
@@ -117,7 +118,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "groups": {
@@ -149,7 +151,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     },
     "noRoles": "No roles available"
   },
@@ -179,7 +182,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "redirectUris": {
@@ -206,7 +210,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "grantTypes": {
@@ -230,7 +235,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "oauthClients": {
@@ -269,7 +275,8 @@
     "action": {
       "detail": "Detail",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "gatewayRoutes": {
@@ -295,6 +302,16 @@
     "detailTitle": "Route detail",
     "deleteError": "Could not delete the route.",
     "saveError": "Could not save the route.",
+    "rateLimitTitle": "Rate Limiting",
+    "replenishRateLabel": "Replenish rate",
+    "replenishRatePlaceholder": "E.g.: 10",
+    "replenishRateHint": "Tokens per second (sustained traffic)",
+    "burstCapacityLabel": "Burst capacity",
+    "burstCapacityPlaceholder": "E.g.: 20",
+    "burstCapacityHint": "Maximum accumulated tokens for bursts",
+    "requestedTokensLabel": "Tokens per request",
+    "requestedTokensPlaceholder": "E.g.: 1",
+    "requestedTokensHint": "Token cost per request",
     "table": {
       "id": "ID",
       "uri": "URI",
@@ -305,7 +322,8 @@
       "detail": "Detail",
       "toggle": "Enable/Disable",
       "edit": "Edit",
-      "delete": "Delete"
+      "delete": "Delete",
+      "clone": "Clone"
     }
   },
   "common": {

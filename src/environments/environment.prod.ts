@@ -1,5 +1,6 @@
 export const environment = {
   production: true,
+  enableMockFallback: false,
   apiBaseUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
   gatewayApiUrl: 'https://mic-authservice-production.up.railway.app/api/v1',
 

@@ -6,17 +6,20 @@ import { BreadcrumbsComponent } from '../breadcrumbs/breadcrumbs.component';
 import { AuthService } from '../../auth/services/auth.service';
 import { TranslateModule } from '@ngx-translate/core';
 import { TourService } from '../../tour/tour.service';
+import { MockBannerComponent } from '../../../shared/components/mock-banner/mock-banner.component';
+import { MockIndicatorService } from '../../mock/mock-indicator.service';
 
 @Component({
   selector: 'app-admin-layout',
   standalone: true,
-  imports: [RouterOutlet, NavbarComponent, SidebarComponent, BreadcrumbsComponent, TranslateModule],
+  imports: [RouterOutlet, NavbarComponent, SidebarComponent, BreadcrumbsComponent, TranslateModule, MockBannerComponent],
   templateUrl: './admin-layout.component.html'
 })
 export class AdminLayoutComponent implements OnInit {
   private authService = inject(AuthService);
   private router = inject(Router);
   private tourService = inject(TourService);
+  mockIndicator = inject(MockIndicatorService);
 
   sidebar = viewChild.required(SidebarComponent);
 

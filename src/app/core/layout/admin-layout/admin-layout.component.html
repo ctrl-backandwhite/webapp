@@ -3,6 +3,9 @@
 
   <div class="drawer-content flex flex-col">
     <app-navbar (toggleSidebar)="onToggleSidebar()"></app-navbar>
+    @if (mockIndicator.isActive()) {
+    <app-mock-banner />
+    }
     <main class="p-4 md:p-6">
       <app-breadcrumbs></app-breadcrumbs>
       <router-outlet></router-outlet>

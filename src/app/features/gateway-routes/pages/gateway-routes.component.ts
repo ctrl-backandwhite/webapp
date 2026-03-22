@@ -66,6 +66,9 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
     predicates: this.fb.array<string>([], [Validators.required]),
     filters: this.fb.array<string>([]),
     order: [0, [Validators.required]],
+    rateLimitReplenishRate: [null as number | null, [Validators.min(1)]],
+    rateLimitBurstCapacity: [null as number | null, [Validators.min(1)]],
+    rateLimitRequestedTokens: [null as number | null, [Validators.min(1)]],
   });
 
   columnDefs: ColDef<GatewayRoute>[] = [];
@@ -119,6 +122,15 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
     this.editingRouteId.set(route.id);
     this.errorMsg.set('');
     this.resetFormWithValues(route);
+    this.isModalOpen.set(true);
+  }
+
+  openClone(route: GatewayRoute) {
+    this.isEditMode.set(false);
+    this.editingRouteId.set(null);
+    this.errorMsg.set('');
+    this.resetFormWithValues(route);
+    this.routeForm.patchValue({ id: '' });
     this.isModalOpen.set(true);
   }
 
@@ -181,7 +193,7 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: () => this.reloadService.triggerReload(),
-        error: () => {},
+        error: () => { },
       });
   }
 
@@ -209,6 +221,9 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
       predicates: raw.predicates as unknown as string[],
       filters: raw.filters as unknown as string[],
       order: raw.order,
+      rateLimitReplenishRate: raw.rateLimitReplenishRate || null,
+      rateLimitBurstCapacity: raw.rateLimitBurstCapacity || null,
+      rateLimitRequestedTokens: raw.rateLimitRequestedTokens || null,
     };
 
     this.saving.set(true);
@@ -272,7 +287,12 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
     this.predicatesArray.clear();
     this.filtersArray.clear();
     this.predicatesArray.push(this.fb.control('', Validators.required));
-    this.routeForm.reset({ id: '', uri: '', order: 0 });
+    this.routeForm.reset({
+      id: '', uri: '', order: 0,
+      rateLimitReplenishRate: null,
+      rateLimitBurstCapacity: null,
+      rateLimitRequestedTokens: null,
+    });
   }
 
   private resetFormWithValues(route: GatewayRoute) {
@@ -283,7 +303,12 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
     if (this.predicatesArray.length === 0) {
       this.predicatesArray.push(this.fb.control('', Validators.required));
     }
-    this.routeForm.patchValue({ id: route.id, uri: route.uri, order: route.order });
+    this.routeForm.patchValue({
+      id: route.id, uri: route.uri, order: route.order,
+      rateLimitReplenishRate: route.rateLimitReplenishRate ?? null,
+      rateLimitBurstCapacity: route.rateLimitBurstCapacity ?? null,
+      rateLimitRequestedTokens: route.rateLimitRequestedTokens ?? null,
+    });
   }
 
   private buildColumnDefs() {
@@ -337,6 +362,12 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
           label: this.translate.instant('gatewayRoutes.action.toggle'),
           icon: 'fa-solid fa-power-off',
           handler: (row) => this.toggleRoute(row),
+        },
+        {
+          id: 'clone',
+          label: this.translate.instant('gatewayRoutes.action.clone'),
+          icon: 'fa-solid fa-clone',
+          handler: (row) => this.openClone(row),
         },
         {
           id: 'edit',

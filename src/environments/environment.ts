@@ -1,5 +1,6 @@
 export const environment = {
   production: false,
+  enableMockFallback: true,
   apiBaseUrl: 'http://localhost:6001/api/v1',
   gatewayApiUrl: 'http://localhost:9000/api/v1',
 

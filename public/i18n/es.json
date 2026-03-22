@@ -65,7 +65,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "users": {
@@ -117,7 +118,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "groups": {
@@ -145,7 +147,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     },
     "noRoles": "No existen roles"
   },
@@ -175,7 +178,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "redirectUris": {
@@ -202,7 +206,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "grantTypes": {
@@ -226,7 +231,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "oauthClients": {
@@ -265,7 +271,8 @@
     "action": {
       "detail": "Detalle",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "gatewayRoutes": {
@@ -291,6 +298,16 @@
     "detailTitle": "Detalle de ruta",
     "deleteError": "No se pudo eliminar la ruta.",
     "saveError": "No se pudo guardar la ruta.",
+    "rateLimitTitle": "Límite de tasa",
+    "replenishRateLabel": "Tasa de reposición",
+    "replenishRatePlaceholder": "Ej: 10",
+    "replenishRateHint": "Tokens por segundo (tráfico sostenido)",
+    "burstCapacityLabel": "Capacidad de ráfaga",
+    "burstCapacityPlaceholder": "Ej: 20",
+    "burstCapacityHint": "Máximo de tokens acumulados para ráfagas",
+    "requestedTokensLabel": "Tokens por petición",
+    "requestedTokensPlaceholder": "Ej: 1",
+    "requestedTokensHint": "Costo en tokens de cada petición",
     "table": {
       "id": "ID",
       "uri": "URI",
@@ -301,7 +318,8 @@
       "detail": "Detalle",
       "toggle": "Activar/Desactivar",
       "edit": "Editar",
-      "delete": "Eliminar"
+      "delete": "Eliminar",
+      "clone": "Clonar"
     }
   },
   "common": {
