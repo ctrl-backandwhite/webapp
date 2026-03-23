@@ -26,6 +26,7 @@ export class AuthGuardService {
   private async buildAuthorizeUrl(): Promise<string> {
     const state = this.generateRandomString(32);
     const nonce = this.generateRandomString(32);
+    sessionStorage.setItem('oauth_state', state);
     const pkce = await this.pkceService.generateChallengeAsync();
     const forceLogin = localStorage.getItem('forceLogin') === '1';
 
@@ -49,11 +50,9 @@ export class AuthGuardService {
 
   private generateRandomString(length: number): string {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-._~';
-    let result = '';
-    for (let i = 0; i < length; i++) {
-      result += chars.charAt(Math.floor(Math.random() * chars.length));
-    }
-    return result;
+    const randomValues = new Uint8Array(length);
+    crypto.getRandomValues(randomValues);
+    return Array.from(randomValues, v => chars[v % chars.length]).join('');
   }
 }
 

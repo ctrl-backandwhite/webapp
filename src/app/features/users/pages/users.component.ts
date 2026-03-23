@@ -420,7 +420,6 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     if (!this.isEditMode() && raw.password) {
       payload.password = raw.password;
-      payload.confirmPassword = raw.confirmPassword;
     }
 
     return payload;

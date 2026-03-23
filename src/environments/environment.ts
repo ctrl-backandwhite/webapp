@@ -11,7 +11,5 @@ export const environment = {
   scope: 'openid',
   responseType: 'code',
   responseMode: 'query',
-  code_challenge_method: 'S256',
-  state: 'lkrg7m7jms',
-  nonce: 'n7x4lgfhri'
+  code_challenge_method: 'S256'
 };

@@ -41,7 +41,6 @@ export class AuthCallbackComponent implements OnInit {
     // Loop detection: break infinite redirect cycles
     const retries = parseInt(sessionStorage.getItem(AuthCallbackComponent.RETRY_KEY) || '0', 10);
     if (retries >= AuthCallbackComponent.MAX_RETRIES) {
-      console.error('[AuthCallback] Max retries reached, breaking loop');
       sessionStorage.removeItem(AuthCallbackComponent.RETRY_KEY);
       this.errorMessage = 'Authentication failed after multiple attempts. Please try again.';
       return;
@@ -51,27 +50,28 @@ export class AuthCallbackComponent implements OnInit {
     try {
       const code = this.extractAuthorizationCode();
 
+      if (!this.validateState()) {
+        this.errorMessage = 'Invalid authentication state. Possible CSRF attack.';
+        return;
+      }
+
       if (!code) {
-        console.error('[AuthCallback] No authorization code found');
         this.errorMessage = 'No authorization code received from the server.';
         return;
       }
 
       this.authService.exchangeCodeForToken(code)
         .then(() => {
-          // Success: clear retry counter and navigate
           sessionStorage.removeItem(AuthCallbackComponent.RETRY_KEY);
+          sessionStorage.removeItem('oauth_state');
           localStorage.removeItem('authInitiated');
           localStorage.removeItem('forceLogin');
-          console.log('[AuthCallback] Successfully authenticated');
           this.router.navigate(['/admin']);
         })
-        .catch((error) => {
-          console.error('[AuthCallback] Token exchange failed:', error);
+        .catch(() => {
           this.errorMessage = 'Failed to complete authentication. Please try again.';
         });
-    } catch (error) {
-      console.error('[AuthCallback] Error:', error);
+    } catch {
       this.errorMessage = 'An unexpected error occurred during authentication.';
     }
   }
@@ -100,5 +100,18 @@ export class AuthCallbackComponent implements OnInit {
 
     const hashParams = new URLSearchParams(hash);
     return hashParams.get('code');
+  }
+
+  private validateState(): boolean {
+    const url = new URL(window.location.href);
+    const receivedState = url.searchParams.get('state')
+      || new URLSearchParams(url.hash.replace(/^#/, '')).get('state');
+    const expectedState = sessionStorage.getItem('oauth_state');
+
+    if (!expectedState || !receivedState) {
+      return false;
+    }
+
+    return expectedState === receivedState;
   }
 }
