@@ -503,7 +503,7 @@ body {
 	display: grid;
 	grid-template-columns: 140px 1fr;
 	column-gap: 8px;
-	align-items: center;
+	align-items: start;
 	padding: 6px 0;
 }
 
@@ -518,8 +518,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	padding: 8px 0 2px;
-	border-top: 1px solid var(--bc, #e5e7eb);
-	opacity: 0.2;
+	border-top: 1px solid hsl(var(--bc) / 0.15);
 }
 
 .dt-detail-label {
@@ -665,6 +664,31 @@ body {
 	line-height: 1;
 	width: max-content;
 	white-space: nowrap;
+}
+
+/* Tag styles */
+.dt-tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 12px;
+	font-size: 12px;
+	font-family: ui-monospace, monospace;
+	background-color: hsl(var(--p) / 0.08);
+	color: hsl(var(--pc, var(--bc)));
+	border: 1px solid hsl(var(--p) / 0.25);
+	border-radius: 20px;
+	line-height: 1.4;
+	word-break: break-all;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.dt-tag-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	width: 100%;
+	padding-top: 2px;
 }
 
 /* Audit info styles */

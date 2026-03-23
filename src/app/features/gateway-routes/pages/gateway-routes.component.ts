@@ -628,4 +628,21 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
   private getFieldValue(row: GatewayRoute, field: string): unknown {
     return (row as unknown as Record<string, unknown>)[field];
   }
+
+  parseEntries(items: string[]): { label: string; value: string }[] {
+    const result: { label: string; value: string }[] = [];
+    for (const item of items) {
+      const eqIndex = item.indexOf('=');
+      if (eqIndex === -1) {
+        result.push({ label: '', value: item });
+        continue;
+      }
+      const label = item.substring(0, eqIndex);
+      const values = item.substring(eqIndex + 1).split(',');
+      for (const v of values) {
+        result.push({ label, value: v.trim() });
+      }
+    }
+    return result;
+  }
 }

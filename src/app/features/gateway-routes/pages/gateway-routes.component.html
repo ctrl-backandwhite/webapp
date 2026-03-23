@@ -244,18 +244,18 @@
       </div>
       <div class="dt-detail-row">
         <span class="dt-detail-label">{{ 'gatewayRoutes.predicatesLabel' | translate }}</span>
-        <div class="dt-detail-value flex flex-col gap-1">
-          @for (p of route.predicates; track $index) {
-          <code class="text-xs bg-base-200 px-2 py-0.5 rounded">{{ p }}</code>
+        <div class="dt-tag-list">
+          @for (entry of parseEntries(route.predicates); track $index) {
+          <span class="dt-tag"><strong>{{ entry.label }}</strong> {{ entry.value }}</span>
           }
         </div>
       </div>
       @if (route.filters.length) {
       <div class="dt-detail-row">
         <span class="dt-detail-label">{{ 'gatewayRoutes.filtersLabel' | translate }}</span>
-        <div class="dt-detail-value flex flex-col gap-1">
-          @for (f of route.filters; track $index) {
-          <code class="text-xs bg-base-200 px-2 py-0.5 rounded">{{ f }}</code>
+        <div class="dt-tag-list">
+          @for (entry of parseEntries(route.filters); track $index) {
+          <span class="dt-tag"><strong>{{ entry.label }}</strong> {{ entry.value }}</span>
           }
         </div>
       </div>
