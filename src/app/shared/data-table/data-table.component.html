@@ -1,10 +1,6 @@
 <div data-tour="table" class="w-full flex flex-col gap-3 dt-table-fade">
   <div class="flex flex-col sm:flex-row sm:items-center sm:justify-end gap-2">
     <div class="flex flex-wrap items-center justify-end gap-2">
-      <button class="btn btn-ghost btn-sm" type="button" [disabled]="loading()" (click)="refresh()">
-        <i class="fa-solid fa-arrows-rotate" [class.animate-spin]="loading()"></i>
-        <span>{{ 'table.refresh' | translate }}</span>
-      </button>
       <button class="btn btn-ghost btn-sm" type="button" (click)="exportCsv()">
         <span>{{ 'table.exportCsv' | translate }}</span>
       </button>
@@ -14,14 +10,14 @@
 
   @if (bulkActions.length && selectedRows().length) {
   <div class="flex items-center gap-2">
-    <span class="text-xs text-base-content/60">
-      {{ 'table.selected' | translate:{ count: selectedRows().length } }}
-    </span>
     @for (action of bulkActions; track action.id) {
-    <button class="btn btn-ghost btn-xs" type="button" (click)="onBulkAction(action)">
+    <button class="btn btn-ghost btn-xs border border-error text-error" type="button" (click)="onBulkAction(action)">
       {{ action.label }}
     </button>
     }
+    <span class="text-xs text-base-content/60">
+      {{ 'table.selected' | translate:{ count: selectedRows().length } }}
+    </span>
   </div>
   }
 

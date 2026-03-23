@@ -1,5 +1,6 @@
 import { Role } from '../../features/roles/interfaces/role.model';
 import { Scope } from '../../features/scopes/interfaces/scope.model';
+import { Permission } from '../../features/permissions/interfaces/permission.model';
 import { User } from '../../features/users/interfaces/user.model';
 import { Group } from '../../features/groups/interfaces/group.model';
 import { OAuthClient } from '../../features/oauth-clients/interfaces/oauth-client.model';
@@ -12,9 +13,16 @@ const MOCK_AUDIT = { createdAt: MOCK_TIMESTAMP, updatedAt: MOCK_TIMESTAMP, creat
 
 // ── Roles ────────────────────────────────────────────────────────
 const MOCK_ROLES: (Role & { _mock: true })[] = [
-    { id: 1, name: 'Admin', uniqueName: 'ROLE_ADMIN', description: 'Administrator role', enabled: true, ...MOCK_AUDIT, _mock: true },
-    { id: 2, name: 'User', uniqueName: 'ROLE_USER', description: 'Standard user role', enabled: true, ...MOCK_AUDIT, _mock: true },
-    { id: 3, name: 'Manager', uniqueName: 'ROLE_MANAGER', description: 'Manager role', enabled: false, ...MOCK_AUDIT, _mock: true },
+    { id: 1, name: 'Admin', uniqueName: 'ROLE_ADMIN', description: 'Administrator role', enabled: true, permissions: [], ...MOCK_AUDIT, _mock: true },
+    { id: 2, name: 'User', uniqueName: 'ROLE_USER', description: 'Standard user role', enabled: true, permissions: [], ...MOCK_AUDIT, _mock: true },
+    { id: 3, name: 'Manager', uniqueName: 'ROLE_MANAGER', description: 'Manager role', enabled: false, permissions: [], ...MOCK_AUDIT, _mock: true },
+];
+
+// ── Permissions ──────────────────────────────────────────────────
+const MOCK_PERMISSIONS: (Permission & { _mock: true })[] = [
+    { id: 1, name: 'Read Users', uniqueName: 'PERM_READ_USERS', description: 'Read users permission', enabled: true, ...MOCK_AUDIT, _mock: true },
+    { id: 2, name: 'Write Users', uniqueName: 'PERM_WRITE_USERS', description: 'Write users permission', enabled: true, ...MOCK_AUDIT, _mock: true },
+    { id: 3, name: 'Delete Users', uniqueName: 'PERM_DELETE_USERS', description: 'Delete users permission', enabled: false, ...MOCK_AUDIT, _mock: true },
 ];
 
 // ── Scopes ───────────────────────────────────────────────────────
@@ -42,8 +50,8 @@ const MOCK_USERS: (User & { _mock: true })[] = [
 
 // ── Groups ───────────────────────────────────────────────────────
 const MOCK_GROUPS: (Group & { _mock: true })[] = [
-    { id: 1, name: 'Administrators', uniqueName: 'GRP_ADMINS', description: 'Admin group', enabled: true, roles: [MOCK_ROLES[0]], ...MOCK_AUDIT, _mock: true },
-    { id: 2, name: 'Editors', uniqueName: 'GRP_EDITORS', description: 'Editor group', enabled: true, roles: [MOCK_ROLES[1]], ...MOCK_AUDIT, _mock: true },
+    { id: 1, name: 'Administrators', uniqueName: 'GRP_ADMINS', description: 'Admin group', enabled: true, roles: [MOCK_ROLES[0]], permissions: [], ...MOCK_AUDIT, _mock: true },
+    { id: 2, name: 'Editors', uniqueName: 'GRP_EDITORS', description: 'Editor group', enabled: true, roles: [MOCK_ROLES[1]], permissions: [], ...MOCK_AUDIT, _mock: true },
 ];
 
 // ── Redirect URIs ────────────────────────────────────────────────
@@ -90,6 +98,7 @@ const MOCK_GATEWAY_ROUTES: (GatewayRoute & { _mock: true })[] = [
 export const MOCK_REGISTRY: Record<string, readonly any[]> = {
     'roles': MOCK_ROLES,
     'scopes': MOCK_SCOPES,
+    'permissions': MOCK_PERMISSIONS,
     'users': MOCK_USERS,
     'groups': MOCK_GROUPS,
     'oauthclients': MOCK_OAUTH_CLIENTS,

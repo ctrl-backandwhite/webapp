@@ -6,6 +6,8 @@ import { GroupsReloadService } from '../services/groups-reload.service';
 import { Group, GroupInput } from '../interfaces/group.model';
 import { RolesService } from '../../roles/services/roles.service';
 import { Role } from '../../roles/interfaces/role.model';
+import { PermissionsService } from '../../permissions/services/permissions.service';
+import { Permission } from '../../permissions/interfaces/permission.model';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
@@ -13,7 +15,7 @@ import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.compon
 import { NestedEntitiesComponent } from '../../../shared/nested-entities/nested-entities.component';
 import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -29,6 +31,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
     private groupsReloadService = inject(GroupsReloadService);
     private groupsService = inject(GroupsService);
     private rolesService = inject(RolesService);
+    private permissionsService = inject(PermissionsService);
     private fb = inject(FormBuilder);
     private translate = inject(TranslateService);
     private roleService = inject(RoleService);
@@ -37,7 +40,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
     private uniqueNameSub?: Subscription;
     private langSub?: Subscription;
 
-    reloadToken = 0;
+    reloadToken = signal(0);
 
     isModalOpen = signal(false);
     isEditMode = signal(false);
@@ -50,11 +53,19 @@ export class GroupsComponent implements OnInit, OnDestroy {
     deleteError = signal('');
     deleteTarget = signal<Group | null>(null);
 
+    isBulkDeleteOpen = signal(false);
+    bulkDeleting = signal(false);
+    bulkDeleteError = signal('');
+    bulkDeleteTargets = signal<Group[]>([]);
+
     isDetailOpen = signal(false);
     detailGroup = signal<Group | null>(null);
 
     roles = signal<Role[]>([]);
     roleSearch = signal('');
+
+    permissions = signal<Permission[]>([]);
+    permissionSearch = signal('');
 
     groupForm = this.fb.nonNullable.group({
         name: ['', [Validators.required]],
@@ -62,10 +73,12 @@ export class GroupsComponent implements OnInit, OnDestroy {
         description: [''],
         enabled: [true],
         roleIds: this.fb.nonNullable.control<number[]>([]),
+        permissionIds: this.fb.nonNullable.control<number[]>([]),
     });
 
     columnDefs: ColDef<Group>[] = [];
     rowActions: DataTableAction<Group>[] = [];
+    bulkActions: DataTableBulkAction<Group>[] = [];
 
     onEditGroup(row: Group) {
         this.openEdit(row);
@@ -89,15 +102,17 @@ export class GroupsComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.buildColumnDefs();
         this.buildRowActions();
+        this.buildBulkActions();
         this.langSub = this.translate.onLangChange.subscribe(() => {
             this.buildColumnDefs();
             this.buildRowActions();
+            this.buildBulkActions();
         });
 
         this.loadReferenceData();
 
         this.reloadSub = this.groupsReloadService.reload$.subscribe(() => {
-            this.reloadToken += 1;
+            this.reloadToken.update(v => v + 1);
         });
 
         this.uniqueNameSub = this.groupForm.controls.uniqueName.valueChanges.subscribe((value) => {
@@ -125,6 +140,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
             description: '',
             enabled: true,
             roleIds: [],
+            permissionIds: [],
         });
         this.isModalOpen.set(true);
     }
@@ -139,6 +155,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
             description: group.description ?? '',
             enabled: group.enabled ?? true,
             roleIds: this.collectIds(group.roles),
+            permissionIds: this.collectIds(group.permissions),
         });
         this.isModalOpen.set(true);
     }
@@ -153,6 +170,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
             description: group.description ?? '',
             enabled: group.enabled ?? true,
             roleIds: this.collectIds(group.roles),
+            permissionIds: this.collectIds(group.permissions),
         });
         this.isModalOpen.set(true);
     }
@@ -241,9 +259,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
                 minWidth: 100,
                 maxWidth: 120,
                 cellRenderer: (params: { value: boolean }) =>
-                    params.value
-                        ? this.translate.instant('common.yes')
-                        : this.translate.instant('common.no')
+                    `<span class="inline-block w-3 h-3 rounded-full ${params.value ? 'bg-green-300 ring-2 ring-green-200' : 'bg-red-300 ring-2 ring-red-200'}"></span>`
             }
         ];
     }
@@ -256,7 +272,8 @@ export class GroupsComponent implements OnInit, OnDestroy {
                 id: 'detail',
                 label: this.translate.instant('groups.action.detail'),
                 icon: 'fa-solid fa-eye',
-                handler: (row) => this.onDetailGroup(row)
+                handler: (row) => this.onDetailGroup(row),
+                buttonClass: () => 'dt-btn-detail'
             }
         ];
 
@@ -266,25 +283,29 @@ export class GroupsComponent implements OnInit, OnDestroy {
                     id: 'toggle',
                     label: this.translate.instant('groups.action.toggle'),
                     icon: 'fa-solid fa-power-off',
-                    handler: (row) => this.toggleGroup(row)
+                    handler: (row) => this.toggleGroup(row),
+                    buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
                 },
                 {
                     id: 'clone',
                     label: this.translate.instant('groups.action.clone'),
                     icon: 'fa-solid fa-clone',
-                    handler: (row) => this.openClone(row)
+                    handler: (row) => this.openClone(row),
+                    buttonClass: () => 'dt-btn-clone'
                 },
                 {
                     id: 'edit',
                     label: this.translate.instant('groups.action.edit'),
                     icon: 'fa-solid fa-pen',
-                    handler: (row) => this.onEditGroup(row)
+                    handler: (row) => this.onEditGroup(row),
+                    buttonClass: () => 'dt-btn-edit'
                 },
                 {
                     id: 'delete',
                     label: this.translate.instant('groups.action.delete'),
                     icon: 'fa-solid fa-trash',
-                    handler: (row) => this.onDeleteGroup(row)
+                    handler: (row) => this.onDeleteGroup(row),
+                    buttonClass: () => 'dt-btn-delete'
                 }
             );
         }
@@ -337,6 +358,7 @@ export class GroupsComponent implements OnInit, OnDestroy {
             description: raw.description,
             enabled: raw.enabled,
             roleIds: this.uniqueIds(raw.roleIds),
+            permissionIds: this.uniqueIds(raw.permissionIds),
         };
     }
 
@@ -474,14 +496,33 @@ export class GroupsComponent implements OnInit, OnDestroy {
     }
 
     private loadReferenceData(): void {
-        this.rolesService.list().pipe(take(1)).subscribe({
+        this.rolesService.listByEnabled(true).pipe(take(1)).subscribe({
             next: (roles: Role[]) => this.roles.set(roles),
             error: () => this.roles.set([]),
+        });
+        this.permissionsService.listByEnabled(true).pipe(take(1)).subscribe({
+            next: (perms: Permission[]) => this.permissions.set(perms),
+            error: () => this.permissions.set([]),
         });
     }
 
     filteredRoles(): Role[] {
         return this.filterByTerm(this.roles(), this.roleSearch());
+    }
+
+    filteredPermissions(): Permission[] {
+        return this.filterByTerm(this.permissions(), this.permissionSearch());
+    }
+
+    togglePermissionSelection(id: number): void {
+        const control = this.groupForm.controls.permissionIds;
+        const current = new Set(control.value ?? []);
+        if (current.has(id)) {
+            current.delete(id);
+        } else {
+            current.add(id);
+        }
+        control.setValue(Array.from(current));
     }
 
     toggleRoleSelection(id: number): void {
@@ -533,5 +574,61 @@ export class GroupsComponent implements OnInit, OnDestroy {
         return Array.from(new Set(names)).join(', ') || '-';
     }
 
+    getPermissionNames(group: Group | null): string {
+        if (!group?.permissions?.length) {
+            return '-';
+        }
+        const names = group.permissions.map((p) => p.name).filter(Boolean);
+        return Array.from(new Set(names)).join(', ') || '-';
+    }
+
     trackByGroupId = (row: Group) => String(row.id);
+
+    private buildBulkActions() {
+        const isAdmin = this.roleService.isAdmin();
+        this.bulkActions = [];
+        if (isAdmin) {
+            this.bulkActions.push({
+                id: 'bulk-delete',
+                label: this.translate.instant('groups.action.bulkDelete'),
+                handler: (rows) => this.openBulkDelete(rows),
+            });
+        }
+    }
+
+    openBulkDelete(rows: Group[]) {
+        this.bulkDeleteTargets.set(rows);
+        this.bulkDeleteError.set('');
+        this.bulkDeleting.set(false);
+        this.isBulkDeleteOpen.set(true);
+    }
+
+    closeBulkDelete() {
+        if (this.bulkDeleting()) return;
+        this.isBulkDeleteOpen.set(false);
+        this.bulkDeleteError.set('');
+        this.bulkDeleteTargets.set([]);
+    }
+
+    confirmBulkDelete() {
+        const targets = this.bulkDeleteTargets();
+        if (!targets.length) return;
+        this.bulkDeleting.set(true);
+        this.bulkDeleteError.set('');
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.groupsService.bulkDelete(targets.map(r => r.id))
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.bulkDeleting.set(false);
+                    this.isBulkDeleteOpen.set(false);
+                    this.bulkDeleteTargets.set([]);
+                    this.groupsReloadService.triggerReload();
+                },
+                error: () => {
+                    this.bulkDeleting.set(false);
+                    this.bulkDeleteError.set(this.translate.instant('groups.bulkDeleteError'));
+                },
+            });
+    }
 }

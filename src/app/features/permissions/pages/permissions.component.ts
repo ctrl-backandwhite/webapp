@@ -1,9 +1,9 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ScopesService } from '../services/scopes.service';
-import { ScopesReloadService } from '../services/scopes-reload.service';
-import { Scope } from '../interfaces/scope.model';
+import { PermissionsService } from '../services/permissions.service';
+import { PermissionsReloadService } from '../services/permissions-reload.service';
+import { Permission } from '../interfaces/permission.model';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
@@ -17,19 +17,20 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 import { RoleService } from '../../../core/auth/services/role.service';
 
 @Component({
-    selector: 'app-scopes',
+    selector: 'app-permissions',
     standalone: true,
     imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, HasRoleDirective, TranslateModule],
-    templateUrl: './scopes.component.html',
+    templateUrl: './permissions.component.html',
 })
-export class ScopesComponent implements OnInit, OnDestroy {
-    private scopesReloadService = inject(ScopesReloadService);
-    private scopesService = inject(ScopesService);
+export class PermissionsComponent implements OnInit, OnDestroy {
+    private permissionsReloadService = inject(PermissionsReloadService);
+    private permissionsService = inject(PermissionsService);
     private fb = inject(FormBuilder);
     private translate = inject(TranslateService);
     private roleService = inject(RoleService);
     private reloadSub?: Subscription;
     private saveSub?: Subscription;
+    private uniqueNameSub?: Subscription;
     private langSub?: Subscription;
 
     reloadToken = signal(0);
@@ -38,58 +39,41 @@ export class ScopesComponent implements OnInit, OnDestroy {
     isEditMode = signal(false);
     saving = signal(false);
     errorMsg = signal('');
-    editingScopeId = signal<number | null>(null);
+    editingPermissionId = signal<number | null>(null);
 
     isDeleteOpen = signal(false);
     deleting = signal(false);
     deleteError = signal('');
-    deleteTarget = signal<Scope | null>(null);
+    deleteTarget = signal<Permission | null>(null);
 
     isBulkDeleteOpen = signal(false);
     bulkDeleting = signal(false);
     bulkDeleteError = signal('');
-    bulkDeleteTargets = signal<Scope[]>([]);
+    bulkDeleteTargets = signal<Permission[]>([]);
 
     isDetailOpen = signal(false);
-    detailScope = signal<Scope | null>(null);
+    detailPermission = signal<Permission | null>(null);
 
-    scopeNameOptions = [
-        { value: 'Read', label: 'Read' },
-        { value: 'Write', label: 'Write' },
-        { value: 'Edit', label: 'Edit' },
-        { value: 'Delete', label: 'Delete' },
-    ];
-
-    scopeForm = this.fb.nonNullable.group({
+    permissionForm = this.fb.nonNullable.group({
         name: ['', [Validators.required]],
         uniqueName: ['', [Validators.required]],
         description: [''],
         enabled: [true],
     });
 
-    constructor() {
-        this.scopeForm.controls.name.valueChanges.subscribe((name) => {
-            if (name) {
-                this.scopeForm.controls.uniqueName.setValue('SCOPE_' + name.toUpperCase());
-            } else {
-                this.scopeForm.controls.uniqueName.setValue('');
-            }
-        });
-    }
+    columnDefs: ColDef<Permission>[] = [];
+    rowActions: DataTableAction<Permission>[] = [];
+    bulkActions: DataTableBulkAction<Permission>[] = [];
 
-    columnDefs: ColDef<Scope>[] = [];
-    rowActions: DataTableAction<Scope>[] = [];
-    bulkActions: DataTableBulkAction<Scope>[] = [];
-
-    onEditScope(row: Scope) {
+    onEditPermission(row: Permission) {
         this.openEdit(row);
     }
 
-    onDeleteScope(row: Scope) {
+    onDeletePermission(row: Permission) {
         this.openDelete(row);
     }
 
-    onDetailScope(row: Scope) {
+    onDetailPermission(row: Permission) {
         this.openDetail(row);
     }
 
@@ -110,22 +94,30 @@ export class ScopesComponent implements OnInit, OnDestroy {
             this.buildBulkActions();
         });
 
-        this.reloadSub = this.scopesReloadService.reload$.subscribe(() => {
+        this.reloadSub = this.permissionsReloadService.reload$.subscribe(() => {
             this.reloadToken.update(v => v + 1);
+        });
+
+        this.uniqueNameSub = this.permissionForm.controls.uniqueName.valueChanges.subscribe((value) => {
+            const upper = (value ?? '').toUpperCase();
+            if (value !== upper) {
+                this.permissionForm.controls.uniqueName.setValue(upper, { emitEvent: false });
+            }
         });
     }
 
     ngOnDestroy(): void {
         this.reloadSub?.unsubscribe();
         this.saveSub?.unsubscribe();
+        this.uniqueNameSub?.unsubscribe();
         this.langSub?.unsubscribe();
     }
 
     openCreate() {
         this.isEditMode.set(false);
-        this.editingScopeId.set(null);
+        this.editingPermissionId.set(null);
         this.errorMsg.set('');
-        this.scopeForm.reset({
+        this.permissionForm.reset({
             name: '',
             uniqueName: '',
             description: '',
@@ -134,28 +126,28 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.isModalOpen.set(true);
     }
 
-    openEdit(scope: Scope) {
+    openEdit(permission: Permission) {
         this.isEditMode.set(true);
-        this.editingScopeId.set(scope.id);
+        this.editingPermissionId.set(permission.id);
         this.errorMsg.set('');
-        this.scopeForm.reset({
-            name: scope.name ?? '',
-            uniqueName: scope.uniqueName ?? '',
-            description: scope.description ?? '',
-            enabled: scope.enabled ?? true,
+        this.permissionForm.reset({
+            name: permission.name ?? '',
+            uniqueName: permission.uniqueName ?? '',
+            description: permission.description ?? '',
+            enabled: permission.enabled ?? true,
         });
         this.isModalOpen.set(true);
     }
 
-    openClone(scope: Scope) {
+    openClone(permission: Permission) {
         this.isEditMode.set(false);
-        this.editingScopeId.set(null);
+        this.editingPermissionId.set(null);
         this.errorMsg.set('');
-        this.scopeForm.reset({
-            name: scope.name ?? '',
+        this.permissionForm.reset({
+            name: permission.name ?? '',
             uniqueName: '',
-            description: scope.description ?? '',
-            enabled: scope.enabled ?? true,
+            description: permission.description ?? '',
+            enabled: permission.enabled ?? true,
         });
         this.isModalOpen.set(true);
     }
@@ -168,8 +160,8 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.errorMsg.set('');
     }
 
-    openDelete(scope: Scope) {
-        this.deleteTarget.set(scope);
+    openDelete(permission: Permission) {
+        this.deleteTarget.set(permission);
         this.deleteError.set('');
         this.deleting.set(false);
         this.isDeleteOpen.set(true);
@@ -184,14 +176,14 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.deleteTarget.set(null);
     }
 
-    openDetail(scope: Scope) {
-        this.detailScope.set(scope);
+    openDetail(permission: Permission) {
+        this.detailPermission.set(permission);
         this.isDetailOpen.set(true);
     }
 
     closeDetail() {
         this.isDetailOpen.set(false);
-        this.detailScope.set(null);
+        this.detailPermission.set(null);
     }
 
     confirmDelete() {
@@ -203,18 +195,18 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.deleting.set(true);
         this.deleteError.set('');
         this.saveSub?.unsubscribe();
-        this.saveSub = this.scopesService.delete(target.id)
+        this.saveSub = this.permissionsService.delete(target.id)
             .pipe(take(1))
             .subscribe({
                 next: () => {
                     this.deleting.set(false);
                     this.isDeleteOpen.set(false);
                     this.deleteTarget.set(null);
-                    this.scopesReloadService.triggerReload();
+                    this.permissionsReloadService.triggerReload();
                 },
                 error: () => {
                     this.deleting.set(false);
-                    this.deleteError.set(this.translate.instant('scopes.deleteError'));
+                    this.deleteError.set(this.translate.instant('permissions.deleteError'));
                 }
             });
     }
@@ -222,25 +214,25 @@ export class ScopesComponent implements OnInit, OnDestroy {
     private buildColumnDefs(): void {
         this.columnDefs = [
             {
-                field: 'id' as keyof Scope,
-                headerName: this.translate.instant('scopes.table.id'),
+                field: 'id' as keyof Permission,
+                headerName: this.translate.instant('permissions.table.id'),
                 minWidth: 80,
                 maxWidth: 120
             },
-            { field: 'name' as keyof Scope, headerName: this.translate.instant('scopes.table.name'), flex: 1 },
+            { field: 'name' as keyof Permission, headerName: this.translate.instant('permissions.table.name'), flex: 1 },
             {
-                field: 'uniqueName' as keyof Scope,
-                headerName: this.translate.instant('scopes.table.uniqueName'),
+                field: 'uniqueName' as keyof Permission,
+                headerName: this.translate.instant('permissions.table.uniqueName'),
                 flex: 1
             },
             {
-                field: 'description' as keyof Scope,
-                headerName: this.translate.instant('scopes.table.description'),
+                field: 'description' as keyof Permission,
+                headerName: this.translate.instant('permissions.table.description'),
                 flex: 2
             },
             {
-                field: 'enabled' as keyof Scope,
-                headerName: this.translate.instant('scopes.table.active'),
+                field: 'enabled' as keyof Permission,
+                headerName: this.translate.instant('permissions.table.active'),
                 minWidth: 100,
                 maxWidth: 120,
                 cellRenderer: (params: { value: boolean }) =>
@@ -255,9 +247,9 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.rowActions = [
             {
                 id: 'detail',
-                label: this.translate.instant('scopes.action.detail'),
+                label: this.translate.instant('permissions.action.detail'),
                 icon: 'fa-solid fa-eye',
-                handler: (row) => this.onDetailScope(row),
+                handler: (row) => this.onDetailPermission(row),
                 buttonClass: () => 'dt-btn-detail'
             }
         ];
@@ -266,59 +258,59 @@ export class ScopesComponent implements OnInit, OnDestroy {
             this.rowActions.push(
                 {
                     id: 'toggle',
-                    label: this.translate.instant('scopes.action.toggle'),
+                    label: this.translate.instant('permissions.action.toggle'),
                     icon: 'fa-solid fa-power-off',
-                    handler: (row) => this.toggleScope(row),
+                    handler: (row) => this.togglePermission(row),
                     buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
                 },
                 {
                     id: 'clone',
-                    label: this.translate.instant('scopes.action.clone'),
+                    label: this.translate.instant('permissions.action.clone'),
                     icon: 'fa-solid fa-clone',
                     handler: (row) => this.openClone(row),
                     buttonClass: () => 'dt-btn-clone'
                 },
                 {
                     id: 'edit',
-                    label: this.translate.instant('scopes.action.edit'),
+                    label: this.translate.instant('permissions.action.edit'),
                     icon: 'fa-solid fa-pen',
-                    handler: (row) => this.onEditScope(row),
+                    handler: (row) => this.onEditPermission(row),
                     buttonClass: () => 'dt-btn-edit'
                 },
                 {
                     id: 'delete',
-                    label: this.translate.instant('scopes.action.delete'),
+                    label: this.translate.instant('permissions.action.delete'),
                     icon: 'fa-solid fa-trash',
-                    handler: (row) => this.onDeleteScope(row),
+                    handler: (row) => this.onDeletePermission(row),
                     buttonClass: () => 'dt-btn-delete'
                 }
             );
         }
     }
 
-    toggleScope(scope: Scope) {
+    togglePermission(permission: Permission) {
         this.saveSub?.unsubscribe();
-        this.saveSub = this.scopesService.toggle(scope.id)
+        this.saveSub = this.permissionsService.toggle(permission.id)
             .pipe(take(1))
             .subscribe({
-                next: () => this.scopesReloadService.triggerReload(),
+                next: () => this.permissionsReloadService.triggerReload(),
                 error: () => { },
             });
     }
 
-    submitScope() {
-        if (this.scopeForm.invalid) {
-            this.scopeForm.markAllAsTouched();
+    submitPermission() {
+        if (this.permissionForm.invalid) {
+            this.permissionForm.markAllAsTouched();
             return;
         }
 
-        const payload = this.scopeForm.getRawValue();
+        const payload = this.permissionForm.getRawValue();
         this.saving.set(true);
         this.errorMsg.set('');
         this.saveSub?.unsubscribe();
 
-        if (this.isEditMode() && this.editingScopeId() !== null) {
-            this.saveSub = this.scopesService.update(this.editingScopeId() as number, payload)
+        if (this.isEditMode() && this.editingPermissionId() !== null) {
+            this.saveSub = this.permissionsService.update(this.editingPermissionId() as number, payload)
                 .pipe(take(1))
                 .subscribe({
                     next: () => this.finishSave(),
@@ -327,7 +319,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
             return;
         }
 
-        this.saveSub = this.scopesService.create(payload)
+        this.saveSub = this.permissionsService.create(payload)
             .pipe(take(1))
             .subscribe({
                 next: () => this.finishSave(),
@@ -338,18 +330,18 @@ export class ScopesComponent implements OnInit, OnDestroy {
     private finishSave() {
         this.saving.set(false);
         this.isModalOpen.set(false);
-        this.scopesReloadService.triggerReload();
+        this.permissionsReloadService.triggerReload();
     }
 
     private handleSaveError() {
         this.saving.set(false);
-        this.errorMsg.set(this.translate.instant('scopes.saveError'));
+        this.errorMsg.set(this.translate.instant('permissions.saveError'));
     }
 
-    loadScopes = (query: DataTableQuery): Observable<DataTableResult<Scope>> => {
-        return this.scopesService.list().pipe(
-            map((scopes: Scope[]) => {
-                let data = [...scopes];
+    loadPermissions = (query: DataTableQuery): Observable<DataTableResult<Permission>> => {
+        return this.permissionsService.list().pipe(
+            map((permissions: Permission[]) => {
+                let data = [...permissions];
                 data = this.applyFilters(data, query.filterModel);
                 data = this.applySort(data, query.sortModel);
 
@@ -362,7 +354,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
         );
     };
 
-    private applySort(data: Scope[], sortModel: SortModelItem[]): Scope[] {
+    private applySort(data: Permission[], sortModel: SortModelItem[]): Permission[] {
         if (!sortModel?.length) {
             return data;
         }
@@ -372,7 +364,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
         return sorted;
     }
 
-    private applyFilters(data: Scope[], filterModel: Record<string, unknown>): Scope[] {
+    private applyFilters(data: Permission[], filterModel: Record<string, unknown>): Permission[] {
         const entries = Object.entries(filterModel ?? {});
         if (entries.length === 0) {
             return data;
@@ -383,7 +375,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
         );
     }
 
-    private compareBySortModel(a: Scope, b: Scope, sortModel: SortModelItem[]): number {
+    private compareBySortModel(a: Permission, b: Permission, sortModel: SortModelItem[]): number {
         for (const sort of sortModel) {
             if (!sort.colId) {
                 continue;
@@ -398,7 +390,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
         return 0;
     }
 
-    private matchesFilter(row: Scope, field: string, rawModel: unknown): boolean {
+    private matchesFilter(row: Permission, field: string, rawModel: unknown): boolean {
         const model = rawModel as { filterType?: string; type?: string; filter?: unknown };
         const value = this.getFieldValue(row, field);
 
@@ -464,11 +456,11 @@ export class ScopesComponent implements OnInit, OnDestroy {
         return aValue > bValue ? 1 : -1;
     }
 
-    private getFieldValue(row: Scope, field: string): unknown {
+    private getFieldValue(row: Permission, field: string): unknown {
         return (row as unknown as Record<string, unknown>)[field];
     }
 
-    trackByScopeId = (row: Scope) => String(row.id);
+    trackByPermissionId = (row: Permission) => String(row.id);
 
     private buildBulkActions() {
         const isAdmin = this.roleService.isAdmin();
@@ -476,13 +468,13 @@ export class ScopesComponent implements OnInit, OnDestroy {
         if (isAdmin) {
             this.bulkActions.push({
                 id: 'bulk-delete',
-                label: this.translate.instant('scopes.action.bulkDelete'),
+                label: this.translate.instant('permissions.action.bulkDelete'),
                 handler: (rows) => this.openBulkDelete(rows),
             });
         }
     }
 
-    openBulkDelete(rows: Scope[]) {
+    openBulkDelete(rows: Permission[]) {
         this.bulkDeleteTargets.set(rows);
         this.bulkDeleteError.set('');
         this.bulkDeleting.set(false);
@@ -502,18 +494,18 @@ export class ScopesComponent implements OnInit, OnDestroy {
         this.bulkDeleting.set(true);
         this.bulkDeleteError.set('');
         this.saveSub?.unsubscribe();
-        this.saveSub = this.scopesService.bulkDelete(targets.map(r => r.id))
+        this.saveSub = this.permissionsService.bulkDelete(targets.map(r => r.id))
             .pipe(take(1))
             .subscribe({
                 next: () => {
                     this.bulkDeleting.set(false);
                     this.isBulkDeleteOpen.set(false);
                     this.bulkDeleteTargets.set([]);
-                    this.scopesReloadService.triggerReload();
+                    this.permissionsReloadService.triggerReload();
                 },
                 error: () => {
                     this.bulkDeleting.set(false);
-                    this.bulkDeleteError.set(this.translate.instant('scopes.bulkDeleteError'));
+                    this.bulkDeleteError.set(this.translate.instant('permissions.bulkDeleteError'));
                 },
             });
     }

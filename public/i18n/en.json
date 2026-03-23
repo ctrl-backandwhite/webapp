@@ -23,6 +23,7 @@
     "roles": "Roles",
     "groups": "Groups",
     "scopes": "Scopes",
+    "permissions": "Permissions",
     "applications": "Applications",
     "redirectUris": "Redirect URIs",
     "grantTypes": "Grant types",
@@ -56,6 +57,9 @@
     "deleteMessage": "Are you sure you want to delete role {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the role.",
+    "bulkDeleteTitle": "Delete selected roles",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} role(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "table": {
       "id": "ID",
       "name": "Name",
@@ -68,8 +72,14 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
-    }
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
+    },
+    "saveError": "Could not save the role.",
+    "permissionIdsLabel": "Permissions",
+    "permissionSearchPlaceholder": "Search permissions...",
+    "noPermissions": "No permissions available",
+    "permissionsLabel": "Permissions"
   },
   "users": {
     "title": "Users",
@@ -105,6 +115,9 @@
     "deleteMessage": "Are you sure you want to delete user {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the user.",
+    "bulkDeleteTitle": "Delete selected users",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} user(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the user.",
     "scopesLabel": "Scopes",
     "rolesLabel": "Roles",
@@ -122,7 +135,8 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     }
   },
   "groups": {
@@ -143,6 +157,9 @@
     "deleteMessage": "Are you sure you want to delete group {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the group.",
+    "bulkDeleteTitle": "Delete selected groups",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} group(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the group.",
     "table": {
       "id": "ID",
@@ -156,9 +173,49 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     },
-    "noRoles": "No roles available"
+    "noRoles": "No roles available",
+    "permissionIdsLabel": "Permissions",
+    "permissionSearchPlaceholder": "Search permissions...",
+    "noPermissions": "No permissions available",
+    "permissionsLabel": "Permissions"
+  },
+  "permissions": {
+    "title": "Permissions",
+    "add": "Add permission",
+    "editTitle": "Edit permission",
+    "createTitle": "Create permission",
+    "nameLabel": "Name",
+    "nameRequired": "Name is required",
+    "uniqueNameLabel": "Unique name",
+    "uniqueNameRequired": "Unique name is required",
+    "descriptionLabel": "Description",
+    "activeLabel": "Active",
+    "deleteTitle": "Delete permission",
+    "deleteMessage": "Are you sure you want to delete permission {{name}}?",
+    "detailTitle": "Detail",
+    "deleteError": "Could not delete the permission.",
+    "bulkDeleteTitle": "Delete selected permissions",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} permission(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
+    "saveError": "Could not save the permission.",
+    "table": {
+      "id": "ID",
+      "name": "Name",
+      "uniqueName": "Unique name",
+      "description": "Description",
+      "active": "Active"
+    },
+    "action": {
+      "detail": "Detail",
+      "toggle": "Enable/Disable",
+      "edit": "Edit",
+      "delete": "Delete",
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
+    }
   },
   "scopes": {
     "title": "Scopes",
@@ -166,6 +223,7 @@
     "editTitle": "Edit scope",
     "createTitle": "Create scope",
     "nameLabel": "Name",
+    "namePlaceholder": "Select a scope",
     "nameRequired": "Name is required",
     "uniqueNameLabel": "Unique name",
     "uniqueNameRequired": "Unique name is required",
@@ -175,6 +233,9 @@
     "deleteMessage": "Are you sure you want to delete scope {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the scope.",
+    "bulkDeleteTitle": "Delete selected scopes",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} scope(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the scope.",
     "table": {
       "id": "ID",
@@ -188,7 +249,8 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     }
   },
   "redirectUris": {
@@ -205,6 +267,9 @@
     "deleteMessage": "Are you sure you want to delete redirect URI {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the redirect URI.",
+    "bulkDeleteTitle": "Delete selected redirect URIs",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} redirect URI(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the redirect URI.",
     "table": {
       "id": "ID",
@@ -217,7 +282,8 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     }
   },
   "grantTypes": {
@@ -232,6 +298,9 @@
     "deleteMessage": "Are you sure you want to delete grant type {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the grant type.",
+    "bulkDeleteTitle": "Delete selected grant types",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} grant type(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the grant type.",
     "table": {
       "id": "ID",
@@ -243,7 +312,8 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     }
   },
   "oauthClients": {
@@ -268,6 +338,9 @@
     "deleteMessage": "Are you sure you want to delete OAuth client {{name}}?",
     "detailTitle": "Detail",
     "deleteError": "Could not delete the OAuth client.",
+    "bulkDeleteTitle": "Delete selected OAuth clients",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} OAuth client(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the OAuth client.",
     "scopesLabel": "Scopes",
     "redirectUrisLabel": "Redirect URIs",
@@ -283,7 +356,8 @@
       "detail": "Detail",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     }
   },
   "gatewayRoutes": {
@@ -308,6 +382,9 @@
     "deleteMessage": "Are you sure you want to delete route {{id}}?",
     "detailTitle": "Route detail",
     "deleteError": "Could not delete the route.",
+    "bulkDeleteTitle": "Delete selected routes",
+    "bulkDeleteMessage": "Are you sure you want to delete {{count}} route(s)?",
+    "bulkDeleteError": "Could not complete the deletion.",
     "saveError": "Could not save the route.",
     "rateLimitTitle": "Rate Limiting",
     "replenishRateLabel": "Replenish rate",
@@ -330,7 +407,8 @@
       "toggle": "Enable/Disable",
       "edit": "Edit",
       "delete": "Delete",
-      "clone": "Clone"
+      "clone": "Clone",
+      "bulkDelete": "Delete selected"
     },
     "bulk": {
       "import": "Import JSON",
@@ -379,6 +457,7 @@
     "users": "Users",
     "groups": "Groups",
     "scopes": "Scopes",
+    "permissions": "Permissions",
     "applications": "Applications",
     "redirectUris": "Redirect URIs",
     "grantTypes": "Grant types",

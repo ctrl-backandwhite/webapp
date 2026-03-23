@@ -10,7 +10,7 @@ import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-si
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -42,7 +42,7 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
   private saveSub?: Subscription;
   private langSub?: Subscription;
 
-  reloadToken = 0;
+  reloadToken = signal(0);
 
   isModalOpen = signal(false);
   isEditMode = signal(false);
@@ -66,6 +66,11 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
   bulkError = signal('');
   bulkResult = signal<BulkImportResult | null>(null);
 
+  isBulkDeleteOpen = signal(false);
+  bulkDeleting = signal(false);
+  bulkDeleteError = signal('');
+  bulkDeleteTargets = signal<GatewayRoute[]>([]);
+
   routeForm = this.fb.nonNullable.group({
     id: ['', [Validators.required]],
     uri: ['', [Validators.required]],
@@ -79,6 +84,7 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
 
   columnDefs: ColDef<GatewayRoute>[] = [];
   rowActions: DataTableAction<GatewayRoute>[] = [];
+  bulkActions: DataTableBulkAction<GatewayRoute>[] = [];
 
   defaultColDef = {
     resizable: true,
@@ -98,14 +104,16 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.buildColumnDefs();
     this.buildRowActions();
+    this.buildBulkActions();
 
     this.langSub = this.translate.onLangChange.subscribe(() => {
       this.buildColumnDefs();
       this.buildRowActions();
+      this.buildBulkActions();
     });
 
     this.reloadSub = this.reloadService.reload$.subscribe(() => {
-      this.reloadToken += 1;
+      this.reloadToken.update(v => v + 1);
     });
   }
 
@@ -211,6 +219,43 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
       .subscribe({
         next: () => this.isRefreshing.set(false),
         error: () => this.isRefreshing.set(false),
+      });
+  }
+
+  openBulkDelete(rows: GatewayRoute[]) {
+    this.bulkDeleteTargets.set(rows);
+    this.bulkDeleteError.set('');
+    this.bulkDeleting.set(false);
+    this.isBulkDeleteOpen.set(true);
+  }
+
+  closeBulkDelete() {
+    if (this.bulkDeleting()) return;
+    this.isBulkDeleteOpen.set(false);
+    this.bulkDeleteError.set('');
+    this.bulkDeleteTargets.set([]);
+  }
+
+  confirmBulkDelete() {
+    const targets = this.bulkDeleteTargets();
+    if (!targets.length) return;
+
+    this.bulkDeleting.set(true);
+    this.bulkDeleteError.set('');
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.routesService.bulkDelete(targets.map(r => r.id))
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.bulkDeleting.set(false);
+          this.isBulkDeleteOpen.set(false);
+          this.bulkDeleteTargets.set([]);
+          this.reloadService.triggerReload();
+        },
+        error: () => {
+          this.bulkDeleting.set(false);
+          this.bulkDeleteError.set(this.translate.instant('gatewayRoutes.bulkDeleteError'));
+        },
       });
   }
 
@@ -430,9 +475,7 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
         minWidth: 100,
         maxWidth: 120,
         cellRenderer: (params: { value: boolean }) =>
-          params.value
-            ? this.translate.instant('common.yes')
-            : this.translate.instant('common.no'),
+          `<span class="inline-block w-3 h-3 rounded-full ${params.value ? 'bg-green-300 ring-2 ring-green-200' : 'bg-red-300 ring-2 ring-red-200'}"></span>`,
       },
     ];
   }
@@ -446,6 +489,7 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
         label: this.translate.instant('gatewayRoutes.action.detail'),
         icon: 'fa-solid fa-eye',
         handler: (row) => this.openDetail(row),
+        buttonClass: () => 'dt-btn-detail'
       },
     ];
 
@@ -456,26 +500,43 @@ export class GatewayRoutesComponent implements OnInit, OnDestroy {
           label: this.translate.instant('gatewayRoutes.action.toggle'),
           icon: 'fa-solid fa-power-off',
           handler: (row) => this.toggleRoute(row),
+          buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
         },
         {
           id: 'clone',
           label: this.translate.instant('gatewayRoutes.action.clone'),
           icon: 'fa-solid fa-clone',
           handler: (row) => this.openClone(row),
+          buttonClass: () => 'dt-btn-clone'
         },
         {
           id: 'edit',
           label: this.translate.instant('gatewayRoutes.action.edit'),
           icon: 'fa-solid fa-pen',
           handler: (row) => this.openEdit(row),
+          buttonClass: () => 'dt-btn-edit'
         },
         {
           id: 'delete',
           label: this.translate.instant('gatewayRoutes.action.delete'),
           icon: 'fa-solid fa-trash',
           handler: (row) => this.openDelete(row),
+          buttonClass: () => 'dt-btn-delete'
         }
       );
+    }
+  }
+
+  private buildBulkActions() {
+    const isAdmin = this.roleService.isAdmin();
+    this.bulkActions = [];
+
+    if (isAdmin) {
+      this.bulkActions.push({
+        id: 'bulk-delete',
+        label: this.translate.instant('gatewayRoutes.action.bulkDelete'),
+        handler: (rows) => this.openBulkDelete(rows),
+      });
     }
   }
 

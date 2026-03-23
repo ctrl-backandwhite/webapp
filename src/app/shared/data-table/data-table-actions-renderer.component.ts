@@ -8,6 +8,7 @@ export interface DataTableAction<T> {
     label: string;
     icon?: string;
     handler: (row: T) => void;
+    buttonClass?: (row: T) => string;
 }
 
 @Component({

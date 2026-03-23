@@ -39,6 +39,11 @@ export const routes: Routes = [
         data: { breadcrumb: 'breadcrumb.groups' },
       },
       {
+        path: 'permissions',
+        loadComponent: () => import('./features/permissions/pages/permissions.component').then(m => m.PermissionsComponent),
+        data: { breadcrumb: 'breadcrumb.permissions' },
+      },
+      {
         path: 'scopes',
         loadComponent: () => import('./features/scopes/pages/scopes.component').then(m => m.ScopesComponent),
         data: { breadcrumb: 'breadcrumb.scopes' },

@@ -2,13 +2,13 @@
   <div class="card bg-base-100 shadow-sm w-full p-5">
     <div class="w-full">
       <app-data-table tableId="users" [title]="'users.title' | translate" [columnDefs]="columnDefs"
-        [defaultColDef]="defaultColDef" [loadFn]="loadUsers" [rowActions]="rowActions" [pageSize]="10"
-        [pageSizeOptions]="[10, 20, 50]" [reloadToken]="reloadToken" [enableSelection]="true" [getRowId]="trackByUserId"
-        (rowClick)="openDetail($event)">
+        [defaultColDef]="defaultColDef" [loadFn]="loadUsers" [rowActions]="rowActions" [bulkActions]="bulkActions"
+        [pageSize]="10" [pageSizeOptions]="[10, 20, 50]" [reloadToken]="reloadToken()" [enableSelection]="true"
+        [getRowId]="trackByUserId" (rowClick)="openDetail($event)">
         <button *hasRole="'ROLE_ADMIN'" data-table-actions
-          class="btn btn-circle bg-base-200 border-none hover:bg-base-300" data-tour="tour-create"
+          class="btn btn-circle bg-white border border-blue-300 hover:bg-blue-50" data-tour="tour-create"
           [attr.title]="'users.add' | translate" (click)="openCreate()">
-          <i class="fa-solid fa-plus text-base-content/60 text-lg"></i>
+          <i class="fa-solid fa-plus text-blue-400 text-lg"></i>
         </button>
       </app-data-table>
       <!-- Tour: Detalle -->
@@ -66,12 +66,19 @@
 
         <label class="dt-field">
           <span class="dt-label">{{ 'users.passwordLabel' | translate }}</span>
-          <input class="dt-input" type="password" formControlName="password" autocomplete="new-password" />
+          <input class="dt-input" type="password" formControlName="password" autocomplete="new-password"
+            [class.dt-input-valid]="passwordMatchState() === 'match'"
+            [class.dt-input-invalid]="passwordMatchState() === 'mismatch'" />
         </label>
 
         <label class="dt-field">
           <span class="dt-label">{{ 'users.confirmPasswordLabel' | translate }}</span>
-          <input class="dt-input" type="password" formControlName="confirmPassword" autocomplete="new-password" />
+          <input class="dt-input" type="password" formControlName="confirmPassword" autocomplete="new-password"
+            [class.dt-input-valid]="passwordMatchState() === 'match'"
+            [class.dt-input-invalid]="passwordMatchState() === 'mismatch'" />
+          @if (passwordMatchState() === 'mismatch') {
+          <span class="dt-error">{{ 'users.passwordMismatch' | translate }}</span>
+          }
         </label>
 
         <label class="dt-field dt-field-full">
@@ -181,6 +188,12 @@
     [message]="'users.deleteMessage' | translate:{ name: deleteTarget()?.name }"
     [confirmLabel]="'common.delete' | translate" [cancelLabel]="'common.cancel' | translate" [busy]="deleting()"
     [error]="deleteError()" (confirm)="confirmDelete()" (cancel)="closeDelete()">
+  </app-confirm-dialog>
+
+  <app-confirm-dialog [open]="isBulkDeleteOpen()" [title]="'users.bulkDeleteTitle' | translate"
+    [message]="'users.bulkDeleteMessage' | translate:{ count: bulkDeleteTargets().length }"
+    [confirmLabel]="'common.delete' | translate" [cancelLabel]="'common.cancel' | translate" [busy]="bulkDeleting()"
+    [error]="bulkDeleteError()" (confirm)="confirmBulkDelete()" (cancel)="closeBulkDelete()">
   </app-confirm-dialog>
 
   <app-detail-sidebar [open]="isDetailOpen()" [title]="'users.detailTitle' | translate" (close)="closeDetail()">

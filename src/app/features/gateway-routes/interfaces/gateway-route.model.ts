@@ -29,3 +29,7 @@ export interface BulkImportResult {
   skippedIds: string[];
   errors: string[];
 }
+
+export interface BulkDeleteResult {
+  deleted: number;
+}

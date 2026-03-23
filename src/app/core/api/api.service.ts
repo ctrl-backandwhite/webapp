@@ -32,4 +32,8 @@ export abstract class ApiService<T, CreatePayload = Partial<T>, UpdatePayload = 
   delete(id: number): Observable<void> {
     return this.http.delete<void>(`${this.resourceUrl}/${id}`);
   }
+
+  bulkDelete(ids: number[]): Observable<void> {
+    return this.http.delete<void>(`${this.resourceUrl}/batch`, { body: ids });
+  }
 }
