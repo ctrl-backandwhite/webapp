@@ -363,18 +363,20 @@ export class UsersComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const password = this.userForm.controls.password.value;
-    const confirm = this.userForm.controls.confirmPassword.value;
-    const isPasswordProvided = Boolean(password || confirm);
+    if (!this.isEditMode()) {
+      const password = this.userForm.controls.password.value;
+      const confirm = this.userForm.controls.confirmPassword.value;
+      const isPasswordProvided = Boolean(password || confirm);
 
-    if (!this.isEditMode() && !isPasswordProvided) {
-      this.errorMsg.set(this.translate.instant('users.passwordRequired'));
-      return;
-    }
+      if (!isPasswordProvided) {
+        this.errorMsg.set(this.translate.instant('users.passwordRequired'));
+        return;
+      }
 
-    if (isPasswordProvided && password !== confirm) {
-      this.errorMsg.set(this.translate.instant('users.passwordMismatch'));
-      return;
+      if (password !== confirm) {
+        this.errorMsg.set(this.translate.instant('users.passwordMismatch'));
+        return;
+      }
     }
 
     const payload = this.buildPayload();
@@ -416,7 +418,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       groupIds: this.uniqueIds(raw.groupIds),
     };
 
-    if (raw.password) {
+    if (!this.isEditMode() && raw.password) {
       payload.password = raw.password;
       payload.confirmPassword = raw.confirmPassword;
     }

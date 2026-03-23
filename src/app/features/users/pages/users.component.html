@@ -64,6 +64,7 @@
           }
         </label>
 
+        @if (!isEditMode()) {
         <label class="dt-field">
           <span class="dt-label">{{ 'users.passwordLabel' | translate }}</span>
           <input class="dt-input" type="password" formControlName="password" autocomplete="new-password"
@@ -80,6 +81,7 @@
           <span class="dt-error">{{ 'users.passwordMismatch' | translate }}</span>
           }
         </label>
+        }
 
         <label class="dt-field dt-field-full">
           <span class="dt-label">{{ 'users.scopeIdsLabel' | translate }}</span>
