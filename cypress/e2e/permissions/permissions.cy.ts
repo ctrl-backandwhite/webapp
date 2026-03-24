@@ -1,7 +1,7 @@
-import { RolesPage } from '../../pages/roles.page';
+import { PermissionsPage } from '../../pages/permissions.page';
 
-describe('Roles', () => {
-  const page = new RolesPage();
+describe('Permissions (Permisos)', () => {
+  const page = new PermissionsPage();
   const uniqueId = () => `CYPRESS_${Date.now()}`;
 
   beforeEach(() => {
@@ -11,7 +11,7 @@ describe('Roles', () => {
 
   // ─── Listing ──────────────────────────────────────────────
 
-  it('loads the roles page and displays the data table', () => {
+  it('loads the permissions page and displays the data table', () => {
     page.visit();
     page.assertLoaded();
     page.assertTableNotEmpty();
@@ -19,7 +19,7 @@ describe('Roles', () => {
 
   // ─── Create ───────────────────────────────────────────────
 
-  it('opens and closes the create role modal', () => {
+  it('opens and closes the create permission modal', () => {
     page.visit();
     page.assertLoaded();
     page.openCreateModal();
@@ -37,98 +37,83 @@ describe('Roles', () => {
     page.cancelModal();
   });
 
-  it('creates a new role', () => {
+  it('creates a new permission', () => {
     const suffix = uniqueId();
-    const roleName = `Role ${suffix}`;
-    const roleUniqueName = `ROLE_${suffix}`;
+    const name = `Permission ${suffix}`;
+    const uniqueName = `PERM_${suffix}`;
 
     page.visit();
     page.assertLoaded();
     page.openCreateModal();
-    page.fillRoleForm({
-      name: roleName,
-      uniqueName: roleUniqueName,
+    page.fillPermissionForm({
+      name,
+      uniqueName,
       description: 'Created by Cypress',
       enabled: true,
     });
     page.submitForm();
-
     cy.wait('@create');
     cy.wait('@list');
-    page.assertRowVisible(roleName);
+    page.assertRowVisible(name);
   });
 
   // ─── CRUD lifecycle ───────────────────────────────────────
 
-  it('creates, edits, and deletes a role', () => {
+  it('creates, edits, and deletes a permission', () => {
     const suffix = uniqueId();
-    const roleName = `Role ${suffix}`;
-    const roleUniqueName = `ROLE_${suffix}`;
-    const updatedDescription = `Updated ${suffix}`;
+    const name = `Perm ${suffix}`;
+    const uniqueName = `PERM_${suffix}`;
 
     page.visit();
     page.assertLoaded();
 
     // Create
     page.openCreateModal();
-    page.fillRoleForm({
-      name: roleName,
-      uniqueName: roleUniqueName,
-      description: 'Role created by Cypress',
-      enabled: true,
-    });
+    page.fillPermissionForm({ name, uniqueName, description: 'Original', enabled: true });
     page.submitForm();
     cy.wait('@create');
     cy.wait('@list');
-    page.assertRowVisible(roleName);
+    page.assertRowVisible(name);
 
     // Edit
-    page.clickEdit(roleName);
-    page.assertModalOpen('Editar rol');
-    page.fillRoleForm({ description: updatedDescription });
+    page.clickEdit(name);
+    page.assertModalOpen('Editar permiso');
+    page.fillPermissionForm({ description: `Updated ${suffix}` });
     page.submitForm();
     cy.wait('@update');
     cy.wait('@list');
-    page.assertRowVisible(roleName);
+    page.assertRowVisible(name);
 
     // Delete
-    page.clickDelete(roleName);
-    page.assertConfirmDialogOpen('Eliminar rol');
+    page.clickDelete(name);
+    page.assertConfirmDialogOpen('Eliminar permiso');
     page.confirmAction();
     cy.wait('@delete');
     cy.wait('@list');
-    page.assertRowMissing(roleName);
+    page.assertRowMissing(name);
   });
 
   // ─── Clone ────────────────────────────────────────────────
 
-  it('clones a role and creates a copy', () => {
+  it('clones a permission', () => {
     const suffix = uniqueId();
-    const roleName = `RoleClone ${suffix}`;
-    const roleUniqueName = `ROLE_CLONE_${suffix}`;
+    const name = `PermClone ${suffix}`;
+    const uniqueName = `PERM_CLONE_${suffix}`;
 
     page.visit();
     page.assertLoaded();
 
-    // Create original
     page.openCreateModal();
-    page.fillRoleForm({
-      name: roleName,
-      uniqueName: roleUniqueName,
-      description: 'Original',
-      enabled: true,
-    });
+    page.fillPermissionForm({ name, uniqueName, description: 'Original', enabled: true });
     page.submitForm();
     cy.wait('@create');
     cy.wait('@list');
-    page.assertRowVisible(roleName);
 
-    // Clone
-    page.clickClone(roleName);
-    page.assertModalOpen('Crear rol');
-    const cloneName = `RoleCloned ${suffix}`;
-    const cloneUniqueName = `ROLE_CLONED_${suffix}`;
-    page.fillRoleForm({ name: cloneName, uniqueName: cloneUniqueName });
+    page.clickClone(name);
+    page.assertModalOpen('Crear permiso');
+    const cloneName = `PermCloned ${suffix}`;
+    const cloneUnique = `PERM_CLONED_${suffix}`;
+    page.fillPermissionForm({ name: cloneName, uniqueName: cloneUnique });
     page.submitForm();
     cy.wait('@create');
     cy.wait('@list');
@@ -138,44 +123,32 @@ describe('Roles', () => {
     page.clickDelete(cloneName);
     page.confirmAction();
     cy.wait('@delete');
-    page.clickDelete(roleName);
+    page.clickDelete(name);
     page.confirmAction();
     cy.wait('@delete');
   });
 
   // ─── Toggle ───────────────────────────────────────────────
 
-  it('toggles a role enabled/disabled', () => {
+  it('toggles a permission enabled/disabled', () => {
     const suffix = uniqueId();
-    const roleName = `RoleToggle ${suffix}`;
-    const roleUniqueName = `ROLE_TOGGLE_${suffix}`;
+    const name = `PermToggle ${suffix}`;
 
     page.visit();
     page.assertLoaded();
 
     page.openCreateModal();
-    page.fillRoleForm({
-      name: roleName,
-      uniqueName: roleUniqueName,
-      description: 'Toggle test',
-      enabled: true,
-    });
+    page.fillPermissionForm({ name, uniqueName: `PERM_TGL_${suffix}`, enabled: true });
     page.submitForm();
     cy.wait('@create');
     cy.wait('@list');
 
-    // Toggle off
-    page.clickToggle(roleName);
-    cy.wait('@toggle');
-    cy.wait('@list');
-
-    // Toggle on
-    page.clickToggle(roleName);
+    page.clickToggle(name);
     cy.wait('@toggle');
     cy.wait('@list');
 
     // Cleanup
-    page.clickDelete(roleName);
+    page.clickDelete(name);
     page.confirmAction();
     cy.wait('@delete');
   });
@@ -194,52 +167,61 @@ describe('Roles', () => {
 
   // ─── Bulk Delete ──────────────────────────────────────────
 
-  it('bulk deletes multiple roles', () => {
+  it('bulk deletes multiple permissions', () => {
     const suffix = uniqueId();
-    const role1 = `BulkRole1 ${suffix}`;
-    const role2 = `BulkRole2 ${suffix}`;
+    const perm1 = `BulkPerm1 ${suffix}`;
+    const perm2 = `BulkPerm2 ${suffix}`;
 
     page.visit();
     page.assertLoaded();
 
-    // Create two roles
     page.openCreateModal();
-    page.fillRoleForm({ name: role1, uniqueName: `BULK_ROLE_1_${suffix}`, enabled: true });
+    page.fillPermissionForm({ name: perm1, uniqueName: `BULK_P1_${suffix}`, enabled: true });
     page.submitForm();
     cy.wait('@create');
     cy.wait('@list');
 
     page.openCreateModal();
-    page.fillRoleForm({ name: role2, uniqueName: `BULK_ROLE_2_${suffix}`, enabled: true });
+    page.fillPermissionForm({ name: perm2, uniqueName: `BULK_P2_${suffix}`, enabled: true });
     page.submitForm();
     cy.wait('@create');
     cy.wait('@list');
 
-    // Select and bulk delete
-    page.selectRow(role1);
-    page.selectRow(role2);
+    page.selectRow(perm1);
+    page.selectRow(perm2);
     page.clickBulkDelete();
-    page.assertConfirmDialogOpen('Eliminar roles seleccionados');
+    page.assertConfirmDialogOpen('Eliminar permisos seleccionados');
     page.confirmAction();
     cy.wait('@batchDelete');
     cy.wait('@list');
-    page.assertRowMissing(role1);
-    page.assertRowMissing(role2);
+    page.assertRowMissing(perm1);
+    page.assertRowMissing(perm2);
   });
 
-  // ─── Cancel actions ───────────────────────────────────────
+  // ─── Cancel ───────────────────────────────────────────────
 
   it('cancels delete dialog without deleting', () => {
     page.visit();
     page.assertLoaded();
     page.assertTableNotEmpty();
 
-    page.getRows().first().find('.ag-cell').eq(1).invoke('text').then((firstCellText) => {
-      const text = firstCellText.trim();
-      page.clickDelete(text);
-      page.assertConfirmDialogOpen('Eliminar rol');
+    page.getRows().first().find('.ag-cell').eq(1).invoke('text').then((text) => {
+      const name = text.trim();
+      page.clickDelete(name);
+      page.assertConfirmDialogOpen('Eliminar permiso');
       page.cancelConfirmDialog();
-      page.assertRowVisible(text);
+      page.assertRowVisible(name);
     });
+  });
+
+  // ─── Unique name auto-uppercase ───────────────────────────
+
+  it('auto-uppercases the uniqueName field', () => {
+    page.visit();
+    page.assertLoaded();
+    page.openCreateModal();
+    page.fillInput('uniqueName', 'test_permission');
+    cy.get('.modal-open [formcontrolname="uniqueName"]').should('have.value', 'TEST_PERMISSION');
+    page.cancelModal();
   });
 });

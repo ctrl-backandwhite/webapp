@@ -15,7 +15,7 @@
             <i class="fa-solid fa-file-import text-blue-400 text-lg"></i>
           </button>
           <button *hasRole="'ROLE_ADMIN'" class="btn btn-circle bg-white border border-blue-300 hover:bg-blue-50"
-            [attr.title]="'gatewayRoutes.add' | translate" (click)="openCreate()">
+            data-tour="tour-create" [attr.title]="'gatewayRoutes.add' | translate" (click)="openCreate()">
             <i class="fa-solid fa-plus text-blue-400 text-lg"></i>
           </button>
         </ng-container>

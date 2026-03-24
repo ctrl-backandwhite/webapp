@@ -1,71 +1,67 @@
-export class RolesPage {
-  visit(): void {
-    cy.visit('/admin/roles');
-  }
+import { BaseCrudPage } from './base-crud.page';
 
-  assertLoaded(): void {
-    cy.url().should('include', '/admin/roles');
-    cy.contains('Roles').should('exist');
-  }
+export class RolesPage extends BaseCrudPage {
+  readonly route = '/admin/roles';
+  readonly apiResource = 'roles';
 
   openCreateModal(): void {
-    cy.get('button[data-table-actions]').click();
-    cy.contains('Crear rol').should('exist');
+    this.clickCreate();
+    this.assertModalOpen('Crear rol');
   }
 
   openEditModal(roleName: string): void {
-    this.getRowByName(roleName).within(() => {
-      cy.get('button[title="Editar"]').click();
-    });
-    cy.contains('Editar rol').should('exist');
+    this.clickEdit(roleName);
+    this.assertModalOpen('Editar rol');
   }
 
-  openDeleteModal(roleName: string): void {
-    this.getRowByName(roleName).within(() => {
-      cy.get('button[title="Eliminar"]').click();
-    });
-    cy.contains('Eliminar rol').should('exist');
+  openDeleteDialog(roleName: string): void {
+    this.clickDelete(roleName);
+    this.assertConfirmDialogOpen('Eliminar rol');
   }
 
   closeModal(): void {
-    cy.contains('Cancelar').click();
+    this.cancelModal();
   }
 
-  fillRoleForm(data: { name: string; uniqueName: string; description?: string; enabled?: boolean }): void {
-    cy.get('input[formcontrolname="name"]').clear().type(data.name);
-    cy.get('input[formcontrolname="uniqueName"]').clear().type(data.uniqueName);
-
+  fillRoleForm(data: {
+    name?: string;
+    uniqueName?: string;
+    description?: string;
+    enabled?: boolean;
+  }): void {
+    if (data.name !== undefined) {
+      this.fillInput('name', data.name);
+    }
+    if (data.uniqueName !== undefined) {
+      this.fillInput('uniqueName', data.uniqueName);
+    }
     if (data.description !== undefined) {
-      cy.get('textarea[formcontrolname="description"]').clear().type(data.description);
+      this.fillTextarea('description', data.description);
     }
-
     if (data.enabled !== undefined) {
-      cy.get('input[formcontrolname="enabled"]').then(($el) => {
-        const isChecked = ($el[0] as HTMLInputElement).checked;
-        if (data.enabled !== isChecked) {
-          cy.wrap($el).click();
-        }
-      });
+      this.setToggle('enabled', data.enabled);
     }
   }
 
-  submitForm(): void {
-    cy.contains('Guardar').click();
+  searchAndSelectPermission(permissionName: string): void {
+    cy.get('.modal-open').contains('label', 'Permisos').parent().within(() => {
+      cy.get('input[type="text"]').clear().type(permissionName);
+      cy.contains('label', permissionName).find('input[type="checkbox"]').check({ force: true });
+    });
   }
 
+  /** @deprecated Use confirmAction() */
   confirmDelete(): void {
-    cy.contains('Eliminar').click();
+    this.confirmAction();
   }
 
+  /** @deprecated Use assertRowVisible() */
   assertRoleVisible(roleName: string): void {
-    cy.contains('.ag-cell', roleName).should('exist');
+    this.assertRowVisible(roleName);
   }
 
+  /** @deprecated Use assertRowMissing() */
   assertRoleMissing(roleName: string): void {
-    cy.contains('.ag-cell', roleName).should('not.exist');
-  }
-
-  private getRowByName(roleName: string): Cypress.Chainable<JQuery<HTMLElement>> {
-    return cy.contains('.ag-row', roleName);
+    this.assertRowMissing(roleName);
   }
 }

@@ -81,11 +81,15 @@ export class UsersComponent implements OnInit, OnDestroy {
     return pw === cpw ? 'match' : 'mismatch';
   });
 
+  /** Backend password regex: min 8 chars, upper, lower, digit, special char */
+  private readonly passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
   userForm = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
-    nickName: ['', [Validators.required]],
-    email: ['', [Validators.required]],
+    nickName: [''],
+    email: ['', [Validators.required, Validators.email]],
     password: [''],
     confirmPassword: [''],
     enabled: [true],
@@ -169,6 +173,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       roleIds: [],
       groupIds: [],
     });
+    // Add create-mode validators for password fields
+    this.userForm.controls.password.setValidators([Validators.required, Validators.pattern(this.passwordPattern)]);
+    this.userForm.controls.confirmPassword.setValidators([Validators.required]);
+    this.userForm.controls.password.updateValueAndValidity();
+    this.userForm.controls.confirmPassword.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
@@ -193,6 +202,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       roleIds: this.collectIds(user.roles),
       groupIds: this.collectIds(user.groups),
     });
+    // Remove password validators in edit mode (password not required)
+    this.userForm.controls.password.clearValidators();
+    this.userForm.controls.confirmPassword.clearValidators();
+    this.userForm.controls.password.updateValueAndValidity();
+    this.userForm.controls.confirmPassword.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
@@ -200,6 +214,8 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.isEditMode.set(false);
     this.editingUserId.set(null);
     this.errorMsg.set('');
+    this.passwordValue.set('');
+    this.confirmPasswordValue.set('');
     this.userForm.reset({
       name: user.name ?? '',
       lastName: user.lastName ?? '',
@@ -215,6 +231,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       roleIds: this.collectIds(user.roles),
       groupIds: this.collectIds(user.groups),
     });
+    // Add create-mode validators for password fields
+    this.userForm.controls.password.setValidators([Validators.required, Validators.pattern(this.passwordPattern)]);
+    this.userForm.controls.confirmPassword.setValidators([Validators.required]);
+    this.userForm.controls.password.updateValueAndValidity();
+    this.userForm.controls.confirmPassword.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
@@ -366,12 +387,6 @@ export class UsersComponent implements OnInit, OnDestroy {
     if (!this.isEditMode()) {
       const password = this.userForm.controls.password.value;
       const confirm = this.userForm.controls.confirmPassword.value;
-      const isPasswordProvided = Boolean(password || confirm);
-
-      if (!isPasswordProvided) {
-        this.errorMsg.set(this.translate.instant('users.passwordRequired'));
-        return;
-      }
 
       if (password !== confirm) {
         this.errorMsg.set(this.translate.instant('users.passwordMismatch'));
@@ -389,7 +404,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe({
           next: () => this.finishSave(),
-          error: () => this.handleSaveError(),
+          error: (err) => this.handleSaveError(err),
         });
       return;
     }
@@ -398,7 +413,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: () => this.finishSave(),
-        error: () => this.handleSaveError(),
+        error: (err) => this.handleSaveError(err),
       });
   }
 
@@ -420,6 +435,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
     if (!this.isEditMode() && raw.password) {
       payload.password = raw.password;
+      payload.confirmPassword = raw.confirmPassword;
     }
 
     return payload;
@@ -431,9 +447,14 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.usersReloadService.triggerReload();
   }
 
-  private handleSaveError() {
+  private handleSaveError(err?: unknown) {
     this.saving.set(false);
-    this.errorMsg.set(this.translate.instant('users.saveError'));
+    const httpErr = err as { status?: number; error?: { message?: string; errors?: Record<string, string> } } | undefined;
+    if (httpErr?.error?.message) {
+      this.errorMsg.set(httpErr.error.message);
+    } else {
+      this.errorMsg.set(this.translate.instant('users.saveError'));
+    }
   }
 
   loadUsers = (query: DataTableQuery): Observable<DataTableResult<User>> => {

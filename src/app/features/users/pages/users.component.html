@@ -51,16 +51,15 @@
         <label class="dt-field">
           <span class="dt-label">{{ 'users.nickNameLabel' | translate }}</span>
           <input class="dt-input" type="text" formControlName="nickName" />
-          @if (userForm.controls.nickName.touched && userForm.controls.nickName.invalid) {
-          <span class="dt-error">{{ 'users.nickNameRequired' | translate }}</span>
-          }
         </label>
 
         <label class="dt-field">
           <span class="dt-label">{{ 'users.emailLabel' | translate }}</span>
           <input class="dt-input" type="email" formControlName="email" />
-          @if (userForm.controls.email.touched && userForm.controls.email.invalid) {
+          @if (userForm.controls.email.touched && userForm.controls.email.hasError('required')) {
           <span class="dt-error">{{ 'users.emailRequired' | translate }}</span>
+          } @else if (userForm.controls.email.touched && userForm.controls.email.hasError('email')) {
+          <span class="dt-error">{{ 'users.emailInvalid' | translate }}</span>
           }
         </label>
 
@@ -70,6 +69,11 @@
           <input class="dt-input" type="password" formControlName="password" autocomplete="new-password"
             [class.dt-input-valid]="passwordMatchState() === 'match'"
             [class.dt-input-invalid]="passwordMatchState() === 'mismatch'" />
+          @if (userForm.controls.password.touched && userForm.controls.password.hasError('required')) {
+          <span class="dt-error">{{ 'users.passwordRequired' | translate }}</span>
+          } @else if (userForm.controls.password.touched && userForm.controls.password.hasError('pattern')) {
+          <span class="dt-error">{{ 'users.passwordPattern' | translate }}</span>
+          }
         </label>
 
         <label class="dt-field">
@@ -77,7 +81,9 @@
           <input class="dt-input" type="password" formControlName="confirmPassword" autocomplete="new-password"
             [class.dt-input-valid]="passwordMatchState() === 'match'"
             [class.dt-input-invalid]="passwordMatchState() === 'mismatch'" />
-          @if (passwordMatchState() === 'mismatch') {
+          @if (userForm.controls.confirmPassword.touched && userForm.controls.confirmPassword.hasError('required')) {
+          <span class="dt-error">{{ 'users.confirmPasswordRequired' | translate }}</span>
+          } @else if (passwordMatchState() === 'mismatch') {
           <span class="dt-error">{{ 'users.passwordMismatch' | translate }}</span>
           }
         </label>
