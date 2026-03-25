@@ -44,20 +44,11 @@ export class NavbarComponent {
     }
 
     onLogout(): void {
-        console.log('[Navbar] Logout button clicked');
         this.authService.logout().subscribe({
             next: () => {
-                console.log('[Navbar] Logout completed');
-                console.log('[Navbar] localStorage before redirect:', {
-                    forceLogin: localStorage.getItem('forceLogin'),
-                    lang: localStorage.getItem('lang'),
-                    allKeys: Object.keys(localStorage)
-                });
-                console.log('[Navbar] Redirecting to login form:', environment.oauth2LoginUrl);
                 window.location.href = environment.oauth2LoginUrl;
             },
-            error: (error) => {
-                console.error('[Navbar] Logout error:', error);
+            error: () => {
                 window.location.href = environment.oauth2LoginUrl;
             }
         });

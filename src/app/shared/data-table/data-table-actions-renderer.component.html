@@ -1,7 +1,8 @@
 <div class="flex h-full w-full items-center justify-center gap-1">
     @for (action of actions; track action.id) {
     <button class="btn btn-ghost btn-xs" type="button" [attr.aria-label]="action.label" [attr.title]="action.label"
-        [attr.data-tour]="'tour-action-' + action.id" (click)="$event.stopPropagation(); onAction(action)">
+        [attr.data-tour]="'tour-action-' + action.id" [ngClass]="action.buttonClass ? action.buttonClass(row) : ''"
+        (click)="$event.stopPropagation(); onAction(action)">
         @if (action.icon) {
         <i [class]="action.icon"></i>
         } @else {

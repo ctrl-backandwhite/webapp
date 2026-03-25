@@ -1,5 +1,5 @@
 import { CommonModule } from '@angular/common';
-import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
+import { Component, OnDestroy, OnInit, inject, signal, computed } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
 import { UsersService } from '../services/users.service';
 import { UsersReloadService } from '../services/users-reload.service';
@@ -17,7 +17,7 @@ import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.compon
 import { NestedEntitiesComponent } from '../../../shared/nested-entities/nested-entities.component';
 import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -41,8 +41,10 @@ export class UsersComponent implements OnInit, OnDestroy {
   private reloadSub?: Subscription;
   private saveSub?: Subscription;
   private langSub?: Subscription;
+  private pwSub?: Subscription;
+  private cpwSub?: Subscription;
 
-  reloadToken = 0;
+  reloadToken = signal(0);
 
   isModalOpen = signal(false);
   isEditMode = signal(false);
@@ -55,6 +57,11 @@ export class UsersComponent implements OnInit, OnDestroy {
   deleteError = signal('');
   deleteTarget = signal<User | null>(null);
 
+  isBulkDeleteOpen = signal(false);
+  bulkDeleting = signal(false);
+  bulkDeleteError = signal('');
+  bulkDeleteTargets = signal<User[]>([]);
+
   isDetailOpen = signal(false);
   detailUser = signal<User | null>(null);
 
@@ -65,11 +72,24 @@ export class UsersComponent implements OnInit, OnDestroy {
   groupSearch = signal('');
   scopeSearch = signal('');
 
+  passwordValue = signal('');
+  confirmPasswordValue = signal('');
+  passwordMatchState = computed<'none' | 'match' | 'mismatch'>(() => {
+    const pw = this.passwordValue();
+    const cpw = this.confirmPasswordValue();
+    if (!pw && !cpw) return 'none';
+    return pw === cpw ? 'match' : 'mismatch';
+  });
+
+  /** Backend password regex: min 8 chars, upper, lower, digit, special char */
+  private readonly passwordPattern =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]).{8,}$/;
+
   userForm = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
     lastName: ['', [Validators.required]],
-    nickName: ['', [Validators.required]],
-    email: ['', [Validators.required]],
+    nickName: [''],
+    email: ['', [Validators.required, Validators.email]],
     password: [''],
     confirmPassword: [''],
     enabled: [true],
@@ -83,6 +103,7 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   columnDefs: ColDef<User>[] = [];
   rowActions: DataTableAction<User>[] = [];
+  bulkActions: DataTableBulkAction<User>[] = [];
 
   onEditUser(row: User) {
     this.openEdit(row);
@@ -106,28 +127,37 @@ export class UsersComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.buildColumnDefs();
     this.buildRowActions();
+    this.buildBulkActions();
     this.langSub = this.translate.onLangChange.subscribe(() => {
       this.buildColumnDefs();
       this.buildRowActions();
+      this.buildBulkActions();
     });
 
     this.loadReferenceData();
 
     this.reloadSub = this.usersReloadService.reload$.subscribe(() => {
-      this.reloadToken += 1;
+      this.reloadToken.update(v => v + 1);
     });
+
+    this.pwSub = this.userForm.controls.password.valueChanges.subscribe(v => this.passwordValue.set(v));
+    this.cpwSub = this.userForm.controls.confirmPassword.valueChanges.subscribe(v => this.confirmPasswordValue.set(v));
   }
 
   ngOnDestroy(): void {
     this.reloadSub?.unsubscribe();
     this.saveSub?.unsubscribe();
     this.langSub?.unsubscribe();
+    this.pwSub?.unsubscribe();
+    this.cpwSub?.unsubscribe();
   }
 
   openCreate() {
     this.isEditMode.set(false);
     this.editingUserId.set(null);
     this.errorMsg.set('');
+    this.passwordValue.set('');
+    this.confirmPasswordValue.set('');
     this.userForm.reset({
       name: '',
       lastName: '',
@@ -143,6 +173,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       roleIds: [],
       groupIds: [],
     });
+    // Add create-mode validators for password fields
+    this.userForm.controls.password.setValidators([Validators.required, Validators.pattern(this.passwordPattern)]);
+    this.userForm.controls.confirmPassword.setValidators([Validators.required]);
+    this.userForm.controls.password.updateValueAndValidity();
+    this.userForm.controls.confirmPassword.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
@@ -150,6 +185,8 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.isEditMode.set(true);
     this.editingUserId.set(user.id);
     this.errorMsg.set('');
+    this.passwordValue.set('');
+    this.confirmPasswordValue.set('');
     this.userForm.reset({
       name: user.name ?? '',
       lastName: user.lastName ?? '',
@@ -165,6 +202,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       roleIds: this.collectIds(user.roles),
       groupIds: this.collectIds(user.groups),
     });
+    // Remove password validators in edit mode (password not required)
+    this.userForm.controls.password.clearValidators();
+    this.userForm.controls.confirmPassword.clearValidators();
+    this.userForm.controls.password.updateValueAndValidity();
+    this.userForm.controls.confirmPassword.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
@@ -172,6 +214,8 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.isEditMode.set(false);
     this.editingUserId.set(null);
     this.errorMsg.set('');
+    this.passwordValue.set('');
+    this.confirmPasswordValue.set('');
     this.userForm.reset({
       name: user.name ?? '',
       lastName: user.lastName ?? '',
@@ -187,6 +231,11 @@ export class UsersComponent implements OnInit, OnDestroy {
       roleIds: this.collectIds(user.roles),
       groupIds: this.collectIds(user.groups),
     });
+    // Add create-mode validators for password fields
+    this.userForm.controls.password.setValidators([Validators.required, Validators.pattern(this.passwordPattern)]);
+    this.userForm.controls.confirmPassword.setValidators([Validators.required]);
+    this.userForm.controls.password.updateValueAndValidity();
+    this.userForm.controls.confirmPassword.updateValueAndValidity();
     this.isModalOpen.set(true);
   }
 
@@ -267,9 +316,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         minWidth: 100,
         maxWidth: 120,
         cellRenderer: (params: { value: boolean }) =>
-          params.value
-            ? this.translate.instant('common.yes')
-            : this.translate.instant('common.no')
+          `<span class="inline-block w-3 h-3 rounded-full ${params.value ? 'bg-green-300 ring-2 ring-green-200' : 'bg-red-300 ring-2 ring-red-200'}"></span>`
       }
     ];
   }
@@ -282,32 +329,53 @@ export class UsersComponent implements OnInit, OnDestroy {
         id: 'detail',
         label: this.translate.instant('users.action.detail'),
         icon: 'fa-solid fa-eye',
-        handler: (row) => this.onDetailUser(row)
+        handler: (row) => this.onDetailUser(row),
+        buttonClass: () => 'dt-btn-detail'
       }
     ];
 
     if (isAdmin) {
       this.rowActions.push(
         {
+          id: 'toggle',
+          label: this.translate.instant('users.action.toggle'),
+          icon: 'fa-solid fa-power-off',
+          handler: (row) => this.toggleUser(row),
+          buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
+        },
+        {
           id: 'clone',
           label: this.translate.instant('users.action.clone'),
           icon: 'fa-solid fa-clone',
-          handler: (row) => this.openClone(row)
+          handler: (row) => this.openClone(row),
+          buttonClass: () => 'dt-btn-clone'
         },
         {
           id: 'edit',
           label: this.translate.instant('users.action.edit'),
           icon: 'fa-solid fa-pen',
-          handler: (row) => this.onEditUser(row)
+          handler: (row) => this.onEditUser(row),
+          buttonClass: () => 'dt-btn-edit'
         },
         {
           id: 'delete',
           label: this.translate.instant('users.action.delete'),
           icon: 'fa-solid fa-trash',
-          handler: (row) => this.onDeleteUser(row)
+          handler: (row) => this.onDeleteUser(row),
+          buttonClass: () => 'dt-btn-delete'
         }
       );
     }
+  }
+
+  toggleUser(user: User) {
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.usersService.toggle(user.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.usersReloadService.triggerReload(),
+        error: () => { },
+      });
   }
 
   submitUser() {
@@ -316,18 +384,14 @@ export class UsersComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const password = this.userForm.controls.password.value;
-    const confirm = this.userForm.controls.confirmPassword.value;
-    const isPasswordProvided = Boolean(password || confirm);
+    if (!this.isEditMode()) {
+      const password = this.userForm.controls.password.value;
+      const confirm = this.userForm.controls.confirmPassword.value;
 
-    if (!this.isEditMode() && !isPasswordProvided) {
-      this.errorMsg.set(this.translate.instant('users.passwordRequired'));
-      return;
-    }
-
-    if (isPasswordProvided && password !== confirm) {
-      this.errorMsg.set(this.translate.instant('users.passwordMismatch'));
-      return;
+      if (password !== confirm) {
+        this.errorMsg.set(this.translate.instant('users.passwordMismatch'));
+        return;
+      }
     }
 
     const payload = this.buildPayload();
@@ -340,7 +404,7 @@ export class UsersComponent implements OnInit, OnDestroy {
         .pipe(take(1))
         .subscribe({
           next: () => this.finishSave(),
-          error: () => this.handleSaveError(),
+          error: (err) => this.handleSaveError(err),
         });
       return;
     }
@@ -349,7 +413,7 @@ export class UsersComponent implements OnInit, OnDestroy {
       .pipe(take(1))
       .subscribe({
         next: () => this.finishSave(),
-        error: () => this.handleSaveError(),
+        error: (err) => this.handleSaveError(err),
       });
   }
 
@@ -369,8 +433,9 @@ export class UsersComponent implements OnInit, OnDestroy {
       groupIds: this.uniqueIds(raw.groupIds),
     };
 
-    if (raw.password) {
+    if (!this.isEditMode() && raw.password) {
       payload.password = raw.password;
+      payload.confirmPassword = raw.confirmPassword;
     }
 
     return payload;
@@ -382,9 +447,14 @@ export class UsersComponent implements OnInit, OnDestroy {
     this.usersReloadService.triggerReload();
   }
 
-  private handleSaveError() {
+  private handleSaveError(err?: unknown) {
     this.saving.set(false);
-    this.errorMsg.set(this.translate.instant('users.saveError'));
+    const httpErr = err as { status?: number; error?: { message?: string; errors?: Record<string, string> } } | undefined;
+    if (httpErr?.error?.message) {
+      this.errorMsg.set(httpErr.error.message);
+    } else {
+      this.errorMsg.set(this.translate.instant('users.saveError'));
+    }
   }
 
   loadUsers = (query: DataTableQuery): Observable<DataTableResult<User>> => {
@@ -510,15 +580,15 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   private loadReferenceData(): void {
-    this.rolesService.list().pipe(take(1)).subscribe({
+    this.rolesService.listByEnabled(true).pipe(take(1)).subscribe({
       next: (roles: Role[]) => this.roles.set(roles),
       error: () => this.roles.set([]),
     });
-    this.groupsService.list().pipe(take(1)).subscribe({
+    this.groupsService.listByEnabled(true).pipe(take(1)).subscribe({
       next: (groups: Group[]) => this.groups.set(groups),
       error: () => this.groups.set([]),
     });
-    this.scopesService.list().pipe(take(1)).subscribe({
+    this.scopesService.listByEnabled(true).pipe(take(1)).subscribe({
       next: (scopes: Scope[]) => this.scopes.set(scopes),
       error: () => this.scopes.set([]),
     });
@@ -602,4 +672,52 @@ export class UsersComponent implements OnInit, OnDestroy {
   }
 
   trackByUserId = (row: User) => String(row.id);
+
+  private buildBulkActions() {
+    const isAdmin = this.roleService.isAdmin();
+    this.bulkActions = [];
+    if (isAdmin) {
+      this.bulkActions.push({
+        id: 'bulk-delete',
+        label: this.translate.instant('users.action.bulkDelete'),
+        handler: (rows) => this.openBulkDelete(rows),
+      });
+    }
+  }
+
+  openBulkDelete(rows: User[]) {
+    this.bulkDeleteTargets.set(rows);
+    this.bulkDeleteError.set('');
+    this.bulkDeleting.set(false);
+    this.isBulkDeleteOpen.set(true);
+  }
+
+  closeBulkDelete() {
+    if (this.bulkDeleting()) return;
+    this.isBulkDeleteOpen.set(false);
+    this.bulkDeleteError.set('');
+    this.bulkDeleteTargets.set([]);
+  }
+
+  confirmBulkDelete() {
+    const targets = this.bulkDeleteTargets();
+    if (!targets.length) return;
+    this.bulkDeleting.set(true);
+    this.bulkDeleteError.set('');
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.usersService.bulkDelete(targets.map(r => r.id))
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.bulkDeleting.set(false);
+          this.isBulkDeleteOpen.set(false);
+          this.bulkDeleteTargets.set([]);
+          this.usersReloadService.triggerReload();
+        },
+        error: () => {
+          this.bulkDeleting.set(false);
+          this.bulkDeleteError.set(this.translate.instant('users.bulkDeleteError'));
+        },
+      });
+  }
 }

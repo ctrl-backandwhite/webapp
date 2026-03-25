@@ -10,7 +10,7 @@ import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-si
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
 import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -32,7 +32,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
     private saveSub?: Subscription;
     private langSub?: Subscription;
 
-    reloadToken = 0;
+    reloadToken = signal(0);
 
     isModalOpen = signal(false);
     isEditMode = signal(false);
@@ -45,8 +45,20 @@ export class ScopesComponent implements OnInit, OnDestroy {
     deleteError = signal('');
     deleteTarget = signal<Scope | null>(null);
 
+    isBulkDeleteOpen = signal(false);
+    bulkDeleting = signal(false);
+    bulkDeleteError = signal('');
+    bulkDeleteTargets = signal<Scope[]>([]);
+
     isDetailOpen = signal(false);
     detailScope = signal<Scope | null>(null);
+
+    scopeNameOptions = [
+        { value: 'Read', label: 'Read' },
+        { value: 'Write', label: 'Write' },
+        { value: 'Edit', label: 'Edit' },
+        { value: 'Delete', label: 'Delete' },
+    ];
 
     scopeForm = this.fb.nonNullable.group({
         name: ['', [Validators.required]],
@@ -55,8 +67,19 @@ export class ScopesComponent implements OnInit, OnDestroy {
         enabled: [true],
     });
 
+    constructor() {
+        this.scopeForm.controls.name.valueChanges.subscribe((name) => {
+            if (name) {
+                this.scopeForm.controls.uniqueName.setValue('SCOPE_' + name.toUpperCase());
+            } else {
+                this.scopeForm.controls.uniqueName.setValue('');
+            }
+        });
+    }
+
     columnDefs: ColDef<Scope>[] = [];
     rowActions: DataTableAction<Scope>[] = [];
+    bulkActions: DataTableBulkAction<Scope>[] = [];
 
     onEditScope(row: Scope) {
         this.openEdit(row);
@@ -80,13 +103,15 @@ export class ScopesComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.buildColumnDefs();
         this.buildRowActions();
+        this.buildBulkActions();
         this.langSub = this.translate.onLangChange.subscribe(() => {
             this.buildColumnDefs();
             this.buildRowActions();
+            this.buildBulkActions();
         });
 
         this.reloadSub = this.scopesReloadService.reload$.subscribe(() => {
-            this.reloadToken += 1;
+            this.reloadToken.update(v => v + 1);
         });
     }
 
@@ -219,9 +244,7 @@ export class ScopesComponent implements OnInit, OnDestroy {
                 minWidth: 100,
                 maxWidth: 120,
                 cellRenderer: (params: { value: boolean }) =>
-                    params.value
-                        ? this.translate.instant('common.yes')
-                        : this.translate.instant('common.no')
+                    `<span class="inline-block w-3 h-3 rounded-full ${params.value ? 'bg-green-300 ring-2 ring-green-200' : 'bg-red-300 ring-2 ring-red-200'}"></span>`
             }
         ];
     }
@@ -234,32 +257,53 @@ export class ScopesComponent implements OnInit, OnDestroy {
                 id: 'detail',
                 label: this.translate.instant('scopes.action.detail'),
                 icon: 'fa-solid fa-eye',
-                handler: (row) => this.onDetailScope(row)
+                handler: (row) => this.onDetailScope(row),
+                buttonClass: () => 'dt-btn-detail'
             }
         ];
 
         if (isAdmin) {
             this.rowActions.push(
                 {
+                    id: 'toggle',
+                    label: this.translate.instant('scopes.action.toggle'),
+                    icon: 'fa-solid fa-power-off',
+                    handler: (row) => this.toggleScope(row),
+                    buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
+                },
+                {
                     id: 'clone',
                     label: this.translate.instant('scopes.action.clone'),
                     icon: 'fa-solid fa-clone',
-                    handler: (row) => this.openClone(row)
+                    handler: (row) => this.openClone(row),
+                    buttonClass: () => 'dt-btn-clone'
                 },
                 {
                     id: 'edit',
                     label: this.translate.instant('scopes.action.edit'),
                     icon: 'fa-solid fa-pen',
-                    handler: (row) => this.onEditScope(row)
+                    handler: (row) => this.onEditScope(row),
+                    buttonClass: () => 'dt-btn-edit'
                 },
                 {
                     id: 'delete',
                     label: this.translate.instant('scopes.action.delete'),
                     icon: 'fa-solid fa-trash',
-                    handler: (row) => this.onDeleteScope(row)
+                    handler: (row) => this.onDeleteScope(row),
+                    buttonClass: () => 'dt-btn-delete'
                 }
             );
         }
+    }
+
+    toggleScope(scope: Scope) {
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.scopesService.toggle(scope.id)
+            .pipe(take(1))
+            .subscribe({
+                next: () => this.scopesReloadService.triggerReload(),
+                error: () => { },
+            });
     }
 
     submitScope() {
@@ -425,4 +469,52 @@ export class ScopesComponent implements OnInit, OnDestroy {
     }
 
     trackByScopeId = (row: Scope) => String(row.id);
+
+    private buildBulkActions() {
+        const isAdmin = this.roleService.isAdmin();
+        this.bulkActions = [];
+        if (isAdmin) {
+            this.bulkActions.push({
+                id: 'bulk-delete',
+                label: this.translate.instant('scopes.action.bulkDelete'),
+                handler: (rows) => this.openBulkDelete(rows),
+            });
+        }
+    }
+
+    openBulkDelete(rows: Scope[]) {
+        this.bulkDeleteTargets.set(rows);
+        this.bulkDeleteError.set('');
+        this.bulkDeleting.set(false);
+        this.isBulkDeleteOpen.set(true);
+    }
+
+    closeBulkDelete() {
+        if (this.bulkDeleting()) return;
+        this.isBulkDeleteOpen.set(false);
+        this.bulkDeleteError.set('');
+        this.bulkDeleteTargets.set([]);
+    }
+
+    confirmBulkDelete() {
+        const targets = this.bulkDeleteTargets();
+        if (!targets.length) return;
+        this.bulkDeleting.set(true);
+        this.bulkDeleteError.set('');
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.scopesService.bulkDelete(targets.map(r => r.id))
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.bulkDeleting.set(false);
+                    this.isBulkDeleteOpen.set(false);
+                    this.bulkDeleteTargets.set([]);
+                    this.scopesReloadService.triggerReload();
+                },
+                error: () => {
+                    this.bulkDeleting.set(false);
+                    this.bulkDeleteError.set(this.translate.instant('scopes.bulkDeleteError'));
+                },
+            });
+    }
 }

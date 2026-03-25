@@ -2,16 +2,19 @@
 import { CommonModule } from '@angular/common';
 import { Component, OnDestroy, OnInit, inject, signal } from '@angular/core';
 import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
-import { Role } from '../interfaces/role.model';
+import { Role, RoleInput } from '../interfaces/role.model';
 import { RolesService } from '../services/roles.service';
 import { RolesReloadService } from '../services/roles-reload.service';
+import { PermissionsService } from '../../permissions/services/permissions.service';
+import { Permission } from '../../permissions/interfaces/permission.model';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
+import { NestedEntitiesComponent } from '../../../shared/nested-entities/nested-entities.component';
 import { HasRoleDirective } from '../../../core/auth/directives/has-role.directive';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import type { ColDef, SortModelItem } from 'ag-grid-community';
 import { map, Observable, Subscription, take } from 'rxjs';
 import { TranslateModule, TranslateService } from '@ngx-translate/core';
@@ -20,12 +23,13 @@ import { RoleService } from '../../../core/auth/services/role.service';
 @Component({
   selector: 'app-roles',
   standalone: true,
-  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, HasRoleDirective, TranslateModule],
+  imports: [CommonModule, DataTableComponent, ReactiveFormsModule, ConfirmDialogComponent, DetailSidebarComponent, AuditInfoComponent, NestedEntitiesComponent, HasRoleDirective, TranslateModule],
   templateUrl: './roles.component.html',
 })
 export class RolesComponent implements OnInit, OnDestroy {
   private rolesReloadService = inject(RolesReloadService);
   private rolesService = inject(RolesService);
+  private permissionsService = inject(PermissionsService);
   private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
   private roleService = inject(RoleService);
@@ -34,7 +38,7 @@ export class RolesComponent implements OnInit, OnDestroy {
   private uniqueNameSub?: Subscription;
   private langSub?: Subscription;
 
-  reloadToken = 0;
+  reloadToken = signal(0);
 
   isModalOpen = signal(false);
   isEditMode = signal(false);
@@ -47,18 +51,28 @@ export class RolesComponent implements OnInit, OnDestroy {
   deleteError = signal('');
   deleteTarget = signal<Role | null>(null);
 
+  isBulkDeleteOpen = signal(false);
+  bulkDeleting = signal(false);
+  bulkDeleteError = signal('');
+  bulkDeleteTargets = signal<Role[]>([]);
+
   isDetailOpen = signal(false);
   detailRole = signal<Role | null>(null);
+
+  permissions = signal<Permission[]>([]);
+  permissionSearch = signal('');
 
   roleForm = this.fb.nonNullable.group({
     name: ['', [Validators.required]],
     uniqueName: ['', [Validators.required]],
     description: [''],
     enabled: [true],
+    permissionIds: this.fb.nonNullable.control<number[]>([]),
   });
 
   columnDefs: ColDef<Role>[] = [];
   rowActions: DataTableAction<Role>[] = [];
+  bulkActions: DataTableBulkAction<Role>[] = [];
 
   onEditRole(row: Role) {
     this.openEdit(row);
@@ -81,13 +95,17 @@ export class RolesComponent implements OnInit, OnDestroy {
   ngOnInit() {
     this.buildColumnDefs();
     this.buildRowActions();
+    this.buildBulkActions();
     this.langSub = this.translate.onLangChange.subscribe(() => {
       this.buildColumnDefs();
       this.buildRowActions();
+      this.buildBulkActions();
     });
 
+    this.loadReferenceData();
+
     this.reloadSub = this.rolesReloadService.reload$.subscribe(() => {
-      this.reloadToken += 1;
+      this.reloadToken.update(v => v + 1);
     });
 
     this.uniqueNameSub = this.roleForm.controls.uniqueName.valueChanges.subscribe((value) => {
@@ -114,6 +132,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       uniqueName: '',
       description: '',
       enabled: true,
+      permissionIds: [],
     });
     this.isModalOpen.set(true);
   }
@@ -127,6 +146,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       uniqueName: role.uniqueName ?? '',
       description: role.description ?? '',
       enabled: role.enabled ?? true,
+      permissionIds: this.collectIds(role.permissions),
     });
     this.isModalOpen.set(true);
   }
@@ -140,6 +160,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       uniqueName: '',
       description: role.description ?? '',
       enabled: role.enabled ?? true,
+      permissionIds: this.collectIds(role.permissions),
     });
     this.isModalOpen.set(true);
   }
@@ -228,9 +249,7 @@ export class RolesComponent implements OnInit, OnDestroy {
         minWidth: 100,
         maxWidth: 120,
         cellRenderer: (params: { value: boolean }) =>
-          params.value
-            ? this.translate.instant('common.yes')
-            : this.translate.instant('common.no')
+          `<span class="inline-block w-3 h-3 rounded-full ${params.value ? 'bg-green-300 ring-2 ring-green-200' : 'bg-red-300 ring-2 ring-red-200'}"></span>`
       }
     ];
   }
@@ -243,32 +262,53 @@ export class RolesComponent implements OnInit, OnDestroy {
         id: 'detail',
         label: this.translate.instant('roles.action.detail'),
         icon: 'fa-solid fa-eye',
-        handler: (row) => this.onDetailRole(row)
+        handler: (row) => this.onDetailRole(row),
+        buttonClass: () => 'dt-btn-detail'
       }
     ];
 
     if (isAdmin) {
       this.rowActions.push(
         {
+          id: 'toggle',
+          label: this.translate.instant('roles.action.toggle'),
+          icon: 'fa-solid fa-power-off',
+          handler: (row) => this.toggleRole(row),
+          buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
+        },
+        {
           id: 'clone',
           label: this.translate.instant('roles.action.clone'),
           icon: 'fa-solid fa-clone',
-          handler: (row) => this.openClone(row)
+          handler: (row) => this.openClone(row),
+          buttonClass: () => 'dt-btn-clone'
         },
         {
           id: 'edit',
           label: this.translate.instant('roles.action.edit'),
           icon: 'fa-solid fa-pen',
-          handler: (row) => this.onEditRole(row)
+          handler: (row) => this.onEditRole(row),
+          buttonClass: () => 'dt-btn-edit'
         },
         {
           id: 'delete',
           label: this.translate.instant('roles.action.delete'),
           icon: 'fa-solid fa-trash',
-          handler: (row) => this.onDeleteRole(row)
+          handler: (row) => this.onDeleteRole(row),
+          buttonClass: () => 'dt-btn-delete'
         }
       );
     }
+  }
+
+  toggleRole(role: Role) {
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.rolesService.toggle(role.id)
+      .pipe(take(1))
+      .subscribe({
+        next: () => this.rolesReloadService.triggerReload(),
+        error: () => { },
+      });
   }
 
   submitRole() {
@@ -277,7 +317,7 @@ export class RolesComponent implements OnInit, OnDestroy {
       return;
     }
 
-    const payload = this.roleForm.getRawValue();
+    const payload = this.buildPayload();
     this.saving.set(true);
     this.errorMsg.set('');
     this.saveSub?.unsubscribe();
@@ -300,6 +340,17 @@ export class RolesComponent implements OnInit, OnDestroy {
       });
   }
 
+  private buildPayload(): RoleInput {
+    const raw = this.roleForm.getRawValue();
+    return {
+      name: raw.name,
+      uniqueName: raw.uniqueName,
+      description: raw.description,
+      enabled: raw.enabled,
+      permissionIds: this.uniqueIds(raw.permissionIds),
+    };
+  }
+
   private finishSave() {
     this.saving.set(false);
     this.isModalOpen.set(false);
@@ -308,7 +359,7 @@ export class RolesComponent implements OnInit, OnDestroy {
 
   private handleSaveError() {
     this.saving.set(false);
-    this.errorMsg.set('No se pudo guardar el rol.');
+    this.errorMsg.set(this.translate.instant('roles.saveError'));
   }
 
   loadRoles = (query: DataTableQuery): Observable<DataTableResult<Role>> => {
@@ -435,4 +486,112 @@ export class RolesComponent implements OnInit, OnDestroy {
   }
 
   trackByRoleId = (row: Role) => String(row.id);
+
+  private buildBulkActions() {
+    const isAdmin = this.roleService.isAdmin();
+    this.bulkActions = [];
+    if (isAdmin) {
+      this.bulkActions.push({
+        id: 'bulk-delete',
+        label: this.translate.instant('roles.action.bulkDelete'),
+        handler: (rows) => this.openBulkDelete(rows),
+      });
+    }
+  }
+
+  openBulkDelete(rows: Role[]) {
+    this.bulkDeleteTargets.set(rows);
+    this.bulkDeleteError.set('');
+    this.bulkDeleting.set(false);
+    this.isBulkDeleteOpen.set(true);
+  }
+
+  closeBulkDelete() {
+    if (this.bulkDeleting()) return;
+    this.isBulkDeleteOpen.set(false);
+    this.bulkDeleteError.set('');
+    this.bulkDeleteTargets.set([]);
+  }
+
+  confirmBulkDelete() {
+    const targets = this.bulkDeleteTargets();
+    if (!targets.length) return;
+    this.bulkDeleting.set(true);
+    this.bulkDeleteError.set('');
+    this.saveSub?.unsubscribe();
+    this.saveSub = this.rolesService.bulkDelete(targets.map(r => r.id))
+      .pipe(take(1))
+      .subscribe({
+        next: () => {
+          this.bulkDeleting.set(false);
+          this.isBulkDeleteOpen.set(false);
+          this.bulkDeleteTargets.set([]);
+          this.rolesReloadService.triggerReload();
+        },
+        error: () => {
+          this.bulkDeleting.set(false);
+          this.bulkDeleteError.set(this.translate.instant('roles.bulkDeleteError'));
+        },
+      });
+  }
+
+  private loadReferenceData(): void {
+    this.permissionsService.listByEnabled(true).pipe(take(1)).subscribe({
+      next: (permissions: Permission[]) => this.permissions.set(permissions),
+      error: () => this.permissions.set([]),
+    });
+  }
+
+  filteredPermissions(): Permission[] {
+    return this.filterByTerm(this.permissions(), this.permissionSearch());
+  }
+
+  togglePermissionSelection(id: number): void {
+    const control = this.roleForm.controls.permissionIds;
+    const current = new Set(control.value ?? []);
+    if (current.has(id)) {
+      current.delete(id);
+    } else {
+      current.add(id);
+    }
+    control.setValue(Array.from(current));
+  }
+
+  isSelected(values: number[] | null | undefined, id: number): boolean {
+    return Boolean(values?.includes(id));
+  }
+
+  private filterByTerm<T extends { name?: string; uniqueName?: string }>(items: T[], term: string): T[] {
+    const normalized = term.trim().toLowerCase();
+    if (!normalized) {
+      return items;
+    }
+    return items.filter((item) => {
+      const name = (item.name ?? '').toLowerCase();
+      const uniqueName = (item.uniqueName ?? '').toLowerCase();
+      return name.includes(normalized) || uniqueName.includes(normalized);
+    });
+  }
+
+  private collectIds(items?: Array<{ id: number }>): number[] {
+    if (!items?.length) {
+      return [];
+    }
+    return Array.from(new Set(items.map((item) => item.id)));
+  }
+
+  private uniqueIds(values: number[] | null | undefined): number[] {
+    if (!values?.length) {
+      return [];
+    }
+    return Array.from(new Set(values));
+  }
+
+  getPermissionNames(role: Role | null): string {
+    if (!role?.permissions?.length) {
+      return '-';
+    }
+    const names = role.permissions.map((permission) => permission.name).filter(Boolean);
+    return Array.from(new Set(names)).join(', ') || '-';
+  }
 }

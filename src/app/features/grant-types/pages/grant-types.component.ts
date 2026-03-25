@@ -7,7 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
@@ -42,7 +42,7 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
     private saveSub?: Subscription;
     private langSub?: Subscription;
 
-    reloadToken = 0;
+    reloadToken = signal(0);
 
     isModalOpen = signal(false);
     isEditMode = signal(false);
@@ -55,6 +55,11 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
     deleteError = signal('');
     deleteTarget = signal<GrantType | null>(null);
 
+    isBulkDeleteOpen = signal(false);
+    bulkDeleting = signal(false);
+    bulkDeleteError = signal('');
+    bulkDeleteTargets = signal<GrantType[]>([]);
+
     isDetailOpen = signal(false);
     detailItem = signal<GrantType | null>(null);
 
@@ -65,6 +70,7 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
 
     columnDefs: ColDef<GrantType>[] = [];
     rowActions: DataTableAction<GrantType>[] = [];
+    bulkActions: DataTableBulkAction<GrantType>[] = [];
 
     defaultColDef = {
         resizable: true,
@@ -76,13 +82,15 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.buildColumnDefs();
         this.buildRowActions();
+        this.buildBulkActions();
         this.langSub = this.translate.onLangChange.subscribe(() => {
             this.buildColumnDefs();
             this.buildRowActions();
+            this.buildBulkActions();
         });
 
         this.reloadSub = this.grantTypesReloadService.reload$.subscribe(() => {
-            this.reloadToken += 1;
+            this.reloadToken.update(v => v + 1);
         });
     }
 
@@ -251,9 +259,7 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
                 minWidth: 100,
                 maxWidth: 120,
                 cellRenderer: (params: { value: boolean }) =>
-                    params.value
-                        ? this.translate.instant('common.yes')
-                        : this.translate.instant('common.no')
+                    `<span class="inline-block w-3 h-3 rounded-full ${params.value ? 'bg-green-300 ring-2 ring-green-200' : 'bg-red-300 ring-2 ring-red-200'}"></span>`
             }
         ];
     }
@@ -266,32 +272,53 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
                 id: 'detail',
                 label: this.translate.instant('grantTypes.action.detail'),
                 icon: 'fa-solid fa-eye',
-                handler: (row) => this.onDetail(row)
+                handler: (row) => this.onDetail(row),
+                buttonClass: () => 'dt-btn-detail'
             }
         ];
 
         if (isAdmin) {
             this.rowActions.push(
                 {
+                    id: 'toggle',
+                    label: this.translate.instant('grantTypes.action.toggle'),
+                    icon: 'fa-solid fa-power-off',
+                    handler: (row) => this.toggleGrantType(row),
+                    buttonClass: (row) => row.enabled ? 'dt-btn-toggle-active' : 'dt-btn-toggle-inactive'
+                },
+                {
                     id: 'clone',
                     label: this.translate.instant('grantTypes.action.clone'),
                     icon: 'fa-solid fa-clone',
-                    handler: (row) => this.openClone(row)
+                    handler: (row) => this.openClone(row),
+                    buttonClass: () => 'dt-btn-clone'
                 },
                 {
                     id: 'edit',
                     label: this.translate.instant('grantTypes.action.edit'),
                     icon: 'fa-solid fa-pen',
-                    handler: (row) => this.onEdit(row)
+                    handler: (row) => this.onEdit(row),
+                    buttonClass: () => 'dt-btn-edit'
                 },
                 {
                     id: 'delete',
                     label: this.translate.instant('grantTypes.action.delete'),
                     icon: 'fa-solid fa-trash',
-                    handler: (row) => this.onDelete(row)
+                    handler: (row) => this.onDelete(row),
+                    buttonClass: () => 'dt-btn-delete'
                 }
             );
         }
+    }
+
+    toggleGrantType(grantType: GrantType) {
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.grantTypesService.toggle(grantType.id)
+            .pipe(take(1))
+            .subscribe({
+                next: () => this.grantTypesReloadService.triggerReload(),
+                error: () => { },
+            });
     }
 
     loadGrantTypes = (query: DataTableQuery): Observable<DataTableResult<GrantType>> => {
@@ -420,4 +447,52 @@ export class GrantTypesComponent implements OnInit, OnDestroy {
     }
 
     trackByGrantTypeId = (row: GrantType) => String(row.id);
+
+    private buildBulkActions() {
+        const isAdmin = this.roleService.isAdmin();
+        this.bulkActions = [];
+        if (isAdmin) {
+            this.bulkActions.push({
+                id: 'bulk-delete',
+                label: this.translate.instant('grantTypes.action.bulkDelete'),
+                handler: (rows) => this.openBulkDelete(rows),
+            });
+        }
+    }
+
+    openBulkDelete(rows: GrantType[]) {
+        this.bulkDeleteTargets.set(rows);
+        this.bulkDeleteError.set('');
+        this.bulkDeleting.set(false);
+        this.isBulkDeleteOpen.set(true);
+    }
+
+    closeBulkDelete() {
+        if (this.bulkDeleting()) return;
+        this.isBulkDeleteOpen.set(false);
+        this.bulkDeleteError.set('');
+        this.bulkDeleteTargets.set([]);
+    }
+
+    confirmBulkDelete() {
+        const targets = this.bulkDeleteTargets();
+        if (!targets.length) return;
+        this.bulkDeleting.set(true);
+        this.bulkDeleteError.set('');
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.grantTypesService.bulkDelete(targets.map(r => r.id))
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.bulkDeleting.set(false);
+                    this.isBulkDeleteOpen.set(false);
+                    this.bulkDeleteTargets.set([]);
+                    this.grantTypesReloadService.triggerReload();
+                },
+                error: () => {
+                    this.bulkDeleting.set(false);
+                    this.bulkDeleteError.set(this.translate.instant('grantTypes.bulkDeleteError'));
+                },
+            });
+    }
 }

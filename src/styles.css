@@ -317,6 +317,16 @@ body {
 	box-shadow: 0 0 0 3px hsl(var(--su) / 0.18);
 }
 
+.dt-input.dt-input-valid {
+	border-color: #16a34a;
+	box-shadow: 0 0 0 2px rgba(22, 163, 74, 0.15);
+}
+
+.dt-input.dt-input-invalid {
+	border-color: #dc2626;
+	box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.15);
+}
+
 .dt-textarea {
 	resize: vertical;
 }
@@ -493,7 +503,7 @@ body {
 	display: grid;
 	grid-template-columns: 140px 1fr;
 	column-gap: 8px;
-	align-items: center;
+	align-items: start;
 	padding: 6px 0;
 }
 
@@ -508,8 +518,7 @@ body {
 	align-items: center;
 	justify-content: center;
 	padding: 8px 0 2px;
-	border-top: 1px solid var(--bc, #e5e7eb);
-	opacity: 0.2;
+	border-top: 1px solid hsl(var(--bc) / 0.15);
 }
 
 .dt-detail-label {
@@ -581,6 +590,66 @@ body {
 	text-align: center;
 }
 
+.dt-btn-toggle-active {
+	background-color: #ffffff;
+	color: #166534;
+	border-color: #86efac;
+}
+
+.dt-btn-toggle-active:hover {
+	background-color: #f0fdf4;
+}
+
+.dt-btn-toggle-inactive {
+	background-color: #ffffff;
+	color: #991b1b;
+	border-color: #fca5a5;
+}
+
+.dt-btn-toggle-inactive:hover {
+	background-color: #fef2f2;
+}
+
+.dt-btn-detail {
+	background-color: #ffffff;
+	color: #1e40af;
+	border-color: #93c5fd;
+}
+
+.dt-btn-detail:hover {
+	background-color: #eff6ff;
+}
+
+.dt-btn-clone {
+	background-color: #ffffff;
+	color: #6d28d9;
+	border-color: #c4b5fd;
+}
+
+.dt-btn-clone:hover {
+	background-color: #f5f3ff;
+}
+
+.dt-btn-edit {
+	background-color: #ffffff;
+	color: #b45309;
+	border-color: #fcd34d;
+}
+
+.dt-btn-edit:hover {
+	background-color: #fffbeb;
+}
+
+.dt-btn-delete {
+	background-color: #ffffff;
+	color: #991b1b;
+	border-color: #fca5a5;
+}
+
+.dt-btn-delete:hover {
+	background-color: #fef2f2;
+}
+
 .dt-badge-outline-info {
 	display: inline-flex;
 	align-items: center;
@@ -595,6 +664,31 @@ body {
 	line-height: 1;
 	width: max-content;
 	white-space: nowrap;
+}
+
+/* Tag styles */
+.dt-tag {
+	display: inline-flex;
+	align-items: center;
+	padding: 4px 12px;
+	font-size: 12px;
+	font-family: ui-monospace, monospace;
+	background-color: hsl(var(--p) / 0.08);
+	color: hsl(var(--pc, var(--bc)));
+	border: 1px solid hsl(var(--p) / 0.25);
+	border-radius: 20px;
+	line-height: 1.4;
+	word-break: break-all;
+	width: fit-content;
+	max-width: 100%;
+}
+
+.dt-tag-list {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	width: 100%;
+	padding-top: 2px;
 }
 
 /* Audit info styles */

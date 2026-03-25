@@ -41,6 +41,11 @@ export class SidebarComponent {
           icon: 'fa-solid fa-people-group'
         },
         {
+          labelKey: 'menu.permissions',
+          route: ['/admin/permissions'],
+          icon: 'fa-solid fa-shield-halved'
+        },
+        {
           labelKey: 'menu.scopes',
           route: ['/admin/scopes'],
           icon: 'fa-solid fa-key'

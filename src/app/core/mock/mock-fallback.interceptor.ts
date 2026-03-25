@@ -84,10 +84,6 @@ export const mockFallbackInterceptor: HttpInterceptorFn = (req, next) => {
                 return throwError(() => error);
             }
 
-            console.warn(
-                `[MockFallback] Backend unavailable for "${parsed.resource}" (${error.status}). Returning mock data.`
-            );
-
             mockIndicator.activate(parsed.resource);
 
             const body = buildMockBody(req.method, parsed, items, req.body);

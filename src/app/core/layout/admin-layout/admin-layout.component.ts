@@ -29,13 +29,9 @@ export class AdminLayoutComponent implements OnInit {
 
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
-      console.log('[AdminLayout] User is authenticated');
       this.startTourOnce();
       return;
     }
-    // The authGuard already handles redirect to the auth server,
-    // so no duplicate authorization logic is needed here.
-    console.warn('[AdminLayout] User is not authenticated — guard should have redirected');
   }
 
   private startTourOnce(): void {

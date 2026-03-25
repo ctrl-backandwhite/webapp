@@ -57,10 +57,8 @@ export class AuthService {
       this.authStateService.setAuthenticated();
       this.roleService.updateRoles();
 
-      console.log('[Auth] Token exchange successful');
       return response;
     } catch (error) {
-      console.error('[Auth] Token exchange failed:', error);
       this.authStateService.setError('Token exchange failed');
       throw error;
     }
@@ -88,10 +86,8 @@ export class AuthService {
         response.token_type
       );
 
-      console.log('[Auth] Token refreshed successfully');
       return response;
     } catch (error) {
-      console.error('[Auth] Token refresh failed:', error);
       this.logout().subscribe();
       throw error;
     }
@@ -110,8 +106,6 @@ export class AuthService {
   }
 
   logout(): Observable<void> {
-    console.log('[Auth] Starting logout process...');
-
     return this.http.post(
       `${environment.apiBaseUrl}/auth/logout`,
       null,
@@ -122,12 +116,9 @@ export class AuthService {
     ).pipe(
       map(() => void 0),
       tap(() => {
-        console.log('[Auth] Logout response received');
         this.cleanupLocalAuth();
-        console.log('[Auth] User logged out successfully');
       }),
-      catchError((error) => {
-        console.warn('[Auth] Server logout failed (will continue with local cleanup):', error);
+      catchError(() => {
         this.cleanupLocalAuth();
         return of(void 0);
       })
@@ -145,36 +136,24 @@ export class AuthService {
       responseType: 'text'
     }).pipe(
       map(() => void 0),
-      tap(() => {
-        console.log('[Auth] Token revoked successfully');
-      }),
-      catchError((error) => {
-        console.warn('[Auth] Token revocation failed:', error);
+      tap(() => { }),
+      catchError(() => {
         return of(void 0);
       })
     );
   }
 
   private cleanupLocalAuth(): void {
-    console.log('[Auth] Clearing tokens and session storage...');
-
     this.tokenService.clearTokens();
     this.pkceService.clearVerifier();
     localStorage.removeItem('authInitiated');
     localStorage.setItem('forceLogin', '1');
 
     this.authStateService.setUnauthenticated();
-
-    console.log('[Auth] Local cleanup complete');
-    console.log('[Auth] localStorage keys remaining:', Object.keys(localStorage));
-    console.log('[Auth] Current forceLogin flag:', localStorage.getItem('forceLogin'));
   }
 
   private async requestToken(params: Record<string, string>): Promise<TokenResponse> {
     const body = new URLSearchParams(params);
-
-    console.log('[Auth] Sending token request to:', this.tokenEndpoint);
-    console.log('[Auth] Request params:', Object.keys(params).join(', '));
 
     try {
       const response = await firstValueFrom(
@@ -190,14 +169,11 @@ export class AuthService {
         throw new Error('No token response received');
       }
 
-      console.log('[Auth] Token response received successfully');
       return response;
     } catch (error) {
       if (error instanceof TimeoutError) {
-        console.error('[Auth] Token request timed out after 30s');
         throw new Error('Token request timed out. The server did not respond.');
       }
-      console.error('[Auth] Token request failed:', error);
       throw error;
     }
   }

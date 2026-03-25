@@ -7,7 +7,7 @@ import { TranslateModule, TranslateService } from '@ngx-translate/core';
 
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import type { DataTableAction } from '../../../shared/data-table/data-table-actions-renderer.component';
-import type { DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
+import type { DataTableBulkAction, DataTableQuery, DataTableResult } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
 import { AuditInfoComponent } from '../../../shared/audit-info/audit-info.component';
@@ -53,7 +53,7 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     private saveSub?: Subscription;
     private langSub?: Subscription;
 
-    reloadToken = 0;
+    reloadToken = signal(0);
 
     isModalOpen = signal(false);
     isEditMode = signal(false);
@@ -65,6 +65,11 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     deleting = signal(false);
     deleteError = signal('');
     deleteTarget = signal<OAuthClient | null>(null);
+
+    isBulkDeleteOpen = signal(false);
+    bulkDeleting = signal(false);
+    bulkDeleteError = signal('');
+    bulkDeleteTargets = signal<OAuthClient[]>([]);
 
     isDetailOpen = signal(false);
     detailItem = signal<OAuthClient | null>(null);
@@ -86,6 +91,7 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
 
     columnDefs: ColDef<OAuthClient>[] = [];
     rowActions: DataTableAction<OAuthClient>[] = [];
+    bulkActions: DataTableBulkAction<OAuthClient>[] = [];
 
     defaultColDef = {
         resizable: true,
@@ -97,15 +103,17 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     ngOnInit() {
         this.buildColumnDefs();
         this.buildRowActions();
+        this.buildBulkActions();
         this.langSub = this.translate.onLangChange.subscribe(() => {
             this.buildColumnDefs();
             this.buildRowActions();
+            this.buildBulkActions();
         });
 
         this.loadReferenceData();
 
         this.reloadSub = this.oauthClientsReloadService.reload$.subscribe(() => {
-            this.reloadToken += 1;
+            this.reloadToken.update(v => v + 1);
         });
     }
 
@@ -322,7 +330,8 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
                 id: 'detail',
                 label: this.translate.instant('oauthClients.action.detail'),
                 icon: 'fa-solid fa-eye',
-                handler: (row) => this.onDetail(row)
+                handler: (row) => this.onDetail(row),
+                buttonClass: () => 'dt-btn-detail'
             }
         ];
 
@@ -332,19 +341,22 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
                     id: 'clone',
                     label: this.translate.instant('oauthClients.action.clone'),
                     icon: 'fa-solid fa-clone',
-                    handler: (row) => this.openClone(row)
+                    handler: (row) => this.openClone(row),
+                    buttonClass: () => 'dt-btn-clone'
                 },
                 {
                     id: 'edit',
                     label: this.translate.instant('oauthClients.action.edit'),
                     icon: 'fa-solid fa-pen',
-                    handler: (row) => this.onEdit(row)
+                    handler: (row) => this.onEdit(row),
+                    buttonClass: () => 'dt-btn-edit'
                 },
                 {
                     id: 'delete',
                     label: this.translate.instant('oauthClients.action.delete'),
                     icon: 'fa-solid fa-trash',
-                    handler: (row) => this.onDelete(row)
+                    handler: (row) => this.onDelete(row),
+                    buttonClass: () => 'dt-btn-delete'
                 }
             );
         }
@@ -367,15 +379,15 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     };
 
     private loadReferenceData(): void {
-        this.scopesService.list().pipe(take(1)).subscribe({
+        this.scopesService.listByEnabled(true).pipe(take(1)).subscribe({
             next: (scopes: Scope[]) => this.scopes.set(scopes),
             error: () => this.scopes.set([]),
         });
-        this.redirectUrisService.list().pipe(take(1)).subscribe({
+        this.redirectUrisService.listByEnabled(true).pipe(take(1)).subscribe({
             next: (redirectUris: RedirectUri[]) => this.redirectUris.set(redirectUris),
             error: () => this.redirectUris.set([]),
         });
-        this.grantTypesService.list().pipe(take(1)).subscribe({
+        this.grantTypesService.listByEnabled(true).pipe(take(1)).subscribe({
             next: (grantTypes: GrantType[]) => this.grantTypes.set(grantTypes),
             error: () => this.grantTypes.set([]),
         });
@@ -568,4 +580,52 @@ export class OauthClientsComponent implements OnInit, OnDestroy {
     }
 
     trackByOauthClientId = (row: OAuthClient) => String(row.id);
+
+    private buildBulkActions() {
+        const isAdmin = this.roleService.isAdmin();
+        this.bulkActions = [];
+        if (isAdmin) {
+            this.bulkActions.push({
+                id: 'bulk-delete',
+                label: this.translate.instant('oauthClients.action.bulkDelete'),
+                handler: (rows) => this.openBulkDelete(rows),
+            });
+        }
+    }
+
+    openBulkDelete(rows: OAuthClient[]) {
+        this.bulkDeleteTargets.set(rows);
+        this.bulkDeleteError.set('');
+        this.bulkDeleting.set(false);
+        this.isBulkDeleteOpen.set(true);
+    }
+
+    closeBulkDelete() {
+        if (this.bulkDeleting()) return;
+        this.isBulkDeleteOpen.set(false);
+        this.bulkDeleteError.set('');
+        this.bulkDeleteTargets.set([]);
+    }
+
+    confirmBulkDelete() {
+        const targets = this.bulkDeleteTargets();
+        if (!targets.length) return;
+        this.bulkDeleting.set(true);
+        this.bulkDeleteError.set('');
+        this.saveSub?.unsubscribe();
+        this.saveSub = this.oauthClientsService.bulkDelete(targets.map(r => r.id))
+            .pipe(take(1))
+            .subscribe({
+                next: () => {
+                    this.bulkDeleting.set(false);
+                    this.isBulkDeleteOpen.set(false);
+                    this.bulkDeleteTargets.set([]);
+                    this.oauthClientsReloadService.triggerReload();
+                },
+                error: () => {
+                    this.bulkDeleting.set(false);
+                    this.bulkDeleteError.set(this.translate.instant('oauthClients.bulkDeleteError'));
+                },
+            });
+    }
 }
