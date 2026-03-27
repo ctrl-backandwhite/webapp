@@ -82,6 +82,7 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   private loadSub?: Subscription;
   private langSub?: Subscription;
   private usesDefaultOverlay = true;
+  private restoringState = false;
 
   ngOnInit() {
     if (this.overlayNoRowsTemplate) {
@@ -211,12 +212,14 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
   };
 
   onSortChanged() {
+    if (this.restoringState) { return; }
     this.page.set(1);
     this.saveState();
     this.load();
   }
 
   onFilterChanged() {
+    if (this.restoringState) { return; }
     this.page.set(1);
     this.saveState();
     this.load();
@@ -328,6 +331,7 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
       return;
     }
 
+    this.restoringState = true;
     try {
       const state = JSON.parse(raw) as { columnState?: unknown; filterModel?: Record<string, unknown> };
       if (state.columnState && Array.isArray(state.columnState)) {
@@ -338,6 +342,8 @@ export class DataTableComponent implements OnInit, OnChanges, OnDestroy {
       }
     } catch {
       localStorage.removeItem(this.storageKey());
+    } finally {
+      this.restoringState = false;
     }
   }
 

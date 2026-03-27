@@ -14,5 +14,16 @@ export default defineConfig({
     chromeWebSecurity: false,
     viewportWidth: 1280,
     viewportHeight: 800,
+    setupNodeEvents(on) {
+      on('before:browser:launch', (browser, launchOptions) => {
+        if (browser.family === 'chromium') {
+          launchOptions.args.push('--disable-gpu');
+          launchOptions.args.push('--disable-dev-shm-usage');
+          launchOptions.args.push('--no-sandbox');
+          launchOptions.args.push('--disable-setuid-sandbox');
+        }
+        return launchOptions;
+      });
+    },
   },
 });

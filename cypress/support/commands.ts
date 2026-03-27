@@ -82,7 +82,7 @@ Cypress.Commands.add('login', () => {
             method: 'POST',
             url: 'http://localhost:6001/login',
             form: true,
-            body: { username: 'test@gmail.com', password: '' },
+            body: { username: 'test@gmail.com', password: 'Motorola25*' },
             followRedirect: false,
           }).then(() => {
             // 2) Call authorize with the authenticated session cookie

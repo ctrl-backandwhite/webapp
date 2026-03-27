@@ -6,7 +6,6 @@ describe('Scopes (Ámbitos)', () => {
 
   beforeEach(() => {
     cy.login();
-    page.interceptAll();
   });
 
   // ─── Listing ──────────────────────────────────────────────

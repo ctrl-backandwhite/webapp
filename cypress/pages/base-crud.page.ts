@@ -15,18 +15,20 @@ export abstract class BaseCrudPage {
   // ─── Navigation ───────────────────────────────────────────
 
   visit(): void {
+    // Register intercepts right before navigation so aliases start clean.
+    this.interceptAll();
+    // Clear any saved table state (filters/sorts) from previous tests
+    // to guarantee a deterministic initial load.
+    cy.window().then(win => {
+      Object.keys(win.localStorage)
+        .filter(k => k.startsWith('data-table:'))
+        .forEach(k => win.localStorage.removeItem(k));
+    });
     cy.visit(this.route);
-    // Wait for data-table and initial list, then expand page size to show all rows
     cy.get('app-data-table', { timeout: 15000 }).should('exist');
     cy.wait('@list');
-    // Inject a large page size option so ALL rows are visible regardless of dataset size
-    cy.get('app-data-table select.select-bordered').then($select => {
-      const opt = document.createElement('option');
-      opt.value = '200';
-      opt.text = '200';
-      $select[0].appendChild(opt);
-    });
-    cy.get('app-data-table select.select-bordered').select('200');
+    // Select the largest built-in page size so most rows are visible
+    cy.get('app-data-table select.select-bordered').select('50');
     cy.wait('@list');
   }
 
@@ -81,24 +83,14 @@ export abstract class BaseCrudPage {
   }
 
   getRowByText(text: string): Cypress.Chainable {
-    // ag-grid virtualises rows — only visible ones are in the DOM.
-    // If the text isn't in the current viewport, scroll to the bottom
-    // where newly-created items (highest IDs) typically reside.
-    cy.get('.ag-center-cols-container').then($c => {
-      if (!$c.text().includes(text)) {
-        cy.get('.ag-body-viewport').scrollTo('bottom');
-      }
-    });
-    return cy.contains('.ag-center-cols-container .ag-row', text);
+    // With page-size=200 and ag-layout-auto-height the grid renders all rows
+    // without virtualisation. Use cy.contains with a generous timeout so
+    // Cypress retries until the grid finishes re-rendering after the API call.
+    return cy.contains('.ag-center-cols-container .ag-row', text, { timeout: 15000 });
   }
 
   getCellByText(text: string): Cypress.Chainable {
-    cy.get('.ag-center-cols-container').then($c => {
-      if (!$c.text().includes(text)) {
-        cy.get('.ag-body-viewport').scrollTo('bottom');
-      }
-    });
-    return cy.contains('.ag-cell', text);
+    return cy.contains('.ag-cell', text, { timeout: 15000 });
   }
 
   assertRowVisible(text: string): void {

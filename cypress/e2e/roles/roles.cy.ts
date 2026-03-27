@@ -6,7 +6,6 @@ describe('Roles', () => {
 
   beforeEach(() => {
     cy.login();
-    page.interceptAll();
   });
 
   // ─── Listing ──────────────────────────────────────────────
@@ -138,9 +137,11 @@ describe('Roles', () => {
     page.clickDelete(cloneName);
     page.confirmAction();
     cy.wait('@delete');
+    cy.wait('@list');
     page.clickDelete(roleName);
     page.confirmAction();
     cy.wait('@delete');
+    cy.wait('@list');
   });
 
   // ─── Toggle ───────────────────────────────────────────────

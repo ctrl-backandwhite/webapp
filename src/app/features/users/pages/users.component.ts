@@ -6,10 +6,8 @@ import { UsersReloadService } from '../services/users-reload.service';
 import { User, UserInput } from '../interfaces/user.model';
 import { RolesService } from '../../roles/services/roles.service';
 import { GroupsService } from '../../groups/services/groups.service';
-import { ScopesService } from '../../scopes/services/scopes.service';
 import { Role } from '../../roles/interfaces/role.model';
 import { Group } from '../../groups/interfaces/group.model';
-import { Scope } from '../../scopes/interfaces/scope.model';
 import { DataTableComponent } from '../../../shared/data-table/data-table.component';
 import { ConfirmDialogComponent } from '../../../shared/confirm-dialog/confirm-dialog.component';
 import { DetailSidebarComponent } from '../../../shared/detail-sidebar/detail-sidebar.component';
@@ -34,7 +32,6 @@ export class UsersComponent implements OnInit, OnDestroy {
   private usersService = inject(UsersService);
   private rolesService = inject(RolesService);
   private groupsService = inject(GroupsService);
-  private scopesService = inject(ScopesService);
   private fb = inject(FormBuilder);
   private translate = inject(TranslateService);
   private roleService = inject(RoleService);
@@ -67,10 +64,8 @@ export class UsersComponent implements OnInit, OnDestroy {
 
   roles = signal<Role[]>([]);
   groups = signal<Group[]>([]);
-  scopes = signal<Scope[]>([]);
   roleSearch = signal('');
   groupSearch = signal('');
-  scopeSearch = signal('');
 
   passwordValue = signal('');
   confirmPasswordValue = signal('');
@@ -96,7 +91,6 @@ export class UsersComponent implements OnInit, OnDestroy {
     accountNonExpired: [true],
     accountNonLocked: [true],
     credentialsNonExpired: [true],
-    scopeIds: this.fb.nonNullable.control<number[]>([]),
     roleIds: this.fb.nonNullable.control<number[]>([]),
     groupIds: this.fb.nonNullable.control<number[]>([]),
   });
@@ -169,7 +163,6 @@ export class UsersComponent implements OnInit, OnDestroy {
       accountNonExpired: true,
       accountNonLocked: true,
       credentialsNonExpired: true,
-      scopeIds: [],
       roleIds: [],
       groupIds: [],
     });
@@ -198,7 +191,6 @@ export class UsersComponent implements OnInit, OnDestroy {
       accountNonExpired: user.accountNonExpired ?? true,
       accountNonLocked: user.accountNonLocked ?? true,
       credentialsNonExpired: user.credentialsNonExpired ?? true,
-      scopeIds: this.collectIds(user.scopes),
       roleIds: this.collectIds(user.roles),
       groupIds: this.collectIds(user.groups),
     });
@@ -227,7 +219,6 @@ export class UsersComponent implements OnInit, OnDestroy {
       accountNonExpired: user.accountNonExpired ?? true,
       accountNonLocked: user.accountNonLocked ?? true,
       credentialsNonExpired: user.credentialsNonExpired ?? true,
-      scopeIds: this.collectIds(user.scopes),
       roleIds: this.collectIds(user.roles),
       groupIds: this.collectIds(user.groups),
     });
@@ -428,7 +419,6 @@ export class UsersComponent implements OnInit, OnDestroy {
       accountNonExpired: raw.accountNonExpired,
       accountNonLocked: raw.accountNonLocked,
       credentialsNonExpired: raw.credentialsNonExpired,
-      scopeIds: this.uniqueIds(raw.scopeIds),
       roleIds: this.uniqueIds(raw.roleIds),
       groupIds: this.uniqueIds(raw.groupIds),
     };
@@ -588,10 +578,6 @@ export class UsersComponent implements OnInit, OnDestroy {
       next: (groups: Group[]) => this.groups.set(groups),
       error: () => this.groups.set([]),
     });
-    this.scopesService.listByEnabled(true).pipe(take(1)).subscribe({
-      next: (scopes: Scope[]) => this.scopes.set(scopes),
-      error: () => this.scopes.set([]),
-    });
   }
 
   filteredRoles(): Role[] {
@@ -602,11 +588,7 @@ export class UsersComponent implements OnInit, OnDestroy {
     return this.filterByTerm(this.groups(), this.groupSearch());
   }
 
-  filteredScopes(): Scope[] {
-    return this.filterByTerm(this.scopes(), this.scopeSearch());
-  }
-
-  toggleSelection(controlName: 'scopeIds' | 'roleIds' | 'groupIds', id: number): void {
+  toggleSelection(controlName: 'roleIds' | 'groupIds', id: number): void {
     const control = this.userForm.controls[controlName];
     const current = new Set(control.value ?? []);
     if (current.has(id)) {
@@ -645,14 +627,6 @@ export class UsersComponent implements OnInit, OnDestroy {
       return [];
     }
     return Array.from(new Set(values));
-  }
-
-  getScopeNames(user: User | null): string {
-    if (!user?.scopes?.length) {
-      return '-';
-    }
-    const names = user.scopes.map((scope) => scope.name).filter(Boolean);
-    return Array.from(new Set(names)).join(', ') || '-';
   }
 
   getRoleNames(user: User | null): string {

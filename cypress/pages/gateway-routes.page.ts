@@ -8,6 +8,13 @@ export class GatewayRoutesPage extends BaseCrudPage {
     return '**/api/v1';
   }
 
+  /** Override visit to also register gateway-specific intercepts */
+  override visit(): void {
+    this.interceptRefresh();
+    this.interceptBulkImport();
+    super.visit();
+  }
+
   /** Gateway routes uses /bulk instead of /batch for batch delete */
   override interceptBatchDelete(): void {
     cy.intercept('DELETE', `${this.apiBase}/${this.apiResource}/bulk`).as('batchDelete');

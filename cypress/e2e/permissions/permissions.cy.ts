@@ -6,7 +6,6 @@ describe('Permissions (Permisos)', () => {
 
   beforeEach(() => {
     cy.login();
-    page.interceptAll();
   });
 
   // ─── Listing ──────────────────────────────────────────────

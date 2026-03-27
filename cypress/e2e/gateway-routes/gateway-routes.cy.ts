@@ -6,9 +6,6 @@ describe('Gateway Routes (Rutas del Gateway)', () => {
 
   beforeEach(() => {
     cy.login();
-    page.interceptAll();
-    page.interceptRefresh();
-    page.interceptBulkImport();
   });
 
   // ─── Listing ──────────────────────────────────────────────

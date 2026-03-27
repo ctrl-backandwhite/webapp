@@ -6,7 +6,6 @@ describe('Grant Types (Tipos de concesión)', () => {
 
     beforeEach(() => {
         cy.login();
-        page.interceptAll();
     });
 
     // ─── Listing ──────────────────────────────────────────────

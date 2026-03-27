@@ -6,7 +6,6 @@ describe('Redirect URIs (URIs de redirección)', () => {
 
     beforeEach(() => {
         cy.login();
-        page.interceptAll();
     });
 
     // ─── Listing ──────────────────────────────────────────────

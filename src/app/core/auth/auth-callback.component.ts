@@ -34,84 +34,84 @@ export class AuthCallbackComponent implements OnInit {
   private authService = inject(AuthService);
   errorMessage: string | null = null;
 
-  private static readonly MAX_RETRIES = 3;
-  private static readonly RETRY_KEY = 'auth_callback_retries';
+  private static readonly EXCHANGE_KEY = 'auth_exchange_in_progress';
 
   ngOnInit(): void {
-    // Loop detection: break infinite redirect cycles
-    const retries = parseInt(sessionStorage.getItem(AuthCallbackComponent.RETRY_KEY) || '0', 10);
-    if (retries >= AuthCallbackComponent.MAX_RETRIES) {
-      sessionStorage.removeItem(AuthCallbackComponent.RETRY_KEY);
-      this.errorMessage = 'Authentication failed after multiple attempts. Please try again.';
+    // Evita que dos instancias o re-renders simultáneos intercambien el mismo code
+    if (sessionStorage.getItem(AuthCallbackComponent.EXCHANGE_KEY) === '1') {
       return;
     }
-    sessionStorage.setItem(AuthCallbackComponent.RETRY_KEY, String(retries + 1));
+    sessionStorage.setItem(AuthCallbackComponent.EXCHANGE_KEY, '1');
 
     try {
-      const code = this.extractAuthorizationCode();
+      // Extrae code y state ANTES de limpiar la URL
+      const { code, state } = this.extractCallbackParams();
 
-      if (!this.validateState()) {
+      // Limpia la URL inmediatamente para que si el componente se re-renderiza
+      // no encuentre el code en la URL (los codes OAuth2 son de un solo uso)
+      window.history.replaceState({}, document.title, window.location.pathname);
+
+      if (!this.validateState(state)) {
+        sessionStorage.removeItem(AuthCallbackComponent.EXCHANGE_KEY);
         this.errorMessage = 'Invalid authentication state. Possible CSRF attack.';
         return;
       }
 
       if (!code) {
+        sessionStorage.removeItem(AuthCallbackComponent.EXCHANGE_KEY);
         this.errorMessage = 'No authorization code received from the server.';
         return;
       }
 
       this.authService.exchangeCodeForToken(code)
         .then(() => {
-          sessionStorage.removeItem(AuthCallbackComponent.RETRY_KEY);
+          sessionStorage.removeItem(AuthCallbackComponent.EXCHANGE_KEY);
           sessionStorage.removeItem('oauth_state');
           localStorage.removeItem('authInitiated');
           localStorage.removeItem('forceLogin');
           this.router.navigate(['/admin']);
         })
         .catch(() => {
+          sessionStorage.removeItem(AuthCallbackComponent.EXCHANGE_KEY);
           this.errorMessage = 'Failed to complete authentication. Please try again.';
         });
     } catch {
+      sessionStorage.removeItem(AuthCallbackComponent.EXCHANGE_KEY);
       this.errorMessage = 'An unexpected error occurred during authentication.';
     }
   }
 
   retryLogin(): void {
-    sessionStorage.removeItem(AuthCallbackComponent.RETRY_KEY);
+    sessionStorage.removeItem(AuthCallbackComponent.EXCHANGE_KEY);
     this.authService.logout().subscribe({
       next: () => this.router.navigate(['/admin']),
       error: () => this.router.navigate(['/admin'])
     });
   }
 
-  private extractAuthorizationCode(): string | null {
-    // Prefer standard OAuth2 redirect parameters.
+  private extractCallbackParams(): { code: string | null; state: string | null } {
     const url = new URL(window.location.href);
-    const queryCode = url.searchParams.get('code');
-    if (queryCode) {
-      return queryCode;
+
+    // Query params (response_mode=query)
+    const code = url.searchParams.get('code');
+    const state = url.searchParams.get('state');
+    if (code || state) {
+      return { code, state };
     }
 
-    // Some providers return params in the hash fragment.
-    const hash = url.hash.replace(/^#/, '');
-    if (!hash) {
-      return null;
-    }
-
-    const hashParams = new URLSearchParams(hash);
-    return hashParams.get('code');
+    // Hash fragment fallback (response_mode=fragment)
+    const hashParams = new URLSearchParams(url.hash.replace(/^#/, ''));
+    return {
+      code: hashParams.get('code'),
+      state: hashParams.get('state'),
+    };
   }
 
-  private validateState(): boolean {
-    const url = new URL(window.location.href);
-    const receivedState = url.searchParams.get('state')
-      || new URLSearchParams(url.hash.replace(/^#/, '')).get('state');
+  private validateState(receivedState: string | null): boolean {
     const expectedState = sessionStorage.getItem('oauth_state');
-
     if (!expectedState || !receivedState) {
       return false;
     }
-
     return expectedState === receivedState;
   }
 }

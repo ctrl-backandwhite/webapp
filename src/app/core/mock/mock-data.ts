@@ -37,13 +37,13 @@ const MOCK_USERS: (User & { _mock: true })[] = [
     {
         id: 1, name: 'John', lastName: 'Doe', nickName: 'jdoe', email: 'john@mock.test',
         enabled: true, accountNonExpired: true, accountNonLocked: true, credentialsNonExpired: true,
-        scopes: MOCK_SCOPES.map(s => ({ ...s })), roles: [MOCK_ROLES[0]], groups: [],
+        roles: [MOCK_ROLES[0]], groups: [],
         ...MOCK_AUDIT, _mock: true,
     },
     {
         id: 2, name: 'Jane', lastName: 'Smith', nickName: 'jsmith', email: 'jane@mock.test',
         enabled: true, accountNonExpired: true, accountNonLocked: true, credentialsNonExpired: true,
-        scopes: [MOCK_SCOPES[0]], roles: [MOCK_ROLES[1]], groups: [],
+        roles: [MOCK_ROLES[1]], groups: [],
         ...MOCK_AUDIT, _mock: true,
     },
 ];

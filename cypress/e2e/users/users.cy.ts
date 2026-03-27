@@ -6,7 +6,6 @@ describe('Users (Usuarios)', () => {
 
   beforeEach(() => {
     cy.login();
-    page.interceptAll();
   });
 
   // ─── Listing ──────────────────────────────────────────────

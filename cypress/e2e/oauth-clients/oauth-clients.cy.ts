@@ -6,7 +6,6 @@ describe('OAuth Clients (Clientes OAuth)', () => {
 
     beforeEach(() => {
         cy.login();
-        page.interceptAll();
     });
 
     // ─── Listing ──────────────────────────────────────────────

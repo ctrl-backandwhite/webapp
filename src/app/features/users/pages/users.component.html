@@ -90,27 +90,6 @@
         }
 
         <label class="dt-field dt-field-full">
-          <span class="dt-label">{{ 'users.scopeIdsLabel' | translate }}</span>
-          @if (scopes().length) {
-          <input class="dt-input" type="text" [value]="scopeSearch()"
-            (input)="scopeSearch.set($any($event.target).value)"
-            [placeholder]="'users.scopeSearchPlaceholder' | translate" />
-          }
-          <div class="dt-multi-select" [class.dt-multi-select-empty]="!scopes().length">
-            @if (!scopes().length) {
-            <div class="dt-empty-box">{{ 'users.noScopes' | translate }}</div>
-            }
-            @for (scope of filteredScopes(); track scope.id) {
-            <label class="dt-option">
-              <input type="checkbox" [checked]="isSelected(userForm.controls.scopeIds.value, scope.id)"
-                (change)="toggleSelection('scopeIds', scope.id)" />
-              <span>{{ scope.name }}</span>
-            </label>
-            }
-          </div>
-        </label>
-
-        <label class="dt-field dt-field-full">
           <span class="dt-label">{{ 'users.roleIdsLabel' | translate }}</span>
           @if (roles().length) {
           <input class="dt-input" type="text" [value]="roleSearch()" (input)="roleSearch.set($any($event.target).value)"
@@ -239,7 +218,6 @@
       <app-audit-info [data]="user" />
       <app-nested-entities [title]="'users.rolesLabel' | translate" [entities]="user.roles" />
       <app-nested-entities [title]="'users.groupsLabel' | translate" [entities]="user.groups" />
-      <app-nested-entities [title]="'users.scopesLabel' | translate" [entities]="user.scopes" />
     </div>
     }
   </app-detail-sidebar>
